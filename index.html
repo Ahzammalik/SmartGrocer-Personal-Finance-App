@@ -14,104 +14,11 @@
     <!-- Chart.js for interactive charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <!-- Google Fonts: PT Sans -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
-
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Custom Styles -->
-    <style>
-        body {
-            font-family: 'PT Sans', sans-serif;
-            background-color: #f0f4f8;
-            color: #1a202c;
-        }
-        
-        .card {
-            background-color: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(34, 139, 34, 0.1), 0 10px 10px -5px rgba(34, 139, 34, 0.04);
-        }
-        
-        .bg-primary { background-color: #228B22; }
-        .text-primary { color: #228B22; }
-        .border-primary { border-color: #228B22; }
-        
-        .bg-accent { background-color: #3CB371; }
-        .text-accent { color: #3CB371; }
-        
-        .page {
-            display: none;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        
-        .page.active {
-            display: block;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #f0f4f8;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #3CB371;
-            border-radius: 10px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #228B22;
-        }
-        
-        #notification-banner {
-            transition: transform 0.5s ease-in-out;
-        }
-        
-        .nav-link.active {
-            background-color: #e6f7e6;
-            color: #228B22;
-            font-weight: bold;
-        }
-        
-        .stat-card {
-            transition: all 0.3s ease;
-        }
-        
-        .stat-card:hover {
-            transform: scale(1.03);
-        }
-        
-        .progress-bar {
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-            background-color: #e5e7eb;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
-    </style>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="antialiased">
 
@@ -286,18 +193,18 @@
                                 <div class="p-3 rounded-full bg-green-100 text-primary">
                                     <i class="fas fa-money-bill-wave text-xl"></i>
                                 </div>
-                                <h3 class="ml-4 text-lg font-semibold text-gray-600">Total Income (Month)</h3>
+                                <h3 class="ml-4 text-lg font-semibold text-gray-极速加速器">Total Income (Month)</h3>
                             </div>
                             <p id="total-income-stat" class="text-3xl font-bold mt-4 text-gray-800">$4,250.00</p>
                         </div>
                         <div class="card p-6 stat-card">
                             <div class="flex items-center">
-                                <div class="p-3 rounded-full bg-green-100 text-primary">
+                                <极速加速器 class="p-3 rounded-full bg-green-100 text-primary">
                                     <i class="fas fa-credit-card text-xl"></i>
                                 </div>
                                 <h3 class="ml-4 text-lg font-semibold text-gray-600">Total Expenses (Month)</h3>
                             </div>
-                            <p id="total-expenses-stat" class="text-3xl font-bold mt-4 text-gray-800">$2,845.50</p>
+                            <p id="total-expenses-stat" class="text-3极速加速器 font-bold mt-4 text-gray-800">$2,845.50</p>
                         </div>
                         <div class="card p-6 stat-card">
                             <div class="flex items-center">
@@ -315,7 +222,7 @@
                                 </div>
                                 <h3 class="ml-4 text-lg font-semibold text-gray-600">Total Debt</h3>
                             </div>
-                            <p id="total-debt-stat" class="text-3xl font-bold mt-4 text-gray-800">$8,250.00</p>
+                            <p id="total-debt-stat" class="text-3xl font-bold mt-4 text-gray-800">$8,250.00</极速加速器>
                         </div>
                     </div>
 
@@ -329,7 +236,7 @@
                                     <input type="number" id="quick-amount" step="0.01" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500">
                                 </div>
                                 <div>
-                                    <label for="quick-description" class="block text-sm font-medium text-gray-700">Description</label>
+                                    <label for="quick-description" class="block text极速加速器 font-medium text-gray-700">Description</label>
                                     <input type="text" id="quick-description" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500">
                                 </div>
                                 <div>
@@ -364,11 +271,11 @@
                         <div class="lg:col-span-2 card p-6">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-xl font-bold text-gray-800">Spending by Category</h3>
-                                <div class="p-3 rounded-full bg-green-100 text-primary">
+                                <div class="p-3 rounded-full bg-green-极速加速器 text-primary">
                                     <i class="fas fa-chart-pie text-xl"></i>
                                 </div>
                             </div>
-                            <p id="ai-tip" class="text-sm mb-4 text-gray-600">Your spending on dining is 15% higher than last month. Consider cooking at home more often to save money.</p>
+                            <p id="ai-t极速加速器" class="text-sm mb-4 text-gray-600">Your spending on dining is 15% higher than last month. Consider cooking at home more often to save money.</p>
                             <div class="h-80"><canvas id="spending-doughnut-chart"></canvas></div>
                         </div>
                     </div>
@@ -386,7 +293,7 @@
                                 <select id="filing-status" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500 bg-white">
                                     <option>Single</option>
                                     <option>Married filing jointly</option>
-                                    <option>Married filing separately</option>
+                                    <option>极速加速器 filing separately</option>
                                     <option>Head of household</option>
                                 </select>
                             </div>
@@ -394,7 +301,7 @@
                                 <button id="estimate-tax-btn" class="w-full bg-accent text-white font-bold py-2 px-4 rounded-lg hover:bg-primary transition-colors duration-300">Estimate Taxes</button>
                             </div>
                         </div>
-                        <div id="tax-result-container" class="mt-4 p-4 bg-green-50 rounded-lg hidden">
+                        <div id="tax-result-container" class="mt-4 p-4极速加速器green-50 rounded-lg hidden">
                             <h4 class="font-semibold text-lg text-primary">Tax Estimation Result:</h4>
                             <div id="tax-result-loader" class="text-center p-4 hidden">
                                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
@@ -432,7 +339,7 @@
                                     <option value="other">Other</option>
                                 </select>
                                 <select id="transaction-type-filter" class="border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500 bg-white">
-                                    <option value="">All Types</option>
+                                    <option value="">All Types</极速加速器>
                                     <option value="income">Income</option>
                                     <option value="expense">Expense</option>
                                 </select>
@@ -457,7 +364,7 @@
                                         <td class="p-4">Grocery Shopping</td>
                                         <td class="p-4"><span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Groceries</span></td>
                                         <td class="p-4 text-right text-red-600">-$125.50</td>
-                                        <td class="p-4">Credit Card</td>
+                                        <td class="极速加速器">Credit Card</td>
                                         <td class="p-4 text-center">
                                             <button class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
                                             <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
@@ -470,12 +377,12 @@
                                         <td class="p-4 text-right text-green-600">+$2,500.00</td>
                                         <td class="p-4">Checking Account</td>
                                         <td class="p-4 text-center">
-                                            <button class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2"><极速加速器 class="fas fa-edit"></i></button>
                                             <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
                                         </td>
                                     </tr>
                                     <tr class="border-b hover:bg-gray-50">
-                                        <td class="p-4">Aug 12, 2023</td>
+                                        <td class="p-极速加速器">Aug 12, 2023</td>
                                         <td class="p-4">Electricity Bill</td>
                                         <td class="p-4"><span class="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs">Utilities</span></td>
                                         <td class="p-4 text-right text-red-600">-$85.25</td>
@@ -492,7 +399,7 @@
                                         <td class="p-4 text-right text-red-600">-$67.80</td>
                                         <td class="p-4">Credit Card</td>
                                         <td class="p-4 text-center">
-                                            <button class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></极速加速器></button>
                                             <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
                                         </td>
                                     </tr>
@@ -529,7 +436,7 @@
                             <button id="open-budget-modal" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent transition-colors">Create Budget</button>
                         </div>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="grid grid-cols-1 md:极速加速器3 gap-6 mb-6">
                             <div class="bg-purple-50 p-4 rounded-lg">
                                 <h4 class="text-sm font-semibold text-gray-600">Active Budgets</h4>
                                 <p class="text-2xl font-bold text-gray-800">5</p>
@@ -540,7 +447,7 @@
                             </div>
                             <div class="bg-purple-50 p-4 rounded-lg">
                                 <h4 class="text-sm font-semibold text-gray-600">Average Utilization</h4>
-                                <p class="text-2xl font-bold text-gray-800">72%</p>
+                                <p class="极速加速器 font-bold text-gray-800">72%</极速加速器>
                             </div>
                         </div>
                         
@@ -569,11 +476,11 @@
                             
                             <div class="card p-4">
                                 <div class="flex justify-between items-start mb-3">
-                                    <h4 class="font-semibold text-gray-800">Transportation</h4>
+                                    <h4 class="font-semib极速加速器 text-gray-800">Transportation</h4>
                                     <span class="text-sm font-semibold text-gray-600">$150 / $200</span>
                                 </div>
                                 <div class="progress-bar">
-                                    <div class="progress-fill bg-green-500" style="width: 75%"></div>
+                                    <div class="progress-fill bg-green-500" style="极速加速器: 75%"></div>
                                 </div>
                                 <p class="text-sm text-gray-600 mt-2">$50 remaining (25%)</p>
                             </div>
@@ -614,8 +521,8 @@
                         </button>
                         
                         <div id="ai-report-container" class="mt-8">
-                            <div id="ai-report-loader" class="text-center p-4 hidden">
-                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                            <div id="ai-report-loader"极速加速器"text-center p-4 hidden">
+                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></极速加速器>
                                 <p class="mt-2 text-gray-600">Analyzing your finances... This may take a moment.</p>
                             </div>
                             <div id="ai-report-content" class="prose max-w-none">
@@ -633,10 +540,10 @@
                         <!-- General Settings -->
                         <div class="bg-gray-50 rounded-lg p-6 mb-6">
                             <h4 class="text-xl font-semibold text-gray-700 mb-4">General</h4>
-                            <div class="space-y-4">
+                            <div class="space极速加速器4">
                                 <div>
                                     <label for="currency-select" class="block text-sm font-medium text-gray-700">Currency</label>
-                                    <select id="currency-select" class="mt-1 block w-full md:w-1/3 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500 bg-white">
+                                    <select id="currency-select" class="mt-1 block w-full md:w-1/极速加速器 border border-gray-300 rounded-md shadow极速加速器 py-2 px-3 focus:ring-green-500 focus:border-green-500 bg-white">
                                         <option value="USD">USD ($)</option>
                                         <option value="EUR">EUR (€)</option>
                                         <option value="GBP">GBP (£)</option>
@@ -650,7 +557,7 @@
                                     <select id="date-format" class="mt-1 block w-full md:w-1/3 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500 bg-white">
                                         <option value="MM/DD/YYYY">MM/DD/YYYY</option>
                                         <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                                        <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                                        <option value="YYYY-MM-DD">YYYY-MM极速加速器</option>
                                     </select>
                                 </div>
                             </div>
@@ -681,7 +588,7 @@
                                 <div>
                                     <label for="current-password" class="block text-sm font-medium text-gray-700">Current Password</label>
                                     <input type="password" id="current-password" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500">
-                                </div>
+                                </极速加速器>
                                 <div>
                                     <label for="new-password" class="block text-sm font-medium text-gray-700">New Password</label>
                                     <input type="password" id="new-password" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500">
@@ -707,7 +614,7 @@
                                     </div>
                                     <label class="relative inline-flex items-center cursor-pointer">
                                         <input type="checkbox" class="sr-only peer" checked>
-                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-check极速加速器after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                                     </label>
                                 </div>
                                 <div class="flex items-center justify-between">
@@ -717,12 +624,12 @@
                                     </div>
                                     <label class="relative inline-flex items-center cursor-pointer">
                                         <input type="checkbox" class="sr-only peer" checked>
-                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:极速加速器-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2极速加速器 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                                     </label>
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <h5 class="font-medium text-gray-800">Bill Reminders</h5>
+                                        <h5 class="font-medium text-gray-800">Bill Reminders</极速加速器>
                                         <p class="text-sm text-gray-500">Receive reminders for upcoming bills</p>
                                     </div>
                                     <label class="relative inline-flex items-center cursor-pointer">
@@ -735,7 +642,7 @@
 
                         <!-- Data Management -->
                         <div class="bg-gray-50 rounded-lg p-6">
-                            <h4 class="text-xl font-semibold text-gray-700 mb-4">Data Management</h4>
+                            <h4 class="text-xl font-semibold text-gray-极速加速器 mb-4">Data Management</h4>
                             <div class="space-y-4">
                                 <div>
                                     <button class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">Export Data</button>
@@ -757,346 +664,7 @@
         </div>
     </div>
 
-    <script>
-        // Basic application functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            // Simulate loading process
-            setTimeout(() => {
-                document.getElementById('loading-overlay').style.display = 'none';
-                // Uncomment the line below to show auth container by default
-                // document.getElementById('auth-container').classList.remove('hidden');
-                
-                // For demo purposes, let's simulate a successful login
-                simulateLogin('demo@smartgrocer.com');
-            }, 1500);
-            
-            // Toggle between login and registration forms
-            document.getElementById('toggle-auth-mode').addEventListener('click', function(e) {
-                e.preventDefault();
-                const loginForm = document.getElementById('login-form');
-                const registerForm = document.getElementById('register-form');
-                const toggleLink = document.getElementById('toggle-auth-mode');
-                
-                if (loginForm.classList.contains('hidden')) {
-                    loginForm.classList.remove('hidden');
-                    registerForm.classList.add('hidden');
-                    toggleLink.textContent = 'Need an account? Sign up';
-                } else {
-                    loginForm.classList.add('hidden');
-                    registerForm.classList.remove('hidden');
-                    toggleLink.textContent = 'Already have an account? Sign in';
-                }
-            });
-            
-            // Handle login form submission
-            document.getElementById('login-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const email = document.getElementById('login-email').value;
-                const password = document.getElementById('login-password').value;
-                
-                // Simple validation
-                if (!email || !password) {
-                    showNotification('Please enter both email and password', 'error');
-                    return;
-                }
-                
-                // Simulate successful login
-                simulateLogin(email);
-            });
-            
-            // Handle registration form submission
-            document.getElementById('register-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const name = document.getElementById('register-name').value;
-                const email = document.getElementById('register-email').value;
-                const password = document.getElementById('register-password').value;
-                const confirmPassword = document.getElementById('register-confirm-password').value;
-                
-                // Simple validation
-                if (!name || !email || !password || !confirmPassword) {
-                    showNotification('Please fill out all fields', 'error');
-                    return;
-                }
-                
-                if (password !== confirmPassword) {
-                    showNotification('Passwords do not match', 'error');
-                    return;
-                }
-                
-                if (password.length < 6) {
-                    showNotification('Password must be at least 6 characters', 'error');
-                    return;
-                }
-                
-                // Simulate successful registration
-                simulateLogin(email);
-            });
-            
-            // Google sign in
-            document.getElementById('google-signin-btn').addEventListener('click', function() {
-                simulateLogin('google-user@example.com');
-            });
-            
-            // Logout functionality
-            document.getElementById('logout-btn').addEventListener('click', function() {
-                document.getElementById('main-app-container').classList.add('hidden');
-                document.getElementById('auth-container').classList.remove('hidden');
-                showNotification('You have been logged out', 'info');
-            });
-            
-            // Navigation
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href').substring(1);
-                    navigateToPage(targetId);
-                    
-                    // Update active state
-                    document.querySelectorAll('.nav-link').forEach(nav => {
-                        nav.classList.remove('active');
-                    });
-                    this.classList.add('active');
-                });
-            });
-            
-            // Mobile menu toggle
-            document.getElementById('mobile-menu-button').addEventListener('click', function() {
-                const sidebar = document.querySelector('aside');
-                sidebar.classList.toggle('hidden');
-            });
-            
-            // Quick expense form submission
-            document.getElementById('quick-expense-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const amount = document.getElementById('quick-amount').value;
-                const description = document.getElementById('quick-description').value;
-                const category = document.getElementById('quick-category').value;
-                const account = document.getElementById('quick-account').value;
-                
-                if (!amount || !description || !category || !account) {
-                    showNotification('Please fill out all fields', 'error');
-                    return;
-                }
-                
-                // Reset form
-                this.reset();
-                
-                showNotification(`Added expense: $${amount} for ${description}`, 'success');
-                
-                // Update the expenses stat
-                const currentExpenses = parseFloat(document.getElementById('total-expenses-stat').textContent.replace('$', '').replace(',', ''));
-                const newExpenses = currentExpenses + parseFloat(amount);
-                document.getElementById('total-expenses-stat').textContent = '$' + newExpenses.toFixed(2);
-                
-                // Update net worth
-                const currentNetWorth = parseFloat(document.getElementById('net-worth-stat').textContent.replace('$', '').replace(',', ''));
-                const newNetWorth = currentNetWorth - parseFloat(amount);
-                document.getElementById('net-worth-stat').textContent = '$' + newNetWorth.toFixed(2);
-            });
-            
-            // Tax estimation
-            document.getElementById('estimate-tax-btn').addEventListener('click', function() {
-                const income = document.getElementById('annual-income').value;
-                const filingStatus = document.getElementById('filing-status').value;
-                
-                if (!income) {
-                    showNotification('Please enter your annual income', 'error');
-                    return;
-                }
-                
-                const taxResult = document.getElementById('tax-result-container');
-                const taxLoader = document.getElementById('tax-result-loader');
-                const taxText = document.getElementById('tax-result-text');
-                
-                taxResult.classList.remove('hidden');
-                taxLoader.classList.remove('hidden');
-                taxText.textContent = '';
-                
-                // Simulate calculation
-                setTimeout(() => {
-                    taxLoader.classList.add('hidden');
-                    
-                    // Simple tax estimation logic (for demonstration only)
-                    const incomeNum = parseFloat(income);
-                    let taxAmount = 0;
-                    
-                    if (incomeNum <= 11000) {
-                        taxAmount = incomeNum * 0.10;
-                    } else if (incomeNum <= 44725) {
-                        taxAmount = 1100 + (incomeNum - 11000) * 0.12;
-                    } else if (incomeNum <= 95375) {
-                        taxAmount = 5147 + (incomeNum - 44725) * 0.22;
-                    } else if (incomeNum <= 182100) {
-                        taxAmount = 16290 + (incomeNum - 95375) * 0.24;
-                    } else if (incomeNum <= 231250) {
-                        taxAmount = 37104 + (incomeNum - 182100) * 0.32;
-                    } else if (incomeNum <= 578125) {
-                        taxAmount = 52832 + (incomeNum - 231250) * 0.35;
-                    } else {
-                        taxAmount = 174238.25 + (incomeNum - 578125) * 0.37;
-                    }
-                    
-                    // Adjust for filing status (simplified)
-                    if (filingStatus === 'Married filing jointly') {
-                        taxAmount *= 0.85;
-                    } else if (filingStatus === 'Head of household') {
-                        taxAmount *= 0.9;
-                    }
-                    
-                    taxText.textContent = `Based on your ${filingStatus.toLowerCase()} status and $${income} annual income, your estimated federal tax is approximately $${taxAmount.toFixed(2)}. This is a rough estimate and may not reflect your actual tax liability.`;
-                }, 2000);
-            });
-            
-            // AI report generation
-            document.getElementById('generate-ai-report-btn').addEventListener('click', function() {
-                const reportContainer = document.getElementById('ai-report-container');
-                const reportLoader = document.getElementById('ai-report-loader');
-                const reportContent = document.getElementById('ai-report-content');
-                
-                reportLoader.classList.remove('hidden');
-                reportContent.innerHTML = '';
-                
-                // Simulate AI analysis
-                setTimeout(() => {
-                    reportLoader.classList.add('hidden');
-                    
-                    // Sample AI report
-                    reportContent.innerHTML = `
-                        <h3 class="text-xl font-semibold text-gray-800">Your Financial Health Report</h3>
-                        <p class="text-gray-700 mt-4">Based on your financial data, here's an analysis of your financial health:</p>
-                        
-                        <div class="mt-6 p-4 bg-green-50 rounded-lg">
-                            <h4 class="font-semibold text-green-800">Strengths</h4>
-                            <ul class="list-disc pl-5 mt-2 text-green-700">
-                                <li>You're saving approximately 15% of your income, which is above the recommended 10%</li>
-                                <li>Your emergency fund covers 3 months of expenses, meeting the basic recommendation</li>
-                                <li>You have minimal high-interest debt</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="mt-4 p-4 bg-yellow-50 rounded-lg">
-                            <h4 class="font-semibold text-yellow-800">Areas for Improvement</h4>
-                            <ul class="list-disc pl-5 mt-2 text-yellow-700">
-                                <li>Your dining expenses are 25% higher than the average for your income level</li>
-                                <li>You could benefit from increasing your retirement contributions</li>
-                                <li>Consider diversifying your investment portfolio</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="mt-4 p-4 bg-blue-50 rounded-lg">
-                            <h4 class="font-semibold text-blue-800">Recommendations</h4>
-                            <ul class="list-disc pl-5 mt-2 text-blue-700">
-                                <li>Set up automatic transfers to your savings account to increase your emergency fund to 6 months of expenses</li>
-                                <li>Create a specific budget category for dining out and set a monthly limit</li>
-                                <li>Consider opening a retirement account if you don't have one, or increase contributions to your existing one</li>
-                                <li>Review your investment portfolio to ensure proper diversification</li>
-                            </ul>
-                        </div>
-                        
-                        <p class="text-sm text-gray-500 mt-6">Disclaimer: This analysis is generated based on the data you've provided and should not be considered professional financial advice. Consult with a qualified financial advisor for personalized recommendations.</p>
-                    `;
-                }, 3000);
-            });
-            
-            // Initialize with dashboard page
-            navigateToPage('dashboard');
-            
-            // Set dashboard as active nav link
-            document.querySelector('a[href="#dashboard"]').classList.add('active');
-            
-            // Sample data for charts
-            initializeSampleData();
-        });
-        
-        function simulateLogin(email) {
-            document.getElementById('auth-container').classList.add('hidden');
-            document.getElementById('main-app-container').classList.remove('hidden');
-            document.getElementById('welcome-user-text').textContent = `Welcome, ${email.split('@')[0]}!`;
-            showNotification('Login successful!', 'success');
-        }
-        
-        function navigateToPage(pageId) {
-            // Hide all pages
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            
-            // Show the selected page
-            document.getElementById(pageId).classList.add('active');
-            
-            // Update page title
-            const pageTitle = document.getElementById('page-title');
-            const navLink = document.querySelector(`a[href="#${pageId}"]`);
-            
-            if (navLink) {
-                pageTitle.textContent = navLink.textContent;
-            }
-            
-            // Close mobile menu if open
-            if (window.innerWidth < 1024) {
-                document.querySelector('aside').classList.add('hidden');
-            }
-        }
-        
-        function showNotification(message, type = 'info') {
-            const banner = document.getElementById('notification-banner');
-            const notificationText = document.getElementById('notification-text');
-            
-            // Set message and style based on type
-            notificationText.textContent = message;
-            
-            switch(type) {
-                case 'success':
-                    banner.style.backgroundColor = '#228B22'; // Green
-                    break;
-                case 'error':
-                    banner.style.backgroundColor = '#DC2626'; // Red
-                    break;
-                case 'warning':
-                    banner.style.backgroundColor = '#D97706'; // Amber
-                    break;
-                default:
-                    banner.style.backgroundColor = '#3B82F6'; // Blue
-            }
-            
-            // Show the banner
-            banner.style.transform = 'translateY(0)';
-            
-            // Hide after 5 seconds
-            setTimeout(() => {
-                banner.style.transform = 'translateY(-100%)';
-            }, 5000);
-        }
-        
-        function initializeSampleData() {
-            // Sample spending chart
-            const spendingCtx = document.getElementById('spending-doughnut-chart').getContext('2d');
-            new Chart(spendingCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Groceries', 'Dining', 'Transportation', 'Utilities', 'Entertainment', 'Shopping', 'Healthcare', 'Other'],
-                    datasets: [{
-                        data: [500, 300, 150, 200, 100, 250, 80, 120],
-                        backgroundColor: [
-                            '#228B22', '#3CB371', '#90EE90', '#98FB98', '#00FA9A', 
-                            '#00FF7F', '#3CB371', '#2E8B57'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                boxWidth: 15
-                            }
-                        }
-                    }
-                }
-            });
-        }
-    </script>
+    <!-- Custom JavaScript -->
+    <script src="script.js"></script>
 </body>
 </html>
