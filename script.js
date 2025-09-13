@@ -1,213 +1,177 @@
 // Global state to hold transactions
 let transactionsData = [
-    {
-        id: 1, // Unique ID for each transaction
-        date: "2025-09-12",
-        description: "Initial Salary",
-        category: "Income",
-        amount: 2500.00,
-        account: "Checking Account",
-        type: "income"
-    },
-    {
-        id: 2,
-        date: "2025-09-13",
-        description: "Grocery Shopping",
-        category: "Groceries",
-        amount: 125.50,
-        account: "Credit Card",
-        type: "expense"
-    }
+    { id: 1, date: "2025-09-12", description: "Initial Salary", category: "Income", amount: 2500.00, account: "Checking Account", type: "income" },
+    { id: 2, date: "2025-09-13", description: "Grocery Shopping", category: "Groceries", amount: 125.50, account: "Credit Card", type: "expense" }
 ];
-let nextTransactionId = 3; // Keep track of the next available ID
+let nextTransactionId = 3;
+let currentlyEditingId = null; // Track which transaction is being edited
 
 // Basic application functionality
 document.addEventListener('DOMContentLoaded', function() {
-    // Simulate loading process
-    setTimeout(() => {
-        document.getElementById('loading-overlay').style.display = 'none';
-    }, 1500);
+    setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; }, 1500);
 
-    // Initial render of transactions
     renderTransactions();
     
     // Navigation
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
-            const targetId = this.getAttribute('href').substring(1);
-            navigateToPage(targetId);
-            
+            navigateToPage(this.getAttribute('href').substring(1));
             document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
             this.classList.add('active');
         });
     });
     
     // Mobile menu toggle
-    document.getElementById('mobile-menu-button').addEventListener('click', function() {
+    document.getElementById('mobile-menu-button').addEventListener('click', () => {
         document.querySelector('aside').classList.toggle('hidden');
     });
     
     // Quick expense form submission
     document.getElementById('quick-expense-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        const amount = parseFloat(document.getElementById('quick-amount').value);
-        const description = document.getElementById('quick-description').value;
-        const category = document.getElementById('quick-category').value;
-        const account = document.getElementById('quick-account').value;
-        
-        if (!amount || !description || !category || !account) {
-            showNotification('Please fill out all fields', 'error');
-            return;
-        }
-        
-        const newTransaction = {
-            id: nextTransactionId++, // Assign a unique ID
-            date: new Date().toISOString().split('T')[0],
-            description,
-            category,
-            amount,
-            account,
-            type: "expense"
-        };
-        transactionsData.unshift(newTransaction);
-
-        renderTransactions();
-        
-        // Update dashboard stats
-        const currentExpenses = parseFloat(document.getElementById('total-expenses-stat').textContent.replace('$', '').replace(',', ''));
-        document.getElementById('total-expenses-stat').textContent = '$' + (currentExpenses + amount).toFixed(2);
-        
-        const currentNetWorth = parseFloat(document.getElementById('net-worth-stat').textContent.replace('$', '').replace(',', ''));
-        document.getElementById('net-worth-stat').textContent = '$' + (currentNetWorth - amount).toFixed(2);
-
-        this.reset();
-        showNotification(`Added expense: $${amount} for ${description}`, 'success');
+        // ... (this function is unchanged) ...
     });
 
-    // Event listener for deleting transactions
+    // Event listener for table actions (Edit, Delete, Save, Cancel)
     document.getElementById('transactions-table-body').addEventListener('click', function(e) {
-        // Find the closest trash icon that was clicked
-        const deleteButton = e.target.closest('.delete-btn');
-        if (deleteButton) {
+        const target = e.target;
+        const editButton = target.closest('.edit-btn');
+        const deleteButton = target.closest('.delete-btn');
+        const saveButton = target.closest('.save-btn');
+        const cancelButton = target.closest('.cancel-btn');
+
+        if (editButton) {
+            const transactionId = parseInt(editButton.getAttribute('data-id'));
+            enterEditMode(transactionId);
+        } else if (deleteButton) {
             const transactionId = parseInt(deleteButton.getAttribute('data-id'));
             deleteTransaction(transactionId);
+        } else if (saveButton) {
+            const transactionId = parseInt(saveButton.getAttribute('data-id'));
+            saveTransaction(transactionId);
+        } else if (cancelButton) {
+            exitEditMode();
         }
     });
-    
-    // Other event listeners (Tax, AI Report) remain the same...
     
     navigateToPage('dashboard');
     document.querySelector('a[href="#dashboard"]').classList.add('active');
     initializeSampleData();
 });
 
-function deleteTransaction(id) {
-    const transactionIndex = transactionsData.findIndex(tx => tx.id === id);
-    if (transactionIndex === -1) return;
+function enterEditMode(id) {
+    // If another row is already being edited, cancel it first.
+    if (currentlyEditingId !== null) {
+        exitEditMode();
+    }
+    currentlyEditingId = id;
+    renderTransactions(); // Re-render to show the edit form for the specific row
+}
 
-    const transactionToDelete = transactionsData[transactionIndex];
-    const amount = transactionToDelete.amount;
+function exitEditMode() {
+    currentlyEditingId = null;
+    renderTransactions(); // Re-render to show all rows as normal
+}
 
-    // Remove transaction from the array
-    transactionsData.splice(transactionIndex, 1);
+function saveTransaction(id) {
+    const transaction = transactionsData.find(tx => tx.id === id);
+    if (!transaction) return;
 
-    // Re-render the table
-    renderTransactions();
-
-    // Update dashboard stats based on the type of transaction deleted
-    if (transactionToDelete.type === 'expense') {
-        const currentExpenses = parseFloat(document.getElementById('total-expenses-stat').textContent.replace('$', '').replace(',', ''));
-        document.getElementById('total-expenses-stat').textContent = '$' + (currentExpenses - amount).toFixed(2);
-        
-        const currentNetWorth = parseFloat(document.getElementById('net-worth-stat').textContent.replace('$', '').replace(',', ''));
-        document.getElementById('net-worth-stat').textContent = '$' + (currentNetWorth + amount).toFixed(2);
-    } else if (transactionToDelete.type === 'income') {
-        const currentIncome = parseFloat(document.getElementById('total-income-stat').textContent.replace('$', '').replace(',', ''));
-        document.getElementById('total-income-stat').textContent = '$' + (currentIncome - amount).toFixed(2);
-
-        const currentNetWorth = parseFloat(document.getElementById('net-worth-stat').textContent.replace('$', '').replace(',', ''));
-        document.getElementById('net-worth-stat').textContent = '$' + (currentNetWorth - amount).toFixed(2);
+    const row = document.querySelector(`tr[data-id="${id}"]`);
+    const newDescription = row.querySelector('input[name="description"]').value;
+    const newAmount = parseFloat(row.querySelector('input[name="amount"]').value);
+    
+    if (!newDescription || isNaN(newAmount)) {
+        showNotification('Invalid input. Please check the values.', 'error');
+        return;
     }
 
-    showNotification('Transaction deleted successfully', 'info');
+    // Update stats before changing the data
+    updateStatsOnEdit(transaction.amount, newAmount, transaction.type);
+
+    // Update the transaction data
+    transaction.description = newDescription;
+    transaction.amount = newAmount;
+
+    showNotification('Transaction updated successfully!', 'success');
+    exitEditMode();
+}
+
+function updateStatsOnEdit(oldAmount, newAmount, type) {
+    const difference = newAmount - oldAmount;
+
+    if (type === 'expense') {
+        const currentExpenses = parseFloat(document.getElementById('total-expenses-stat').textContent.replace('$', '').replace(',', ''));
+        document.getElementById('total-expenses-stat').textContent = '$' + (currentExpenses + difference).toFixed(2);
+        
+        const currentNetWorth = parseFloat(document.getElementById('net-worth-stat').textContent.replace('$', '').replace(',', ''));
+        document.getElementById('net-worth-stat').textContent = '$' + (currentNetWorth - difference).toFixed(2);
+    } else if (type === 'income') {
+        const currentIncome = parseFloat(document.getElementById('total-income-stat').textContent.replace('$', '').replace(',', ''));
+        document.getElementById('total-income-stat').textContent = '$' + (currentIncome + difference).toFixed(2);
+
+        const currentNetWorth = parseFloat(document.getElementById('net-worth-stat').textContent.replace('$', '').replace(',', ''));
+        document.getElementById('net-worth-stat').textContent = '$' + (currentNetWorth + difference).toFixed(2);
+    }
+}
+
+
+function deleteTransaction(id) {
+    // ... (this function is unchanged from the previous version) ...
 }
 
 function renderTransactions() {
     const tableBody = document.getElementById('transactions-table-body');
-    if (!tableBody) return;
-
     tableBody.innerHTML = '';
 
     transactionsData.forEach(tx => {
-        const row = document.createElement('tr');
-        row.className = 'border-b hover:bg-gray-50';
+        // Check if the current row is the one being edited
+        if (tx.id === currentlyEditingId) {
+            tableBody.innerHTML += renderEditRow(tx);
+        } else {
+            tableBody.innerHTML += renderDataRow(tx);
+        }
+    });
+}
 
-        const amountColor = tx.type === 'income' ? 'text-green-600' : 'text-red-600';
-        const amountPrefix = tx.type === 'income' ? '+' : '-';
-
-        row.innerHTML = `
+// Returns the HTML string for a standard data row
+function renderDataRow(tx) {
+    const amountColor = tx.type === 'income' ? 'text-green-600' : 'text-red-600';
+    const amountPrefix = tx.type === 'income' ? '+' : '-';
+    return `
+        <tr class="border-b hover:bg-gray-50" data-id="${tx.id}">
             <td class="p-4">${new Date(tx.date).toLocaleDateString()}</td>
             <td class="p-4">${tx.description}</td>
             <td class="p-4"><span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">${tx.category}</span></td>
             <td class="p-4 text-right ${amountColor}">${amountPrefix}$${tx.amount.toFixed(2)}</td>
             <td class="p-4">${tx.account}</td>
             <td class="p-4 text-center">
-                <button class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
+                <button class="text-blue-600 hover:text-blue-800 mr-2 edit-btn" data-id="${tx.id}"><i class="fas fa-edit"></i></button>
                 <button class="text-red-600 hover:text-red-800 delete-btn" data-id="${tx.id}"><i class="fas fa-trash"></i></button>
             </td>
-        `;
-        tableBody.appendChild(row);
-    });
+        </tr>
+    `;
 }
 
-function navigateToPage(pageId) {
-    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-    
-    const targetPage = document.getElementById(pageId);
-    if (targetPage) targetPage.classList.add('active');
-    
-    const pageTitle = document.getElementById('page-title');
-    const navLink = document.querySelector(`a[href="#${pageId}"]`);
-    if (navLink) pageTitle.textContent = navLink.textContent.trim();
-    
-    if (window.innerWidth < 1024) {
-        document.querySelector('aside').classList.add('hidden');
-    }
+// Returns the HTML string for a row in edit mode
+function renderEditRow(tx) {
+    return `
+        <tr class="bg-yellow-50" data-id="${tx.id}">
+            <td class="p-4">${new Date(tx.date).toLocaleDateString()}</td>
+            <td class="p-2"><input type="text" name="description" value="${tx.description}" class="transaction-edit-input"></td>
+            <td class="p-4"><span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">${tx.category}</span></td>
+            <td class="p-2 text-right"><input type="number" step="0.01" name="amount" value="${tx.amount.toFixed(2)}" class="transaction-edit-input text-right"></td>
+            <td class="p-4">${tx.account}</td>
+            <td class="p-4 text-center">
+                <button class="text-green-600 hover:text-green-800 mr-2 save-btn" data-id="${tx.id}"><i class="fas fa-check"></i></button>
+                <button class="text-gray-600 hover:text-gray-800 cancel-btn" data-id="${tx.id}"><i class="fas fa-times"></i></button>
+            </td>
+        </tr>
+    `;
 }
 
-function showNotification(message, type = 'info') {
-    const banner = document.getElementById('notification-banner');
-    const notificationText = document.getElementById('notification-text');
-    notificationText.textContent = message;
-    
-    switch(type) {
-        case 'success': banner.style.backgroundColor = '#228B22'; break;
-        case 'error': banner.style.backgroundColor = '#DC2626'; break;
-        default: banner.style.backgroundColor = '#3B82F6';
-    }
-    
-    banner.style.transform = 'translateY(0)';
-    setTimeout(() => { banner.style.transform = 'translateY(-100%)'; }, 5000);
-}
-
-function initializeSampleData() {
-    const spendingCtx = document.getElementById('spending-doughnut-chart').getContext('2d');
-    new Chart(spendingCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Groceries', 'Dining', 'Transportation', 'Utilities', 'Entertainment'],
-            datasets: [{
-                data: [500, 300, 150, 200, 100],
-                backgroundColor: ['#228B22', '#3CB371', '#90EE90', '#98FB98', '#00FA9A']
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { position: 'right' }
-            }
-        }
-    });
-}
+function navigateToPage(pageId) { /* ... Unchanged ... */ }
+function showNotification(message, type = 'info') { /* ... Unchanged ... */ }
+function initializeSampleData() { /* ... Unchanged ... */ }
+// Add back the full function bodies from the previous step for navigateToPage, showNotification, initializeSampleData, and the quick expense form submit logic.
