@@ -198,3 +198,10 @@ body {
     font-size: 0.875rem; /* 14px */
     color: #6b7280; /* gray-500 */
 }
+
+/* ... (all previous CSS is unchanged) ... */
+
+/* Add this new class to slide the sidebar into view on mobile */
+.sidebar-open {
+    transform: translateX(0);
+}
