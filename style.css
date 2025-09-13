@@ -183,3 +183,18 @@ body {
 .recent-transaction-amount {
     font-weight: 600;
 }
+
+/* ... (all previous CSS is unchanged) ... */
+
+/* Styles for Account Cards */
+.account-card-balance {
+    font-size: 1.875rem; /* 30px */
+    font-weight: 700;
+    color: #1a202c; /* gray-900 */
+    margin-top: 8px;
+}
+
+.account-card-type {
+    font-size: 0.875rem; /* 14px */
+    color: #6b7280; /* gray-500 */
+}
