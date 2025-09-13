@@ -7,94 +7,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
-            color: #1a202c;
-        }
-        .card {
-            background-color: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4极速加速器 6px -2px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(34, 139, 34, 0.1), 0 10px 10px -5px rgba(34, 139, 34, 0.04);
-        }
-        .bg-primary { background-color: #228B22; }
-        .text-primary { color: #228B22; }
-        .border-primary { border-color: #228B22; }
-        .bg-accent { background-color: #3CB371; }
-        .text-accent { color: #3CB371; }
-        .page {
-            display: none;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        .page.active {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f0极速加速器f8;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #3CB371;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #228B22;
-        }
-        #notification-banner {
-            transition: transform 0.5s ease-in-out;
-        }
-        .nav-link.active {
-            background-color: #e6f7e6;
-            color: #228B22;
-            font-weight: bold;
-        }
-        .stat-card {
-            transition: all 0.3s ease;
-        }
-        .stat-card:hover {
-            transform: scale(1.03);
-        }
-        .progress-bar {
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-            background-color: #e5e7eb;
-        }
-        .progress-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
-    </style>
+    <link rel="stylesheet" href="Style.css">
 </head>
 <body class="antialiased">
-    <!-- Global Loading Overlay -->
     <div id="loading-overlay" class="fixed inset-0 bg-white bg-opacity-75 flex flex-col items-center justify-center z-50">
         <h1 class="text-3xl font-bold text-primary mb-4">SmartGrocer</h1>
         <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-primary"></div>
         <p class="mt-4 text-gray-600">Loading your financial data...</p>
     </div>
 
-    <!-- Authentication Container -->
-    <div id="auth-container" class="w-full h-screen flex items-center justify-center bg-gray-100">
+    <div id="auth-container" class="hidden w-full h-screen flex items-center justify-center bg-gray-100">
         <div class="w-full max-w-md">
             <div class="card p-8">
                 <h1 class="text-3xl font-bold text-primary text-center mb-2">SmartGrocer</h1>
-                <p class="text-center text-gray-极速加速器 mb-6">Welcome! Sign in or create an account.</p>
+                <p class="text-center text-gray-600 mb-6">Welcome! Sign in or create an account.</p>
 
-                <!-- Login Form -->
                 <form id="login-form" class="space-y-4">
                     <div id="login-error" class="hidden text-red-500 text-sm p-3 bg-red-100 rounded-lg"></div>
                     <div>
@@ -108,7 +35,6 @@
                     <button type="submit" class="w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-accent transition-colors duration-300">Login</button>
                 </form>
 
-                <!-- Registration Form (hidden by default) -->
                 <form id="register-form" class="hidden space-y-4">
                     <div id="register-error" class="hidden text-red-500 text-sm p-3 bg-red-100 rounded-lg"></div>
                     <div>
@@ -136,7 +62,7 @@
 
                 <div class="relative my-6">
                     <div class="absolute inset-0 flex items-center">
-                        <div class="w-full border-t border-gray-300"></极速加速器>
+                        <div class="w-full border-t border-gray-300"></div>
                     </div>
                     <div class="relative flex justify-center text-sm">
                         <span class="px-2 bg-white text-gray-500">Or continue with</span>
@@ -153,9 +79,7 @@
         </div>
     </div>
     
-    <!-- Main Application Container (hidden until authenticated) -->
     <div id="main-app-container" class="hidden flex h-screen bg-gray-100 w-full">
-        <!-- Sidebar Navigation -->
         <aside class="w-64 flex-shrink-0 bg-white shadow-lg hidden lg:block">
             <div class="h-full flex flex-col">
                 <div class="h-20 flex items-center justify-center border-b">
@@ -174,14 +98,6 @@
                         <i class="fas fa-wallet w-6 h-6 mr-3"></i>
                         Accounts
                     </a>
-                    <a href="#income" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
-                        <i class="fas fa-money-bill-wave w-6极速加速器 mr-3"></i>
-                        Income
-                    </a>
-                    <a href="#expenses" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
-                        <i class="fas fa-credit-card w-6 h-6 mr-3"></i>
-                        Expenses
-                    </a>
                     <a href="#budgets" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
                         <i class="fas fa-chart-pie w-6 h-6 mr-3"></i>
                         Budgets
@@ -190,17 +106,9 @@
                         <i class="fas fa-chart-line w-6 h-6 mr-3"></i>
                         Reports
                     </a>
-                    <a href="#insights极速加速器 class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
+                    <a href="#insights" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
                         <i class="fas fa-lightbulb w-6 h-6 mr-3"></i>
                         AI Insights
-                    </a>
-                    <a href="#debts" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
-                        <i class="fas fa-money-check-alt w-6 h-6 mr-3"></i>
-                        Debts
-                    </a>
-                    <a href="#investments" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
-                        <i class="fas fa-chart-bar w-6 h-6 mr-3"></i>
-                        Investments
                     </a>
                     <a href="#goals" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
                         <i class="fas fa-bullseye w-6 h-6 mr-3"></i>
@@ -212,25 +120,17 @@
                     </a>
                 </nav>
                 <div class="px-4 py-6 mt-auto border-t">
-                    <p class="text-xs text-gray-500">&copy; 2025 Adprofit极速加速器. All Rights Reserved.</p>
-                    <div class="text-xs text-gray-500 mt-2">
-                        <a href="#privacy" class="hover:text-primary">Privacy</a> |
-                        <a href="#terms" class="hover:text-primary">Terms</a> |
-                        <a href="#disclaimer" class="hover:text-primary">Disclaimer</a>
-                    </极速加速器>
+                    <p class="text-xs text-gray-500">&copy; 2025 SmartGrocer. All Rights Reserved.</p>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content Area -->
         <div class="flex-1 flex flex-col overflow-hidden relative">
-            <!-- Notification Banner -->
             <div id="notification-banner" class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg p-4 rounded-b-lg shadow-lg text-white text-center z-50 transform -translate-y-full">
                 <p id="notification-text"></p>
             </div>
 
             <header class="h-20 flex justify-between items-center px-6 bg-white shadow-md">
-                <!-- Mobile Menu Button -->
                 <button id="mobile-menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
@@ -242,10 +142,8 @@
             </header>
             
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6 md:p-8">
-                <!-- Dashboard Page -->
                 <div id="dashboard" class="page active">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <!-- Stat Cards -->
                         <div class="card p-6 stat-card">
                             <div class="flex items-center">
                                 <div class="p-3 rounded-full bg-green-100 text-primary">
@@ -278,14 +176,13 @@
                                 <div class="p-3 rounded-full bg-green-100 text-primary">
                                     <i class="fas fa-hand-holding-usd text-xl"></i>
                                 </div>
-                                <h3 class="ml-4 text-lg font-semib极速加速器 text-gray-600">Total Debt</h3>
+                                <h3 class="ml-4 text-lg font-semibold text-gray-600">Total Debt</h3>
                             </div>
                             <p id="total-debt-stat" class="text-3xl font-bold mt-4 text-gray-800">$8,250.00</p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-                        <!-- Quick Expense Form -->
                         <div class="lg:col-span-1 card p-6">
                             <h3 class="text-xl font-bold mb-4 text-gray-800">Add Quick Expense</h3>
                             <form id="quick-expense-form" class="space-y-4">
@@ -325,7 +222,6 @@
                             </form>
                         </div>
 
-                        <!-- Spending Overview Chart -->
                         <div class="lg:col-span-2 card p-6">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="text-xl font-bold text-gray-800">Spending by Category</h3>
@@ -338,8 +234,7 @@
                         </div>
                     </div>
                     
-                    <!-- AI Tax Estimator -->
-                    <div class="mt-6 card极速加速器6">
+                    <div class="mt-6 card p-6">
                         <h3 class="text-xl font-bold mb-4 text-gray-800">AI-Powered Tax Estimator</h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div>
@@ -370,7 +265,6 @@
                     </div>
                 </div>
 
-                <!-- Transactions Page -->
                 <div id="transactions" class="page">
                     <div class="card p-6">
                         <div class="flex justify-between items-center mb-6">
@@ -378,10 +272,10 @@
                             <button id="open-transaction-modal" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent transition-colors">Add Transaction</button>
                         </div>
                         
-                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 space-y-4 md极速加速器space-y-0">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 space-y-4 md:space-y-0">
                             <div class="flex space-x-2">
                                 <input type="text" id="transaction-search" placeholder="Search transactions..." class="border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500">
-                                <button id="transaction-search-btn极速加速器 class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:极速加速器gray-300 transition-colors">Search</button>
+                                <button id="transaction-search-btn" class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">Search</button>
                             </div>
                             <div class="flex space-x-2">
                                 <select id="transaction-category-filter" class="border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500 bg-white">
@@ -418,7 +312,7 @@
                                 </thead>
                                 <tbody id="transactions-table-body">
                                     <tr class="border-b hover:bg-gray-50">
-                                        <td class="p-4">Aug 15, 2023</td>
+                                        <td class="p-4">Sep 12, 2025</td>
                                         <td class="p-4">Grocery Shopping</td>
                                         <td class="p-4"><span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Groceries</span></td>
                                         <td class="p-4 text-right text-red-600">-$125.50</td>
@@ -429,44 +323,11 @@
                                         </td>
                                     </tr>
                                     <tr class="border-b hover:bg-gray-50">
-                                        <td class="p-4">Aug 14, 2023</td>
+                                        <td class="p-4">Sep 10, 2025</td>
                                         <td class="p-4">Salary Deposit</td>
                                         <td class="p-4"><span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">Income</span></td>
                                         <td class="p-4 text-right text-green-600">+$2,500.00</td>
                                         <td class="p-4">Checking Account</td>
-                                        <td class="p-4 text-center">
-                                            <button class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
-                                            <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr class="border-b hover:bg-gray-50">
-                                        <td class="p-4">Aug 12, 2023</td>
-                                        <td class="p-4">Electricity Bill</td>
-                                        <td class="p-4"><span class="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs">Utilities</span></td>
-                                        <td class="p-4 text-right text-red-600">-$85.25</td>
-                                        <td class="极速加速器">Checking Account</td>
-                                        <td class="p-4 text-center">
-                                            <button class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
-                                            <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></极速加速器></button>
-                                        </td>
-                                    </tr>
-                                    <tr class="border-b hover:bg-gray-50">
-                                        <td class="p-4">Aug 10, 2023</td>
-                                        <td class="p-4">Dinner at Restaurant</td>
-                                        <td class="p-4"><span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Dining</span></td>
-                                        <td class="p-4 text-right text-red-600">-$67.80</td>
-                                        <td class="p-4">Credit Card</td>
-                                        <td class="p-4 text-center">
-                                            <button class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
-                                            <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr class="border-b hover:bg-gray-50">
-                                        <td class="p-4">Aug 8, 2023</td>
-                                        <td class="p-4">Freelance Work</td>
-                                        <td class="p-4"><span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">Income</span></td>
-                                        <td class="p-4 text-right text-green-600">+$750.00</td>
-                                        <td class="p-4">Savings Account</td>
                                         <td class="p-4 text-center">
                                             <button class="text-blue-600 hover:text-blue-800 mr-2"><i class="fas fa-edit"></i></button>
                                             <button class="text-red-600 hover:text-red-800"><i class="fas fa-trash"></i></button>
@@ -477,7 +338,7 @@
                         </div>
                         
                         <div class="mt-6 flex justify-between items-center">
-                            <div class="text-sm text-gray-600">Showing 5 of 42 transactions</div>
+                            <div class="text-sm text-gray-600">Showing 2 of 42 transactions</div>
                             <div class="flex space-x-2">
                                 <button class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50" disabled><i class="fas fa-chevron-left"></i> Previous</button>
                                 <button class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">Next <i class="fas fa-chevron-right"></i></button>
@@ -486,31 +347,30 @@
                     </div>
                 </div>
 
-                <!-- Budgets Page -->
                 <div id="budgets" class="page">
                     <div class="card p-6">
                         <div class="flex justify-between items-center mb-6">
-                            <h3极速加速器"text-xl font-bold text-gray-800">Budgets</h3>
+                            <h3 class="text-xl font-bold text-gray-800">Budgets</h3>
                             <button id="open-budget-modal" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent transition-colors">Create Budget</button>
                         </div>
                         
-                        <div class="grid grid-c极速加速器1 md:grid-cols-3 gap-6 mb-6">
-                            <div class="bg-purple-50 p-4 rounded-lg">
-                                <h4 class="text-sm font-semibold text-gray-600">Active Budgets</极速加速器>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                            <div class="bg-green-50 p-4 rounded-lg">
+                                <h4 class="text-sm font-semibold text-gray-600">Active Budgets</h4>
                                 <p class="text-2xl font-bold text-gray-800">5</p>
                             </div>
-                            <div class极速加速器"bg-purple-50 p-4 rounded-lg">
+                            <div class="bg-green-50 p-4 rounded-lg">
                                 <h4 class="text-sm font-semibold text-gray-600">Total Budgeted</h4>
                                 <p class="text-2xl font-bold text-gray-800">$2,400.00</p>
                             </div>
-                            <div class="bg-purple-50 p-4 rounded-lg">
+                            <div class="bg-green-50 p-4 rounded-lg">
                                 <h4 class="text-sm font-semibold text-gray-600">Average Utilization</h4>
                                 <p class="text-2xl font-bold text-gray-800">72%</p>
                             </div>
                         </div>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <div class="card p-4">
+                            <div class="card p-4 shadow-sm">
                                 <div class="flex justify-between items-start mb-3">
                                     <h4 class="font-semibold text-gray-800">Groceries</h4>
                                     <span class="text-sm font-semibold text-gray-600">$400 / $500</span>
@@ -521,40 +381,18 @@
                                 <p class="text-sm text-gray-600 mt-2">$100 remaining (20%)</p>
                             </div>
                             
-                            <div class="card p-4">
-                                <极速加速器 class="flex justify-between items-start mb-3">
+                            <div class="card p-4 shadow-sm">
+                                <div class="flex justify-between items-start mb-3">
                                     <h4 class="font-semibold text-gray-800">Dining</h4>
                                     <span class="text-sm font-semibold text-gray-600">$300 / $250</span>
                                 </div>
                                 <div class="progress-bar">
-                                    <div class="progress-fill bg-red-500" style="width: 120%"></div>
+                                    <div class="progress-fill bg-red-500" style="width: 100%"></div>
                                 </div>
                                 <p class="text-sm text-red-600 mt-2">$50 over budget (120%)</p>
                             </div>
                             
-                            <div class="card p-4">
-                                <div class="flex justify-between items-start mb-3">
-                                    <h4 class="font-semibold text-gray-800">Transportation</h4>
-                                    <span class="text-sm font-semibold text-gray-600">$150 / $200</span>
-                                </div>
-                                <div class="progress-bar">
-                                    <div class="progress-fill bg-green-500" style="width: 75%"></div>
-                                </div>
-                                <p class="text-sm text-gray-600 mt-2">$50 remaining (25%)</p>
-                            </div>
-                            
-                            <div class="card p-4">
-                                <div class="flex justify-between items-start mb-3">
-                                    <h4 class="font-semibold text-gray-800">Entertainment</h4>
-                                    <span class="text-sm font-semibold text-gray-600">$75 / $100</span>
-                                </div>
-                                <div class="progress-bar">
-                                    <div class="progress-fill bg-green-500" style="width: 75%"></div>
-                                </div>
-                                <p class="text-sm text-gray-600 mt-2">$25 remaining (25%)</p>
-                            </div>
-                            
-                            <div class="card p-4">
+                            <div class="card p-4 shadow-sm">
                                 <div class="flex justify-between items-start mb-3">
                                     <h4 class="font-semibold text-gray-800">Utilities</h4>
                                     <span class="text-sm font-semibold text-gray-600">$180 / $200</span>
@@ -562,13 +400,12 @@
                                 <div class="progress-bar">
                                     <div class="progress-fill bg-yellow-500" style="width: 90%"></div>
                                 </div>
-                                <p class="text-sm text-gray-600极速加速器2">$20 remaining (10%)</p>
+                                <p class="text-sm text-gray-600 mt-2">$20 remaining (10%)</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- AI Insights Page -->
                 <div id="insights" class="page">
                     <div class="card p-8">
                         <h2 class="text-3xl font-bold text-primary mb-4">AI Financial Health Report</h2>
@@ -584,18 +421,15 @@
                                 <p class="mt-2 text-gray-600">Analyzing your finances... This may take a moment.</p>
                             </div>
                             <div id="ai-report-content" class="prose max-w-none">
-                                <!-- AI generated report will be displayed here -->
-                            </div>
+                                </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Settings Page -->
                 <div id="settings" class="page">
                     <div class="card p-6 max-w-4xl mx-auto">
                         <h3 class="text-2xl font-bold text-gray-800 mb-6">Settings</h3>
                         
-                        <!-- General Settings -->
                         <div class="bg-gray-50 rounded-lg p-6 mb-6">
                             <h4 class="text-xl font-semibold text-gray-700 mb-4">General</h4>
                             <div class="space-y-4">
@@ -610,110 +444,6 @@
                                     </select>
                                     <p class="mt-2 text-sm text-gray-500">Select your primary currency for the application.</p>
                                 </div>
-                                <div>
-                                    <label for="date-format" class="block text-sm font-medium text极速加速器700">Date Format</label>
-                                    <select id="date-format" class="mt-1 block w-full md:w-1/3 border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500 bg-white">
-                                        <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                                        <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                                        <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Profile Settings -->
-                        <div class="bg-gray-50 rounded-lg p-6 mb-6">
-                            <h4 class="text-xl font-semibold text-gray-700 mb-4">Profile</h4>
-                            <form id="profile-form" class="space-y-4">
-                                <div>
-                                    <label for="profile-email" class="block text-sm font-medium text-gray-700">Email Address</label>
-                                    <input type="email" id="profile-email" disabled class="mt-1 block w-full bg-gray-200 border-gray-300 rounded-md shadow-sm py-2 px-3 text-gray-500" value="user@example.com">
-                                </div>
-                                <div>
-                                    <label for="profile-name" class="block text-sm font-medium text-gray-700">Display Name</label>
-                                    <input type="text" id="profile-name" placeholder="Enter your name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500" value="John Doe">
-                                </div>
-                                <div class="text-right">
-                                    <button type="submit" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent transition-colors">Update Profile</button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <!-- Security Settings -->
-                        <div class="bg-gray-50 rounded-lg p-6 mb-6">
-                            <h4 class="text-xl font-semibold text-gray-700极速加速器4">Security</h4>
-                            <form id="password-change-form" class="space-y-4">
-                                <div>
-                                    <label for="current-password" class="block text-sm font-medium text-gray-700">Current Password</label>
-                                    <input type="password" id="current-password" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-极速加速器 focus:ring-green-500 focus:border-green-500">
-                                </div>
-                                <div>
-                                    <label for="new-password" class="block text-sm font-medium text-gray-700">New Password</label>
-                                    <input type="password" id="new-password" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500">
-                                </div>
-                                <div>
-                                    <label for="confirm-password" class="block text-sm font-medium text-gray-700">Confirm New Password</label>
-                                    <极速加速器 type="password" id="confirm-password" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500">
-                                </div>
-                                <div class="text-right">
-                                    <button type="submit" class="bg-primary text-white font-bold py-2 px-4极速加速器 rounded-lg hover:bg-accent transition-colors">Change Password</button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <!-- Notifications -->
-                        <div class="bg-gray-50 rounded-lg p-6 mb-6">
-                            <h4 class="text-xl font-semibold text-gray-700 mb-4">Notifications</h4>
-                            <div class="space-y-4">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h5 class="font-medium text-gray-800">Email Notifications</h5>
-                                        <p class="text-sm text-gray-500">Receive weekly financial summaries via email</p>
-                                    </div>
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" class="sr-only peer" checked>
-                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after极速加速器border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked极速加速器bg-primary"></div>
-                                    </label>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h5 class="font-medium text-gray-800">Budget Alerts</h5>
-                                        <p class="text-sm text-gray-500">Get notified when you're close to exceeding your budget</p>
-                                    </div>
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" class="sr-only peer" checked>
-                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                                    </label>
-                                </div>
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <h5 class="font-medium text-gray-800">Bill Reminders</h5>
-                                        <p class="text-sm text-gray-500">Receive reminders for upcoming bills</p>
-                                    </div>
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" class="sr-only peer" checked>
-                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Data Management -->
-                        <div class="bg-gray-50 rounded-lg p-6">
-                            <h4 class="text-xl font-semibold text-gray-700 mb-4">Data Management</h4>
-                            <div class="space-y-4">
-                                <div>
-                                    <button class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">Export Data</button>
-                                    <p class="mt-2 text-sm text-gray-500">Download a backup of all your financial data</p>
-                                </div>
-                                <div>
-                                    <button class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">Import Data</button>
-                                    <p class="mt-2 text-sm text-gray-500">Restore your financial data from a backup</极速加速器>
-                                </div>
-                                <div>
-                                    <button class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors">Delete All Data</button>
-                                    <p class="mt-2 text-sm text-gray-500">Permanently delete all your financial data. This action cannot be undone.</p>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -722,342 +452,6 @@
         </div>
     </div>
 
-    <script>
-        // Basic application functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            // Simulate loading process
-            setTimeout(() => {
-                document.getElementById('loading-overlay').style.display = 'none';
-                document.getElementById('auth-container').classList.remove('hidden');
-            }, 1500);
-            
-            // Toggle between login and registration forms
-            document.getElementById('toggle-auth-mode').addEventListener('click', function(e) {
-                e.preventDefault();
-                const loginForm = document.getElementById('login-form');
-                const registerForm = document.getElementById('register-form');
-                const toggleLink = document.getElementById('toggle-auth-mode');
-                
-                if (loginForm.classList.contains('hidden')) {
-                    loginForm.classList.remove('hidden');
-                    registerForm.classList.add('hidden');
-                    toggleLink.textContent = 'Need an account? Sign up';
-                } else {
-                    loginForm.classList.add('hidden');
-                    registerForm.classList.remove('hidden');
-                    toggleLink.textContent = 'Already have an account? Sign in';
-                }
-            });
-            
-            // Handle login form submission
-            document.getElementById('login-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const email = document.getElementById('login-email').value;
-                const password = document.getElementById('login-password').value;
-                
-                // Simple validation
-                if (!email || !password) {
-                    showNotification('Please enter both email and password', 'error');
-                    return;
-                }
-                
-                // Simulate successful login
-                simulateLogin(email);
-            });
-            
-            // Handle registration form submission
-            document.getElementById('register-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const name = document.getElementById('register-name').value;
-                const email = document.getElementById('register-email').value;
-                const password = document.getElementById('register-password').value;
-                const confirmPassword = document.getElementById('register-confirm-password').value;
-                
-                // Simple validation
-                if (!name || !email || !password || !confirmPassword) {
-                    showNotification('Please fill out all fields', 'error');
-                    return;
-                }
-                
-                if (password !== confirmPassword) {
-                    showNotification('Passwords do not match', 'error');
-                    return;
-                }
-                
-                if (password.length < 6) {
-                    showNotification('Password must be at least 6 characters', 'error');
-                    return;
-                }
-                
-                // Simulate successful registration
-                simulateLogin(email);
-            });
-            
-            // Google sign in
-            document.getElementById('google-signin-btn').addEventListener('click', function() {
-                simulateLogin('google-user@example.com');
-            });
-            
-            // Logout functionality
-            document.getElementById('logout-btn').addEventListener('click', function() {
-                document.getElementById('main-app-container').classList.add('hidden');
-                document.getElementById('auth-container').classList.remove('hidden');
-                showNotification('You have been logged out', 'info');
-            });
-            
-            // Navigation
-            document.querySelectorAll('.nav-link').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href').substring(1);
-                    navigateToPage(targetId);
-                    
-                    // Update active state
-                    document.querySelectorAll('.nav-link').forEach(nav => {
-                        nav.classList.remove('active');
-                    });
-                    this.classList.add('active');
-                });
-            });
-            
-            // Mobile menu toggle
-            document.getElementById('mobile-menu-button').addEventListener('click', function() {
-                const sidebar = document.querySelector('aside');
-                sidebar.classList.toggle('hidden');
-            });
-            
-            // Quick expense form submission
-            document.getElementById('quick-expense-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const amount = document.getElementById('quick-amount').value;
-                const description = document.getElementById('quick-description').value;
-                const category = document.getElementById('quick-category').value;
-                const account = document.getElementById('quick-account').value;
-                
-                if (!amount || !description || !category || !account) {
-                    showNotification('Please fill out all fields', 'error');
-                    return;
-                }
-                
-                // Reset form
-                this.reset();
-                
-                showNotification(`Added expense: $${amount} for ${description}`, 'success');
-                
-                // Update the expenses stat
-                const currentExpenses = parseFloat(document.getElementById('total-expenses-stat').textContent.replace('$', '').replace(',', ''));
-                const newExpenses = currentExpenses + parseFloat(amount);
-                document.getElementById('total-expenses-stat').textContent = '$' + newExpenses.toFixed(2);
-                
-                // Update net worth
-                const currentNetWorth = parseFloat(document.getElementById('net-worth-stat').textContent.replace('$', '').replace(',', ''));
-                const newNetWorth = currentNetWorth - parseFloat(amount);
-                document.getElementById('net-worth-stat').textContent = '$' + newNetWorth.toFixed(2);
-            });
-            
-            // Tax estimation
-            document.getElementById('estimate-tax-btn').addEventListener('click', function() {
-                const income = document.getElementById('annual-income').value;
-                const filingStatus = document.getElementById('filing-status').value;
-                
-                if (!income) {
-                    showNotification('Please enter your annual income', 'error');
-                    return;
-                }
-                
-                const taxResult = document.getElementById('tax极速加速器-container');
-                const taxLoader = document.getElementById('tax-result-loader');
-                const taxText = document.getElementById('tax-result-text');
-                
-                taxResult.classList.remove('hidden');
-                taxLoader.classList.remove('hidden');
-                taxText.textContent = '';
-                
-                // Simulate calculation
-                setTimeout(() => {
-                    taxLoader.classList.add('hidden');
-                    
-                    // Simple tax estimation logic (for demonstration only)
-                    const incomeNum = parseFloat(income);
-                    let taxAmount = 0;
-                    
-                    if (incomeNum <= 11000) {
-                        taxAmount = incomeNum * 0.10;
-                    } else if (incomeNum <= 44725) {
-                        taxAmount = 1100 + (incomeNum - 11000) * 0.12;
-                    } else if (incomeNum <= 95375) {
-                        taxAmount = 5147 + (incomeNum - 44725) * 0.22;
-                    } else if (incomeNum <= 182100) {
-                        taxAmount = 16290 + (income极速加速器 - 95375) * 0.24;
-                    } else if (incomeNum <= 231250) {
-                        taxAmount = 37104 + (incomeNum - 182100) * 0.32;
-                    } else if (incomeNum <= 578125) {
-                        taxAmount = 52832 + (incomeNum - 231250) * 0.35;
-                    } else {
-                        taxAmount = 174238.25 + (incomeNum - 578125) * 0.37;
-                    }
-                    
-                    // Adjust for filing status (simplified)
-                    if (filingStatus === 'Married filing jointly') {
-                        taxAmount *= 0.85;
-                    } else if (filingStatus === 'Head of household') {
-                        taxAmount *= 0.9;
-                    }
-                    
-                    taxText.textContent = `Based on your ${filingStatus.toLowerCase()} status and $${income} annual income, your estimated federal tax is approximately $${taxAmount.toFixed(2)}. This is a rough estimate and may not reflect your actual tax liability.`;
-                }, 2000);
-            });
-            
-            // AI report generation
-            document.getElementById('generate-ai-report-btn').addEventListener('click', function() {
-                const reportContainer = document.getElementById('ai-report-container');
-                const reportLoader = document.getElementById('ai-report-loader');
-                const reportContent = document.getElementById('ai-report-content');
-                
-                reportLoader.classList.remove('hidden');
-                reportContent.innerHTML = '';
-                
-                // Simulate AI analysis
-                setTimeout(() => {
-                    reportLoader.classList.add('hidden');
-                    
-                    // Sample AI report
-                    reportContent.innerHTML = `
-                        <h3 class="text-xl font-semibold text-gray-800">Your Financial Health Report</h3>
-                        <p class极速加速器text-gray-700 mt-4">Based on your financial data, here's an analysis of your financial health:</p>
-                        
-                        <div class="mt-6 p-4 bg-green-50 rounded-lg">
-                            <h4 class="font-semibold text-green-800">Strengths</h4>
-                            <ul class="list-disc pl-5 mt-2 text-green-700">
-                                <li>You're saving approximately 15% of your income, which is above the recommended 10%</li>
-                                <li>Your emergency fund covers 3 months of expenses, meeting the basic recommendation</li>
-                                <li>You have minimal high-interest debt</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="mt-4 p-4 bg-yellow-50 rounded-lg">
-                            <h4 class="font-semibold text-yellow-800">Areas for Improvement</h4>
-                            <ul class="list-disc pl-5极速加速器2 text-yellow-700">
-                                <li>Your dining expenses are 25% higher than the average for your income level</li>
-                                <li>You could benefit from increasing your retirement contributions</li>
-                                <li>Consider diversifying your investment portfolio</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="mt-4 p-4 bg-blue-50 rounded-lg">
-                            <h4 class="font-semibold text-blue-800">Recommendations</h4>
-                            <ul class="list-disc pl-5 mt-2 text-blue-700">
-                                <li>Set up automatic transfers to your savings account to increase your emergency fund to 6 months of expenses</li>
-                                <li>Create a specific budget category for dining out and set a monthly limit</li>
-                                <li>Consider opening a retirement account if you don't have one, or increase contributions to your existing one</li>
-                                <li>Review your investment portfolio to ensure proper diversification</li>
-                            </ul>
-                        </div>
-                        
-                        <p class="text-sm text-gray-500 mt-6">Disclaimer: This analysis is generated based on the data you've provided and should not be considered professional financial advice. Consult with a qualified financial advisor for personalized recommendations.</p>
-                    `;
-                }, 3000);
-            });
-            
-            // Initialize with dashboard page
-            navigateToPage('dashboard');
-            
-            // Set dashboard as active nav link
-            document.querySelector('a[href="#dashboard"]').classList.add('active');
-            
-            // Sample data for charts
-            initializeSampleData();
-        });
-        
-        function simulateLogin(email) {
-            document.getElementById('auth-container').classList.add('hidden');
-            document.getElementById('main-app-container').classList.remove('hidden');
-            document.getElementById('welcome-user-text').textContent = `Welcome, ${email.split('@')[0]}!`;
-            showNotification('Login successful!', 'success');
-        }
-        
-        function navigateToPage(pageId) {
-            // Hide all pages
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            
-            // Show the selected page
-            document.getElementById(pageId).classList.add('active');
-            
-            // Update page title
-            const pageTitle = document.getElementById('page-title');
-            const navLink = document.querySelector(`a[href="#${pageId}"]`);
-            
-            if (navLink) {
-                pageTitle.textContent = navLink.textContent;
-            }
-            
-            // Close mobile menu if open
-            if (window.innerWidth < 1024) {
-                document.querySelector('aside').classList.add('hidden');
-            }
-        }
-        
-        function showNotification(message, type = 'info') {
-            const banner = document.getElementById('notification-banner');
-            const notificationText = document.getElementById('notification-text');
-            
-            // Set message and style based on type
-            notificationText.textContent = message;
-            
-            switch(type) {
-                case 'success':
-                    banner.style.backgroundColor = '#228B22'; // Green
-                    break;
-                case 'error':
-                    banner.style.backgroundColor = '#DC2626'; // Red
-                    break;
-                case 'warning':
-                    banner.style.backgroundColor = '#D97706'; // Amber
-                    break;
-                default:
-                    banner.style.backgroundColor = '#3B82F6'; // Blue
-            }
-            
-            // Show the banner
-            banner.style.transform = 'translateY(0)';
-            
-            // Hide after 5 seconds
-            setTimeout(() => {
-                banner.style.transform = 'translateY(-100%)';
-            }, 5000);
-        }
-        
-        function initializeSampleData() {
-            // Sample spending chart
-            const spendingCtx = document.getElementById('spending-doughnut-chart').getContext('2d');
-            new Chart(spendingCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Groceries', 'Dining', 'Transportation', 'Utilities', 'Entertainment', 'Shopping', 'Healthcare', 'Other'],
-                    datasets: [{
-                        data: [500, 300, 150, 200, 100, 250, 80, 120],
-                        backgroundColor: [
-                            '#228B22', '#3CB371', '#90EE90', '#98FB98', '#00FA9A', 
-                            '#00FF7F', '#3CB371', '#2E8B57'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                boxWidth: 15
-                            }
-                        }
-                    }
-                }
-            });
-        }
-    </script>
+    <script src="Script.js"></script>
 </body>
 </html>
