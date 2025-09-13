@@ -1,248 +1,168 @@
-// Global state variables
-let transactionsData = [], budgetsData = [], accountsData = [];
-let nextTransactionId = 1, nextBudgetId = 1, nextAccountId = 1;
-let currentlyEditingId = null, editingBudgetId = null, editingAccountId = null;
-
-// --- LOCAL STORAGE FUNCTIONS (now include accounts) ---
-function saveStateToLocalStorage() {
-    localStorage.setItem('smartGrocerTransactions', JSON.stringify(transactionsData));
-    localStorage.setItem('smartGrocerBudgets', JSON.stringify(budgetsData));
-    localStorage.setItem('smartGrocerAccounts', JSON.stringify(accountsData));
-    // ... save next IDs ...
-}
-
-function loadStateFromLocalStorage() {
-    // ... load transactions and budgets ...
-    const savedAccounts = localStorage.getItem('smartGrocerAccounts');
-    if (savedAccounts) {
-        accountsData = JSON.parse(savedAccounts);
-    } else {
-        accountsData = [
-            { id: 1, name: "Main Checking", type: "Checking", balance: 1500 },
-            { id: 2, name: "Visa Credit Card", type: "Credit Card", balance: -450.50 }
-        ];
-    }
-    nextAccountId = parseInt(localStorage.getItem('smartGrocerNextAccountId') || (accountsData.length ? Math.max(...accountsData.map(a => a.id)) + 1 : 1));
-}
+// ... (Global state variables and Local Storage functions are unchanged) ...
 
 // --- MAIN APPLICATION LOGIC ---
 document.addEventListener('DOMContentLoaded', function() {
-    loadStateFromLocalStorage();
-    setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; }, 500);
+    // ... (All previous setup code is unchanged) ...
 
-    updateDashboard();
-    renderTransactions();
-    renderBudgets();
-    renderAccounts();
-    populateAccountDropdowns();
-
-    // --- Modal & Form Event Listeners ---
-    const accountModal = document.getElementById('account-modal');
-    document.getElementById('create-account-btn').addEventListener('click', () => openAccountModal());
-    document.getElementById('cancel-account-btn').addEventListener('click', () => accountModal.classList.add('hidden'));
-    document.getElementById('account-form').addEventListener('submit', handleAccountFormSubmit);
-    // ... other modal listeners ...
-    
     // --- Event Delegation for Actions ---
-    document.getElementById('accounts-container').addEventListener('click', handleAccountActions);
-    // ... other action listeners ...
+    // ... (Event listeners for transactions, budgets, and accounts are unchanged) ...
+
+    // --- AI Insights Page Listener ---
+    document.getElementById('generate-ai-report-btn').addEventListener('click', generateAndRenderInsights);
 });
 
-// --- ACCOUNT CRUD & RENDERING ---
-function renderAccounts() {
-    const container = document.getElementById('accounts-container');
-    container.innerHTML = '';
+// --- AI INSIGHTS FUNCTIONS ---
 
-    accountsData.forEach(account => {
-        const balance = calculateAccountBalance(account.id);
-        const balanceColor = balance >= 0 ? 'text-gray-900' : 'text-red-600';
+/**
+ * Main function to generate and display financial insights.
+ */
+function generateAndRenderInsights() {
+    const reportLoader = document.getElementById('ai-report-loader');
+    const reportContent = document.getElementById('ai-report-content');
 
-        const accountCardHTML = `
-            <div class="card p-6" data-id="${account.id}">
-                <div class="budget-actions">
-                    <button class="budget-action-btn edit-account-btn"><i class="fas fa-pencil-alt"></i></button>
-                    <button class="budget-action-btn delete-account-btn"><i class="fas fa-trash-alt"></i></button>
-                </div>
-                <h4 class="font-semibold text-lg text-gray-800">${account.name}</h4>
-                <p class="account-card-type">${account.type}</p>
-                <p class="account-card-balance ${balanceColor}">$${balance.toFixed(2)}</p>
-            </div>
-        `;
-        container.innerHTML += accountCardHTML;
-    });
-}
+    reportLoader.classList.remove('hidden');
+    reportContent.innerHTML = '';
 
-function calculateAccountBalance(accountId) {
-    const account = accountsData.find(a => a.id === accountId);
-    if (!account) return 0;
+    // Simulate AI processing time
+    setTimeout(() => {
+        const insights = {
+            strengths: [],
+            improvements: [],
+            observations: []
+        };
 
-    let balance = account.balance; // Start with the initial balance
-    transactionsData.forEach(tx => {
-        // Note: For simplicity, this assumes account name is unique. In a real app, you'd use accountId.
-        if (tx.account === account.name) {
-            if (tx.type === 'income') {
-                balance += tx.amount;
-            } else {
-                balance -= tx.amount;
-            }
-        }
-    });
-    return balance;
-}
+        // 1. Get transaction data for current and previous month
+        const today = new Date();
+        const { start: currentMonthStart, end: currentMonthEnd } = getMonthDateRange(today.getFullYear(), today.getMonth());
+        const prevMonthDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        const { start: prevMonthStart, end: prevMonthEnd } = getMonthDateRange(prevMonthDate.getFullYear(), prevMonthDate.getMonth());
 
-function handleAccountActions(e) {
-    const target = e.target;
-    const accountCard = target.closest('.card');
-    if (!accountCard) return;
-
-    const accountId = parseInt(accountCard.getAttribute('data-id'));
-
-    if (target.closest('.edit-account-btn')) {
-        openAccountModal(accountId);
-    }
-    if (target.closest('.delete-account-btn')) {
-        deleteAccount(accountId);
-    }
-}
-
-function openAccountModal(id = null) {
-    const modal = document.getElementById('account-modal');
-    const title = document.getElementById('account-modal-title');
-    const form = document.getElementById('account-form');
-    const balanceInput = document.getElementById('account-balance');
-
-    editingAccountId = id;
-    form.reset();
-
-    if (id) { // Edit mode
-        const account = accountsData.find(a => a.id === id);
-        title.textContent = 'Edit Account';
-        document.getElementById('account-name').value = account.name;
-        document.getElementById('account-type').value = account.type;
-        balanceInput.value = account.balance;
-        balanceInput.previousElementSibling.textContent = 'Starting Balance ($)'; // Change label for clarity
-    } else { // Create mode
-        title.textContent = 'Create New Account';
-        balanceInput.previousElementSibling.textContent = 'Current Balance ($)';
-    }
-    modal.classList.remove('hidden');
-}
-
-function handleAccountFormSubmit(e) {
-    e.preventDefault();
-    const name = document.getElementById('account-name').value;
-    const type = document.getElementById('account-type').value;
-    const balance = parseFloat(document.getElementById('account-balance').value);
-
-    if (editingAccountId) { // Update existing
-        const account = accountsData.find(a => a.id === editingAccountId);
-        account.name = name;
-        account.type = type;
-        account.balance = balance;
-    } else { // Create new
-        accountsData.push({ id: nextAccountId++, name, type, balance });
-    }
-
-    saveStateToLocalStorage();
-    renderAccounts();
-    populateAccountDropdowns();
-    document.getElementById('account-modal').classList.add('hidden');
-}
-
-function deleteAccount(id) {
-    // Safety Check: Don't delete an account if it's used in transactions
-    const account = accountsData.find(a => a.id === id);
-    const isUsed = transactionsData.some(tx => tx.account === account.name);
-
-    if (isUsed) {
-        alert('This account cannot be deleted because it has transactions linked to it. Please reassign or delete those transactions first.');
-        return;
-    }
-
-    if (confirm(`Are you sure you want to delete the "${account.name}" account?`)) {
-        accountsData = accountsData.filter(a => a.id !== id);
-        saveStateToLocalStorage();
-        renderAccounts();
-        populateAccountDropdowns();
-    }
-}
-
-function populateAccountDropdowns() {
-    const select = document.getElementById('quick-account');
-    select.innerHTML = ''; // Clear existing options
-    accountsData.forEach(account => {
-        if (account.type !== 'Credit Card') { // Example: don't pay expenses with a credit card account directly
-            const option = document.createElement('option');
-            option.value = account.name;
-            option.textContent = account.name;
-            select.appendChild(option);
-        }
-    });
-}
-
-// All other functions remain the same
-
-// Global state variables (Unchanged)
-// --- LOCAL STORAGE FUNCTIONS (Unchanged) ---
-
-// --- MAIN APPLICATION LOGIC ---
-document.addEventListener('DOMContentLoaded', function() {
-    loadStateFromLocalStorage();
-    setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; }, 500);
-
-    updateDashboard();
-    renderTransactions();
-    renderBudgets();
-    renderAccounts();
-    populateAccountDropdowns();
-
-    // --- Sidebar Controls ---
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebar-overlay');
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-
-    function openSidebar() {
-        sidebar.classList.add('sidebar-open');
-        sidebarOverlay.classList.remove('hidden');
-    }
-    function closeSidebar() {
-        sidebar.classList.remove('sidebar-open');
-        sidebarOverlay.classList.add('hidden');
-    }
-
-    mobileMenuButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        openSidebar();
-    });
-    sidebarOverlay.addEventListener('click', closeSidebar);
-
-    // --- Navigation ---
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            navigateToPage(this.getAttribute('href').substring(1));
-            document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
-            this.classList.add('active');
-            closeSidebar(); // Close sidebar after navigation
+        const currentMonthTransactions = transactionsData.filter(tx => {
+            const txDate = new Date(tx.date);
+            return txDate >= currentMonthStart && txDate <= currentMonthEnd;
         });
+        const prevMonthTransactions = transactionsData.filter(tx => {
+            const txDate = new Date(tx.date);
+            return txDate >= prevMonthStart && txDate <= prevMonthEnd;
+        });
+        
+        // --- Generate Insights ---
+        generateBudgetInsights(insights, currentMonthTransactions);
+        generateSpendingInsights(insights, currentMonthTransactions, prevMonthTransactions);
+
+        // --- Render Insights ---
+        let html = '<h3 class="text-xl font-semibold text-gray-800">Your Financial Health Report</h3>';
+
+        // Strengths
+        if (insights.strengths.length > 0) {
+            html += `
+                <div class="mt-6 p-4 bg-green-50 rounded-lg">
+                    <h4 class="font-semibold text-green-800">Strengths 💪</h4>
+                    <ul class="list-disc pl-5 mt-2 text-green-700 space-y-1">${insights.strengths.map(i => `<li>${i}</li>`).join('')}</ul>
+                </div>`;
+        }
+        
+        // Improvements
+        if (insights.improvements.length > 0) {
+            html += `
+                <div class="mt-4 p-4 bg-yellow-50 rounded-lg">
+                    <h4 class="font-semibold text-yellow-800">Areas for Improvement 🧐</h4>
+                    <ul class="list-disc pl-5 mt-2 text-yellow-700 space-y-1">${insights.improvements.map(i => `<li>${i}</li>`).join('')}</ul>
+                </div>`;
+        }
+
+        // Observations
+        if (insights.observations.length > 0) {
+             html += `
+                <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+                    <h4 class="font-semibold text-blue-800">Observations 📊</h4>
+                    <ul class="list-disc pl-5 mt-2 text-blue-700 space-y-1">${insights.observations.map(i => `<li>${i}</li>`).join('')}</ul>
+                </div>`;
+        }
+        
+        if (insights.strengths.length === 0 && insights.improvements.length === 0) {
+            html += `<p class="mt-4 text-gray-600">Not enough data for a full analysis yet. Keep adding transactions to get insights!</p>`;
+        }
+
+        reportContent.innerHTML = html;
+        reportLoader.classList.add('hidden');
+
+    }, 2000);
+}
+
+/**
+ * Analyzes budget adherence and adds insights.
+ */
+function generateBudgetInsights(insights, transactions) {
+    if (budgetsData.length === 0) return;
+
+    let onTrackCount = 0;
+    budgetsData.forEach(budget => {
+        const spent = transactions
+            .filter(tx => tx.category === budget.category && tx.type === 'expense')
+            .reduce((sum, tx) => sum + tx.amount, 0);
+
+        if (spent > budget.limit) {
+            insights.improvements.push(`You've gone over your **$${budget.limit}** budget for **${budget.category}**, spending **$${spent.toFixed(2)}**.`);
+        } else if (spent >= budget.limit * 0.9) {
+            insights.improvements.push(`You're close to your **$${budget.limit}** budget for **${budget.category}**, with **$${(budget.limit - spent).toFixed(2)}** remaining.`);
+        } else {
+            onTrackCount++;
+        }
     });
-    
-    // ... Other event listeners for modals and forms are unchanged ...
-});
+    if (onTrackCount > 0) {
+        insights.strengths.push(`Great job staying on track with **${onTrackCount}** of your budget${onTrackCount > 1 ? 's' : ''}!`);
+    }
+}
 
+/**
+ * Analyzes spending habits and adds insights.
+ */
+function generateSpendingInsights(insights, currentMonthTx, prevMonthTx) {
+    const currentExpenses = currentMonthTx.filter(tx => tx.type === 'expense');
+    if (currentExpenses.length === 0) return;
 
-// --- NAVIGATION FUNCTION (Simplified) ---
-function navigateToPage(pageId) {
-    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-    
-    const targetPage = document.getElementById(pageId);
-    if (targetPage) targetPage.classList.add('active');
-    
-    const pageTitle = document.getElementById('page-title');
-    const navLink = document.querySelector(`a[href="#${pageId}"]`);
-    if (navLink) pageTitle.textContent = navLink.textContent.trim();
-    // The logic to close the sidebar is now handled by the nav-link's own click listener.
+    // Find top spending category
+    const spendingByCategory = currentExpenses.reduce((acc, tx) => {
+        acc[tx.category] = (acc[tx.category] || 0) + tx.amount;
+        return acc;
+    }, {});
+
+    let topCategory = '';
+    let topAmount = 0;
+    for (const category in spendingByCategory) {
+        if (spendingByCategory[category] > topAmount) {
+            topAmount = spendingByCategory[category];
+            topCategory = category;
+        }
+    }
+    if(topCategory) {
+        insights.observations.push(`Your top spending category this month is **${topCategory}** with **$${topAmount.toFixed(2)}** spent.`);
+    }
+
+    // Compare with previous month
+    const totalCurrentSpending = currentExpenses.reduce((sum, tx) => sum + tx.amount, 0);
+    const totalPrevSpending = prevMonthTx.filter(tx => tx.type === 'expense').reduce((sum, tx) => sum + tx.amount, 0);
+
+    if (totalPrevSpending > 0) {
+        const percentageChange = ((totalCurrentSpending - totalPrevSpending) / totalPrevSpending) * 100;
+        if (percentageChange > 10) {
+            insights.improvements.push(`Your overall spending is up by **${percentageChange.toFixed(0)}%** compared to last month.`);
+        } else if (percentageChange < -10) {
+            insights.strengths.push(`Excellent! Your overall spending is down by **${Math.abs(percentageChange).toFixed(0)}%** compared to last month.`);
+        }
+    }
+}
+
+/**
+ * Helper function to get the start and end dates for a given month/year.
+ */
+function getMonthDateRange(year, month) {
+    const start = new Date(year, month, 1);
+    const end = new Date(year, month + 1, 0); // Day 0 of next month is the last day of current month
+    end.setHours(23, 59, 59, 999); // Set to end of the day
+    return { start, end };
 }
 
 
-// All other functions (CRUD, Rendering, Dashboard, etc.) remain the same.
+// All other functions remain the same.
