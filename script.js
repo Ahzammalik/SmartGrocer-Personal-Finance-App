@@ -181,3 +181,68 @@ function populateAccountDropdowns() {
 }
 
 // All other functions remain the same
+
+// Global state variables (Unchanged)
+// --- LOCAL STORAGE FUNCTIONS (Unchanged) ---
+
+// --- MAIN APPLICATION LOGIC ---
+document.addEventListener('DOMContentLoaded', function() {
+    loadStateFromLocalStorage();
+    setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; }, 500);
+
+    updateDashboard();
+    renderTransactions();
+    renderBudgets();
+    renderAccounts();
+    populateAccountDropdowns();
+
+    // --- Sidebar Controls ---
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+
+    function openSidebar() {
+        sidebar.classList.add('sidebar-open');
+        sidebarOverlay.classList.remove('hidden');
+    }
+    function closeSidebar() {
+        sidebar.classList.remove('sidebar-open');
+        sidebarOverlay.classList.add('hidden');
+    }
+
+    mobileMenuButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openSidebar();
+    });
+    sidebarOverlay.addEventListener('click', closeSidebar);
+
+    // --- Navigation ---
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            navigateToPage(this.getAttribute('href').substring(1));
+            document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
+            this.classList.add('active');
+            closeSidebar(); // Close sidebar after navigation
+        });
+    });
+    
+    // ... Other event listeners for modals and forms are unchanged ...
+});
+
+
+// --- NAVIGATION FUNCTION (Simplified) ---
+function navigateToPage(pageId) {
+    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+    
+    const targetPage = document.getElementById(pageId);
+    if (targetPage) targetPage.classList.add('active');
+    
+    const pageTitle = document.getElementById('page-title');
+    const navLink = document.querySelector(`a[href="#${pageId}"]`);
+    if (navLink) pageTitle.textContent = navLink.textContent.trim();
+    // The logic to close the sidebar is now handled by the nav-link's own click listener.
+}
+
+
+// All other functions (CRUD, Rendering, Dashboard, etc.) remain the same.
