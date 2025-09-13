@@ -113,3 +113,40 @@ body {
     background-color: #f8fafc;
     font-size: 14px; /* Added for better fit */
 }
+
+/* ... (all previous CSS is unchanged) ... */
+
+.transaction-edit-input {
+    width: 100%;
+    padding: 4px 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background-color: #f8fafc;
+    font-size: 14px;
+}
+
+/* Styles for the Edit/Delete buttons on budget cards */
+.budget-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 8px;
+}
+
+.budget-action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #94a3b8; /* gray-400 */
+    transition: color 0.2s ease;
+}
+
+.budget-action-btn:hover {
+    color: #334155; /* gray-700 */
+}
+
+/* Add relative positioning to the card to contain the action buttons */
+.card {
+    position: relative;
+}
