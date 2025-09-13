@@ -168,6 +168,42 @@
             font-size: 0.875rem; /* 14px */
             color: #6b7280; /* gray-500 */
         }
+        
+        /* Styles for the Edit/Delete buttons on budget cards */
+        .budget-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .budget-action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #94a3b8; /* gray-400 */
+            transition: color 0.2s ease;
+        }
+
+        .budget-action-btn:hover {
+            color: #334155; /* gray-700 */
+        }
+
+        /* Add relative positioning to the card to contain the action buttons */
+        .card {
+            position: relative;
+        }
+        
+        /* Style for input fields when editing a transaction in the table */
+        .transaction-edit-input {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background-color: #f8fafc;
+            font-size: 14px; /* Added for better fit */
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -311,6 +347,20 @@
                                     </div>
                                     <span class="recent-transaction-amount text-red-600">-$120.75</span>
                                 </div>
+                                <div class="recent-transaction-item">
+                                    <div class="recent-transaction-details">
+                                        <span class="recent-transaction-description">Dinner Out</span>
+                                        <span class="recent-transaction-category">Dining</span>
+                                    </div>
+                                    <span class="recent-transaction-amount text-red-600">-$67.50</span>
+                                </div>
+                                <div class="recent-transaction-item">
+                                    <div class="recent-transaction-details">
+                                        <span class="recent-transaction-description">Gasoline</span>
+                                        <span class="recent-transaction-category">Transportation</span>
+                                    </div>
+                                    <span class="recent-transaction-amount text-red-600">-$45.00</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -344,6 +394,10 @@
                 <!-- Transactions Page -->
                 <div id="transactions" class="page">
                     <div class="card p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold text-gray-800">All Transactions</h3>
+                            <button id="add-transaction-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent transition-colors">Add Transaction</button>
+                        </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left">
                                 <thead>
@@ -394,6 +448,36 @@
                                         <td class="p-4">Utilities</td>
                                         <td class="p-4 text-right text-red-600">-$120.75</td>
                                         <td class="p-4">Checking Account</td>
+                                        <td class="p-4 text-center">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b">
+                                        <td class="p-4">05/03/2025</td>
+                                        <td class="p-4">Dinner Out</td>
+                                        <td class="p-4">Dining</td>
+                                        <td class="p-4 text-right text-red-600">-$67.50</td>
+                                        <td class="p-4">Credit Card</td>
+                                        <td class="p-4 text-center">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b">
+                                        <td class="p-4">05/01/2025</td>
+                                        <td class="p-4">Gasoline</td>
+                                        <td class="p-4">Transportation</td>
+                                        <td class="p-4 text-right text-red-600">-$45.00</td>
+                                        <td class="p-4">Credit Card</td>
                                         <td class="p-4 text-center">
                                             <button class="text-blue-600 hover:text-blue-800 mr-2">
                                                 <i class="fas fa-edit"></i>
@@ -554,7 +638,16 @@
                 <div id="reports" class="page">
                     <div class="card p-6">
                         <h3 class="text-xl font-bold text-gray-800 mb-4">Financial Reports</h3>
-                        <p>Reports content will be displayed here.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="card p-6">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Monthly Income vs Expenses</h4>
+                                <div class="h-64"><canvas id="income-expense-chart"></canvas></div>
+                            </div>
+                            <div class="card p-6">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Net Worth Trend</h4>
+                                <div class="h-64"><canvas id="net-worth-chart"></canvas></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -567,7 +660,28 @@
                             <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-primary mx-auto"></div>
                             <p class="mt-4 text-gray-600">Generating your financial insights...</p>
                         </div>
-                        <div id="ai-report-content" class="mt-6"></div>
+                        <div id="ai-report-content" class="mt-6">
+                            <div class="p-4 bg-green-50 rounded-lg">
+                                <h4 class="font-semibold text-green-800">Strengths 💪</h4>
+                                <ul class="list-disc pl-5 mt-2 text-green-700 space-y-1">
+                                    <li>Great job staying on track with <strong>2</strong> of your budgets!</li>
+                                    <li>Excellent! Your overall spending is down by <strong>15%</strong> compared to last month.</li>
+                                </ul>
+                            </div>
+                            <div class="mt-4 p-4 bg-yellow-50 rounded-lg">
+                                <h4 class="font-semibold text-yellow-800">Areas for Improvement 🧐</h4>
+                                <ul class="list-disc pl-5 mt-2 text-yellow-700 space-y-1">
+                                    <li>You're close to your <strong>$300</strong> budget for <strong>Dining</strong>, with <strong>$80</strong> remaining.</li>
+                                </ul>
+                            </div>
+                            <div class="mt-4 p-4 bg-blue-50 rounded-lg">
+                                <h4 class="font-semibold text-blue-800">Observations 📊</h4>
+                                <ul class="list-disc pl-5 mt-2 text-blue-700 space-y-1">
+                                    <li>Your top spending category this month is <strong>Groceries</strong> with <strong>$320.00</strong> spent.</li>
+                                    <li>You've saved <strong>$1,404.50</strong> this month after expenses.</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -575,7 +689,47 @@
                 <div id="goals" class="page">
                     <div class="card p-6">
                         <h3 class="text-xl font-bold text-gray-800 mb-4">Financial Goals</h3>
-                        <p>Goals content will be displayed here.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="card p-6">
+                                <h4 class="text-lg font-semibold text-gray-800">Emergency Fund</h4>
+                                <div class="mt-4">
+                                    <div class="flex justify-between text-sm text-gray-600">
+                                        <span>Saved: $3,500</span>
+                                        <span>Target: $10,000</span>
+                                    </div>
+                                    <div class="progress-bar mt-2">
+                                        <div class="progress-fill bg-green-500" style="width: 35%"></div>
+                                    </div>
+                                    <p class="mt-2 text-sm text-gray-600">$6,500 to go</p>
+                                </div>
+                            </div>
+                            <div class="card p-6">
+                                <h4 class="text-lg font-semibold text-gray-800">Vacation Fund</h4>
+                                <div class="mt-4">
+                                    <div class="flex justify-between text-sm text-gray-600">
+                                        <span>Saved: $1,200</span>
+                                        <span>Target: $3,000</span>
+                                    </div>
+                                    <div class="progress-bar mt-2">
+                                        <div class="progress-fill bg-blue-500" style="width: 40%"></div>
+                                    </div>
+                                    <p class="mt-2 text-sm text-gray-600">$1,800 to go</p>
+                                </div>
+                            </div>
+                            <div class="card p-6">
+                                <h4 class="text-lg font-semibold text-gray-800">Credit Card Payoff</h4>
+                                <div class="mt-4">
+                                    <div class="flex justify-between text-sm text-gray-600">
+                                        <span>Paid: $1,650</span>
+                                        <span>Target: $2,350</span>
+                                    </div>
+                                    <div class="progress-bar mt-2">
+                                        <div class="progress-fill bg-yellow-500" style="width: 70%"></div>
+                                    </div>
+                                    <p class="mt-2 text-sm text-gray-600">$700 to go</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -583,7 +737,50 @@
                 <div id="settings" class="page">
                     <div class="card p-6">
                         <h3 class="text-xl font-bold text-gray-800 mb-4">Settings</h3>
-                        <p>Settings content will be displayed here.</p>
+                        <div class="grid grid-cols-1 gap-6">
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Profile Settings</h4>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Name</label>
+                                        <input type="text" value="John Doe" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                                        <input type="email" value="john.doe@example.com" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Currency</label>
+                                        <select class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
+                                            <option>USD ($)</option>
+                                            <option>EUR (€)</option>
+                                            <option>GBP (£)</option>
+                                            <option>JPY (¥)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Notification Preferences</h4>
+                                <div class="space-y-2">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="budget-alerts" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded" checked>
+                                        <label for="budget-alerts" class="ml-2 block text-sm text-gray-900">Budget alerts</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="bill-reminders" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded" checked>
+                                        <label for="bill-reminders" class="ml-2 block text-sm text-gray-900">Bill reminders</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="weekly-reports" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                                        <label for="weekly-reports" class="ml-2 block text-sm text-gray-900">Weekly reports</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex justify-end">
+                                <button class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Save Settings</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>
@@ -730,8 +927,13 @@
                 }
             });
 
-            // Initialize chart
+            // Initialize charts
             initSpendingChart();
+            initIncomeExpenseChart();
+            initNetWorthChart();
+
+            // Modal functionality
+            setupModals();
         });
 
         function initSpendingChart() {
@@ -760,6 +962,102 @@
                             position: 'bottom'
                         }
                     }
+                }
+            });
+        }
+
+        function initIncomeExpenseChart() {
+            const ctx = document.getElementById('income-expense-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                    datasets: [
+                        {
+                            label: 'Income',
+                            data: [4200, 4300, 4400, 4300, 4250],
+                            backgroundColor: '#3CB371',
+                        },
+                        {
+                            label: 'Expenses',
+                            data: [3100, 3200, 3000, 2900, 2845],
+                            backgroundColor: '#228B22',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function initNetWorthChart() {
+            const ctx = document.getElementById('net-worth-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                    datasets: [{
+                        label: 'Net Worth',
+                        data: [38000, 39500, 40500, 41500, 42500],
+                        borderColor: '#228B22',
+                        backgroundColor: 'rgba(34, 139, 34, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function setupModals() {
+            // Account modal
+            const createAccountBtn = document.getElementById('create-account-btn');
+            const accountModal = document.getElementById('account-modal');
+            const cancelAccountBtn = document.getElementById('cancel-account-btn');
+            
+            createAccountBtn.addEventListener('click', () => {
+                accountModal.classList.remove('hidden');
+            });
+            
+            cancelAccountBtn.addEventListener('click', () => {
+                accountModal.classList.add('hidden');
+            });
+            
+            // Budget modal
+            const createBudgetBtn = document.getElementById('create-budget-btn');
+            const budgetModal = document.getElementById('budget-modal');
+            const cancelBudgetBtn = document.getElementById('cancel-budget-btn');
+            
+            createBudgetBtn.addEventListener('click', () => {
+                budgetModal.classList.remove('hidden');
+            });
+            
+            cancelBudgetBtn.addEventListener('click', () => {
+                budgetModal.classList.add('hidden');
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === accountModal) {
+                    accountModal.classList.add('hidden');
+                }
+                if (e.target === budgetModal) {
+                    budgetModal.classList.add('hidden');
                 }
             });
         }
