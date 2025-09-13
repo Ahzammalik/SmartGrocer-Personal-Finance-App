@@ -199,3 +199,47 @@
     <script src="Script.js"></script>
 </body>
 </html>
+<div id="dashboard" class="page active">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-6">
+        
+        <div class="lg:col-span-3 card p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Monthly Spending by Category</h3>
+            <div class="h-80"><canvas id="spending-doughnut-chart"></canvas></div>
+        </div>
+
+        <div class="lg:col-span-2 card p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Recent Transactions</h3>
+            <div id="recent-transactions-container" class="space-y-4">
+                </div>
+        </div>
+
+    </div>
+    
+    <div class="mt-6 card p-6">
+        <h3 class="text-xl font-bold mb-4 text-gray-800">Add Quick Expense</h3>
+        <form id="quick-expense-form" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+            <div class="md:col-span-2">
+                <label for="quick-description" class="block text-sm font-medium text-gray-700">Description</label>
+                <input type="text" id="quick-description" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+            </div>
+            <div>
+                <label for="quick-amount" class="block text-sm font-medium text-gray-700">Amount ($)</label>
+                <input type="number" id="quick-amount" step="0.01" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+            </div>
+            <div>
+                <label for="quick-category" class="block text-sm font-medium text-gray-700">Category</label>
+                <select id="quick-category" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
+                    <option value="Groceries">Groceries</option>
+                    <option value="Dining">Dining</option>
+                    <option value="Transportation">Transportation</option>
+                    <option value="Utilities">Utilities</option>
+                    <option value="Entertainment">Entertainment</option>
+                </select>
+            </div>
+            <button type="submit" class="w-full bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Add</button>
+        </form>
+    </div>
+</div>
