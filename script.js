@@ -3,82 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Simulate loading process
     setTimeout(() => {
         document.getElementById('loading-overlay').style.display = 'none';
-        // Show auth container after loading
-        document.getElementById('auth-container').classList.remove('hidden');
-        
-        // For quick demo, uncomment the line below to simulate an automatic login
-        // simulateLogin('demo@smartgrocer.com');
     }, 1500);
-    
-    // Toggle between login and registration forms
-    document.getElementById('toggle-auth-mode').addEventListener('click', function(e) {
-        e.preventDefault();
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const toggleLink = document.getElementById('toggle-auth-mode');
-        
-        if (loginForm.classList.contains('hidden')) {
-            loginForm.classList.remove('hidden');
-            registerForm.classList.add('hidden');
-            toggleLink.textContent = 'Need an account? Sign up';
-        } else {
-            loginForm.classList.add('hidden');
-            registerForm.classList.remove('hidden');
-            toggleLink.textContent = 'Already have an account? Sign in';
-        }
-    });
-    
-    // Handle login form submission
-    document.getElementById('login-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const email = document.getElementById('login-email').value;
-        const password = document.getElementById('login-password').value;
-        
-        if (!email || !password) {
-            showNotification('Please enter both email and password', 'error');
-            return;
-        }
-        
-        simulateLogin(email);
-    });
-    
-    // Handle registration form submission
-    document.getElementById('register-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const name = document.getElementById('register-name').value;
-        const email = document.getElementById('register-email').value;
-        const password = document.getElementById('register-password').value;
-        const confirmPassword = document.getElementById('register-confirm-password').value;
-        
-        if (!name || !email || !password || !confirmPassword) {
-            showNotification('Please fill out all fields', 'error');
-            return;
-        }
-        
-        if (password !== confirmPassword) {
-            showNotification('Passwords do not match', 'error');
-            return;
-        }
-        
-        if (password.length < 6) {
-            showNotification('Password must be at least 6 characters', 'error');
-            return;
-        }
-        
-        simulateLogin(email);
-    });
-    
-    // Google sign in
-    document.getElementById('google-signin-btn').addEventListener('click', function() {
-        simulateLogin('google-user@example.com');
-    });
-    
-    // Logout functionality
-    document.getElementById('logout-btn').addEventListener('click', function() {
-        document.getElementById('main-app-container').classList.add('hidden');
-        document.getElementById('auth-container').classList.remove('hidden');
-        showNotification('You have been logged out', 'info');
-    });
     
     // Navigation
     document.querySelectorAll('.nav-link').forEach(link => {
@@ -150,29 +75,19 @@ document.addEventListener('DOMContentLoaded', function() {
             const incomeNum = parseFloat(income);
             let taxAmount = 0;
             
-            if (incomeNum <= 11000) {
-                taxAmount = incomeNum * 0.10;
-            } else if (incomeNum <= 44725) {
-                taxAmount = 1100 + (incomeNum - 11000) * 0.12;
-            } else if (incomeNum <= 95375) {
-                taxAmount = 5147 + (incomeNum - 44725) * 0.22;
-            } else if (incomeNum <= 182100) {
-                taxAmount = 16290 + (incomeNum - 95375) * 0.24;
-            } else if (incomeNum <= 231250) {
-                taxAmount = 37104 + (incomeNum - 182100) * 0.32;
-            } else if (incomeNum <= 578125) {
-                taxAmount = 52832 + (incomeNum - 231250) * 0.35;
-            } else {
-                taxAmount = 174238.25 + (incomeNum - 578125) * 0.37;
-            }
+            // Simplified tax logic
+            if (incomeNum <= 11000) { taxAmount = incomeNum * 0.10; } 
+            else if (incomeNum <= 44725) { taxAmount = 1100 + (incomeNum - 11000) * 0.12; } 
+            else if (incomeNum <= 95375) { taxAmount = 5147 + (incomeNum - 44725) * 0.22; } 
+            else if (incomeNum <= 182100) { taxAmount = 16290 + (incomeNum - 95375) * 0.24; } 
+            else if (incomeNum <= 231250) { taxAmount = 37104 + (incomeNum - 182100) * 0.32; } 
+            else if (incomeNum <= 578125) { taxAmount = 52832 + (incomeNum - 231250) * 0.35; } 
+            else { taxAmount = 174238.25 + (incomeNum - 578125) * 0.37; }
             
-            if (filingStatus === 'Married filing jointly') {
-                taxAmount *= 0.85;
-            } else if (filingStatus === 'Head of household') {
-                taxAmount *= 0.9;
-            }
+            if (filingStatus === 'Married filing jointly') { taxAmount *= 0.85; } 
+            else if (filingStatus === 'Head of household') { taxAmount *= 0.9; }
             
-            taxText.textContent = `Based on your ${filingStatus.toLowerCase()} status and $${income} annual income, your estimated federal tax is approximately $${taxAmount.toFixed(2)}. This is a rough estimate and may not reflect your actual tax liability.`;
+            taxText.textContent = `Based on your ${filingStatus.toLowerCase()} status and $${income} annual income, your estimated federal tax is approximately $${taxAmount.toFixed(2)}. This is a rough estimate.`;
         }, 2000);
     });
     
@@ -189,36 +104,21 @@ document.addEventListener('DOMContentLoaded', function() {
             
             reportContent.innerHTML = `
                 <h3 class="text-xl font-semibold text-gray-800">Your Financial Health Report</h3>
-                <p class="text-gray-700 mt-4">Based on your financial data, here's an analysis of your financial health:</p>
-                
+                <p class="text-gray-700 mt-4">Based on your financial data, here's an analysis:</p>
                 <div class="mt-6 p-4 bg-green-50 rounded-lg">
                     <h4 class="font-semibold text-green-800">Strengths</h4>
                     <ul class="list-disc pl-5 mt-2 text-green-700">
-                        <li>You're saving approximately 15% of your income, which is above the recommended 10%</li>
-                        <li>Your emergency fund covers 3 months of expenses, meeting the basic recommendation</li>
-                        <li>You have minimal high-interest debt</li>
+                        <li>Saving approximately 15% of your income.</li>
+                        <li>Emergency fund covers 3 months of expenses.</li>
                     </ul>
                 </div>
-                
                 <div class="mt-4 p-4 bg-yellow-50 rounded-lg">
                     <h4 class="font-semibold text-yellow-800">Areas for Improvement</h4>
                     <ul class="list-disc pl-5 mt-2 text-yellow-700">
-                        <li>Your dining expenses are 25% higher than the average for your income level</li>
-                        <li>You could benefit from increasing your retirement contributions</li>
-                        <li>Consider diversifying your investment portfolio</li>
+                        <li>Dining expenses are 25% higher than average.</li>
+                        <li>Consider increasing retirement contributions.</li>
                     </ul>
                 </div>
-                
-                <div class="mt-4 p-4 bg-blue-50 rounded-lg">
-                    <h4 class="font-semibold text-blue-800">Recommendations</h4>
-                    <ul class="list-disc pl-5 mt-2 text-blue-700">
-                        <li>Set up automatic transfers to your savings account to increase your emergency fund to 6 months of expenses</li>
-                        <li>Create a specific budget category for dining out and set a monthly limit</li>
-                        <li>Consider opening a retirement account if you don't have one, or increase contributions to your existing one</li>
-                    </ul>
-                </div>
-                
-                <p class="text-sm text-gray-500 mt-6">Disclaimer: This analysis is generated based on the data you've provided and should not be considered professional financial advice.</p>
             `;
         }, 3000);
     });
@@ -231,31 +131,20 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeSampleData();
 });
 
-function simulateLogin(email) {
-    document.getElementById('auth-container').classList.add('hidden');
-    document.getElementById('main-app-container').classList.remove('hidden');
-    document.getElementById('welcome-user-text').textContent = `Welcome, ${email.split('@')[0]}!`;
-    showNotification('Login successful!', 'success');
-}
-
 function navigateToPage(pageId) {
     document.querySelectorAll('.page').forEach(page => {
         page.classList.remove('active');
     });
     
-    document.getElementById(pageId).classList.add('active');
+    const targetPage = document.getElementById(pageId);
+    if (targetPage) {
+        targetPage.classList.add('active');
+    }
     
     const pageTitle = document.getElementById('page-title');
-    const navLink = document.querySelector(`a[href="#${pageId}"] .nav-link-text`);
-    
+    const navLink = document.querySelector(`a[href="#${pageId}"]`);
     if (navLink) {
-        pageTitle.textContent = navLink.textContent.trim();
-    } else {
-        // Fallback for simple nav links
-        const simpleNavLink = document.querySelector(`a[href="#${pageId}"]`);
-        if(simpleNavLink) {
-           pageTitle.textContent = simpleNavLink.textContent.trim();
-        }
+       pageTitle.textContent = navLink.textContent.trim();
     }
     
     if (window.innerWidth < 1024) {
@@ -270,17 +159,10 @@ function showNotification(message, type = 'info') {
     notificationText.textContent = message;
     
     switch(type) {
-        case 'success':
-            banner.style.backgroundColor = '#228B22'; // Green
-            break;
-        case 'error':
-            banner.style.backgroundColor = '#DC2626'; // Red
-            break;
-        case 'warning':
-            banner.style.backgroundColor = '#D97706'; // Amber
-            break;
-        default:
-            banner.style.backgroundColor = '#3B82F6'; // Blue
+        case 'success': banner.style.backgroundColor = '#228B22'; break;
+        case 'error': banner.style.backgroundColor = '#DC2626'; break;
+        case 'warning': banner.style.backgroundColor = '#D97706'; break;
+        default: banner.style.backgroundColor = '#3B82F6';
     }
     
     banner.style.transform = 'translateY(0)';
@@ -296,13 +178,10 @@ function initializeSampleData() {
     new Chart(spendingCtx, {
         type: 'doughnut',
         data: {
-            labels: ['Groceries', 'Dining', 'Transportation', 'Utilities', 'Entertainment', 'Shopping', 'Healthcare', 'Other'],
+            labels: ['Groceries', 'Dining', 'Transportation', 'Utilities', 'Entertainment', 'Shopping'],
             datasets: [{
-                data: [500, 300, 150, 200, 100, 250, 80, 120],
-                backgroundColor: [
-                    '#228B22', '#3CB371', '#90EE90', '#98FB98', '#00FA9A', 
-                    '#00FF7F', '#3CB371', '#2E8B57'
-                ]
+                data: [500, 300, 150, 200, 100, 250],
+                backgroundColor: ['#228B22', '#3CB371', '#90EE90', '#98FB98', '#00FA9A', '#00FF7F']
             }]
         },
         options: {
@@ -311,9 +190,7 @@ function initializeSampleData() {
             plugins: {
                 legend: {
                     position: 'right',
-                    labels: {
-                        boxWidth: 15
-                    }
+                    labels: { boxWidth: 15 }
                 }
             }
         }
