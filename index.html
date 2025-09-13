@@ -17,7 +17,11 @@
     </div>
 
     <div id="main-app-container" class="flex h-screen bg-gray-100 w-full">
-        <aside class="w-64 flex-shrink-0 bg-white shadow-lg hidden lg:block">
+        <!-- Mobile sidebar overlay -->
+        <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"></div>
+        
+        <!-- Sidebar -->
+        <aside id="sidebar" class="w-64 flex-shrink-0 bg-white shadow-lg fixed inset-y-0 left-0 z-40 transform -translate-x-full transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0">
             <div class="h-full flex flex-col">
                 <div class="h-20 flex items-center justify-center border-b">
                     <h1 class="text-2xl font-bold text-primary">SmartGrocer</h1>
@@ -74,6 +78,7 @@
             </header>
             
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6 md:p-8">
+                <!-- Dashboard Page -->
                 <div id="dashboard" class="page active">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <div class="card p-6 stat-card">
@@ -113,42 +118,84 @@
                             <p id="total-debt-stat" class="text-3xl font-bold mt-4 text-gray-800">$8,250.00</p>
                         </div>
                     </div>
-                    <div id="transactions" class="page">
-                        <div class="card p-6">
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left">
-                                    <thead>
-                                        <tr class="border-b bg-gray-50">
-                                            <th class="p-4">Date</th>
-                                            <th class="p-4">Description</th>
-                                            <th class="p-4">Category</th>
-                                            <th class="p-4 text-right">Amount</th>
-                                            <th class="p-4">Account</th>
-                                            <th class="p-4 text-center">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="transactions-table-body">
-                                        </tbody>
-                                </table>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-6">
+                        <div class="lg:col-span-3 card p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">Monthly Spending by Category</h3>
+                            <div class="h-80"><canvas id="spending-doughnut-chart"></canvas></div>
+                        </div>
+
+                        <div class="lg:col-span-2 card p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">Recent Transactions</h3>
+                            <div id="recent-transactions-container" class="space-y-4">
+                                <!-- Recent transactions will be populated here -->
                             </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 card p-6">
+                        <h3 class="text-xl font-bold mb-4 text-gray-800">Add Quick Expense</h3>
+                        <form id="quick-expense-form" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                            <div class="md:col-span-2">
+                                <label for="quick-description" class="block text-sm font-medium text-gray-700">Description</label>
+                                <input type="text" id="quick-description" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                             </div>
+                            <div>
+                                <label for="quick-amount" class="block text-sm font-medium text-gray-700">Amount ($)</label>
+                                <input type="number" id="quick-amount" step="0.01" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                            </div>
+                            <div>
+                                <label for="quick-category" class="block text-sm font-medium text-gray-700">Category</label>
+                                <select id="quick-category" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
+                                    <option value="Groceries">Groceries</option>
+                                    <option value="Dining">Dining</option>
+                                    <option value="Transportation">Transportation</option>
+                                    <option value="Utilities">Utilities</option>
+                                    <option value="Entertainment">Entertainment</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="w-full bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Add</button>
+                        </form>
                     </div>
+                </div>
+
+                <!-- Transactions Page -->
+                <div id="transactions" class="page">
+                    <div class="card p-6">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr class="border-b bg-gray-50">
+                                        <th class="p-4">Date</th>
+                                        <th class="p-4">Description</th>
+                                        <th class="p-4">Category</th>
+                                        <th class="p-4 text-right">Amount</th>
+                                        <th class="p-4">Account</th>
+                                        <th class="p-4 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactions-table-body">
+                                    <!-- Transactions will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-            </main>
-        </div>
-    </div>
-    <script src="Script.js"></script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <link rel="stylesheet" href="Style.css">
-</head>
-<body class="antialiased">
-    <div id="main-app-container" class="flex h-screen bg-gray-100 w-full">
-        <div class="flex-1 flex flex-col overflow-hidden relative">
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6 md:p-8">
+                </div>
+
+                <!-- Accounts Page -->
+                <div id="accounts" class="page">
+                    <div class="card p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold text-gray-800">Your Accounts</h3>
+                            <button id="create-account-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent transition-colors">Add Account</button>
+                        </div>
+                        <div id="accounts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Accounts will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Budgets Page -->
                 <div id="budgets" class="page">
                     <div class="card p-6">
                         <div class="flex justify-between items-center mb-6">
@@ -157,14 +204,85 @@
                         </div>
                         
                         <div id="budgets-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            </div>
+                            <!-- Budgets will be populated here -->
+                        </div>
                     </div>
                 </div>
 
-                </main>
+                <!-- Reports Page -->
+                <div id="reports" class="page">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Financial Reports</h3>
+                        <p>Reports content will be displayed here.</p>
+                    </div>
+                </div>
+
+                <!-- AI Insights Page -->
+                <div id="insights" class="page">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">AI Insights</h3>
+                        <button id="generate-ai-report-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent transition-colors">Generate Insights</button>
+                        <div id="ai-report-loader" class="hidden mt-6 p-4 bg-gray-50 rounded-lg text-center">
+                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-primary mx-auto"></div>
+                            <p class="mt-4 text-gray-600">Generating your financial insights...</p>
+                        </div>
+                        <div id="ai-report-content" class="mt-6"></div>
+                    </div>
+                </div>
+
+                <!-- Goals Page -->
+                <div id="goals" class="page">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Financial Goals</h3>
+                        <p>Goals content will be displayed here.</p>
+                    </div>
+                </div>
+
+                <!-- Settings Page -->
+                <div id="settings" class="page">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Settings</h3>
+                        <p>Settings content will be displayed here.</p>
+                    </div>
+                </div>
+            </main>
         </div>
     </div>
 
+    <!-- Account Modal -->
+    <div id="account-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
+            <h3 id="account-modal-title" class="text-2xl font-bold mb-6 text-gray-800">Create New Account</h3>
+            <form id="account-form">
+                <div class="space-y-4">
+                    <div>
+                        <label for="account-name" class="block text-sm font-medium text-gray-700">Account Name</label>
+                        <input type="text" id="account-name" required placeholder="e.g., Chase Checking" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                    </div>
+                    <div>
+                        <label for="account-type" class="block text-sm font-medium text-gray-700">Account Type</label>
+                        <select id="account-type" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
+                            <option>Checking</option>
+                            <option>Savings</option>
+                            <option>Credit Card</option>
+                            <option>Cash</option>
+                            <option>Investment</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="account-balance" class="block text-sm font-medium text-gray-700">Current Balance ($)</label>
+                        <input type="number" id="account-balance" step="0.01" required placeholder="e.g., 1500.00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-end space-x-4">
+                    <button type="button" id="cancel-account-btn" class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button>
+                    <button type="submit" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Save Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Budget Modal -->
     <div id="budget-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
             <h3 class="text-2xl font-bold mb-6 text-gray-800">Create a New Budget</h3>
@@ -193,129 +311,6 @@
                     <button type="submit" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Save Budget</button>
                 </div>
             </form>
-        </div>
-    </div>
-
-    <script src="Script.js"></script>
-</body>
-</html>
-<div id="dashboard" class="page active">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-6">
-        
-        <div class="lg:col-span-3 card p-6">
-            <h3 class="text-xl font-bold text-gray-800 mb-4">Monthly Spending by Category</h3>
-            <div class="h-80"><canvas id="spending-doughnut-chart"></canvas></div>
-        </div>
-
-        <div class="lg:col-span-2 card p-6">
-            <h3 class="text-xl font-bold text-gray-800 mb-4">Recent Transactions</h3>
-            <div id="recent-transactions-container" class="space-y-4">
-                </div>
-        </div>
-
-    </div>
-    
-    <div class="mt-6 card p-6">
-        <h3 class="text-xl font-bold mb-4 text-gray-800">Add Quick Expense</h3>
-        <form id="quick-expense-form" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-            <div class="md:col-span-2">
-                <label for="quick-description" class="block text-sm font-medium text-gray-700">Description</label>
-                <input type="text" id="quick-description" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-            </div>
-            <div>
-                <label for="quick-amount" class="block text-sm font-medium text-gray-700">Amount ($)</label>
-                <input type="number" id="quick-amount" step="0.01" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-            </div>
-            <div>
-                <label for="quick-category" class="block text-sm font-medium text-gray-700">Category</label>
-                <select id="quick-category" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
-                    <option value="Groceries">Groceries</option>
-                    <option value="Dining">Dining</option>
-                    <option value="Transportation">Transportation</option>
-                    <option value="Utilities">Utilities</option>
-                    <option value="Entertainment">Entertainment</option>
-                </select>
-            </div>
-            <button type="submit" class="w-full bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Add</button>
-        </form>
-    </div>
-</div>
-<div id="accounts" class="page">
-    <div class="card p-6">
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-xl font-bold text-gray-800">Your Accounts</h3>
-            <button id="create-account-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent transition-colors">Add Account</button>
-        </div>
-        <div id="accounts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            </div>
-    </div>
-</div>
-<div id="account-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
-        <h3 id="account-modal-title" class="text-2xl font-bold mb-6 text-gray-800">Create New Account</h3>
-        <form id="account-form">
-            <div class="space-y-4">
-                <div>
-                    <label for="account-name" class="block text-sm font-medium text-gray-700">Account Name</label>
-                    <input type="text" id="account-name" required placeholder="e.g., Chase Checking" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                </div>
-                <div>
-                    <label for="account-type" class="block text-sm font-medium text-gray-700">Account Type</label>
-                    <select id="account-type" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
-                        <option>Checking</option>
-                        <option>Savings</option>
-                        <option>Credit Card</option>
-                        <option>Cash</option>
-                        <option>Investment</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="account-balance" class="block text-sm font-medium text-gray-700">Current Balance ($)</label>
-                    <input type="number" id="account-balance" step="0.01" required placeholder="e.g., 1500.00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                </div>
-            </div>
-            <div class="mt-8 flex justify-end space-x-4">
-                <button type="button" id="cancel-account-btn" class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button>
-                <button type="submit" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Save Account</button>
-            </div>
-        </form>
-    </div>
-</div>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <link rel="stylesheet" href="Style.css">
-</head>
-<body class="antialiased bg-gray-100">
-    <div id="main-app-container" class="relative min-h-screen lg:flex">
-        <aside id="sidebar" class="bg-white text-gray-800 w-64 fixed inset-y-0 left-0 z-40 shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0">
-            <div class="h-full flex flex-col">
-                <div class="h-20 flex items-center justify-center border-b">
-                    <h1 class="text-2xl font-bold text-primary">SmartGrocer</h1>
-                </div>
-                <nav class="flex-1 px-4 py-6 space-y-2">
-                    <a href="#dashboard" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg">...</a>
-                    <a href="#transactions" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg">...</a>
-                    </nav>
-                <div class="px-4 py-6 mt-auto border-t">
-                    <p class="text-xs text-gray-500">&copy; 2025 SmartGrocer. All Rights Reserved.</p>
-                </div>
-            </div>
-        </aside>
-
-        <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"></div>
-
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="h-20 flex justify-between items-center px-6 bg-white shadow-md">
-                <button id="mobile-menu-button" class="text-gray-600 focus:outline-none lg:hidden">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-                </header>
-            <main class="flex-1 overflow-x-hidden overflow-y-auto p-6 md:p-8">
-                </main>
         </div>
     </div>
 
