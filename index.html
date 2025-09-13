@@ -7,7 +7,168 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="Style.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            color: #1a202c;
+        }
+
+        /* Custom 3D card effect */
+        .card {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transform-style: preserve-3d;
+        }
+
+        .card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(34, 139, 34, 0.1), 0 10px 10px -5px rgba(34, 139, 34, 0.04);
+        }
+
+        /* Primary color scheme */
+        .bg-primary { background-color: #228B22; } /* ForestGreen */
+        .text-primary { color: #228B22; }
+        .border-primary { border-color: #228B22; }
+
+        /* Accent color */
+        .bg-accent { background-color: #3CB371; } /* MediumSeaGreen */
+        .text-accent { color: #3CB371; }
+
+        /* Smooth page transition effect */
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f0f4f8;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3CB371;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #228B22;
+        }
+
+        /* Notification Banner */
+        #notification-banner {
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .nav-link.active {
+            background-color: #e6f7e6;
+            color: #228B22;
+            font-weight: bold;
+        }
+
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: scale(1.03);
+        }
+
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            background-color: #e5e7eb;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Mobile sidebar styles */
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        #sidebar-overlay {
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        /* Prevent body scrolling when sidebar is open on mobile */
+        body.overflow-hidden {
+            overflow: hidden;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1023px) {
+            #sidebar {
+                width: 75%;
+                max-width: 300px;
+            }
+        }
+
+        /* Styles for the Recent Transactions list on the dashboard */
+        .recent-transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb; /* gray-200 */
+        }
+
+        .recent-transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .recent-transaction-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .recent-transaction-description {
+            font-weight: 600;
+            color: #374151; /* gray-700 */
+        }
+
+        .recent-transaction-category {
+            font-size: 0.875rem; /* 14px */
+            color: #6b7280; /* gray-500 */
+        }
+
+        .recent-transaction-amount {
+            font-weight: 600;
+        }
+
+        /* Styles for Account Cards */
+        .account-card-balance {
+            font-size: 1.875rem; /* 30px */
+            font-weight: 700;
+            color: #1a202c; /* gray-900 */
+            margin-top: 8px;
+        }
+
+        .account-card-type {
+            font-size: 0.875rem; /* 14px */
+            color: #6b7280; /* gray-500 */
+        }
+    </style>
 </head>
 <body class="antialiased">
     <div id="loading-overlay" class="fixed inset-0 bg-white bg-opacity-75 flex flex-col items-center justify-center z-50">
@@ -129,6 +290,27 @@
                             <h3 class="text-xl font-bold text-gray-800 mb-4">Recent Transactions</h3>
                             <div id="recent-transactions-container" class="space-y-4">
                                 <!-- Recent transactions will be populated here -->
+                                <div class="recent-transaction-item">
+                                    <div class="recent-transaction-details">
+                                        <span class="recent-transaction-description">Grocery Shopping</span>
+                                        <span class="recent-transaction-category">Groceries</span>
+                                    </div>
+                                    <span class="recent-transaction-amount text-red-600">-$85.25</span>
+                                </div>
+                                <div class="recent-transaction-item">
+                                    <div class="recent-transaction-details">
+                                        <span class="recent-transaction-description">Salary Deposit</span>
+                                        <span class="recent-transaction-category">Income</span>
+                                    </div>
+                                    <span class="recent-transaction-amount text-green-600">+$2,500.00</span>
+                                </div>
+                                <div class="recent-transaction-item">
+                                    <div class="recent-transaction-details">
+                                        <span class="recent-transaction-description">Electric Bill</span>
+                                        <span class="recent-transaction-category">Utilities</span>
+                                    </div>
+                                    <span class="recent-transaction-amount text-red-600">-$120.75</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -176,6 +358,51 @@
                                 </thead>
                                 <tbody id="transactions-table-body">
                                     <!-- Transactions will be populated here -->
+                                    <tr class="border-b">
+                                        <td class="p-4">05/15/2025</td>
+                                        <td class="p-4">Grocery Shopping</td>
+                                        <td class="p-4">Groceries</td>
+                                        <td class="p-4 text-right text-red-600">-$85.25</td>
+                                        <td class="p-4">Credit Card</td>
+                                        <td class="p-4 text-center">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b">
+                                        <td class="p-4">05/10/2025</td>
+                                        <td class="p-4">Salary Deposit</td>
+                                        <td class="p-4">Income</td>
+                                        <td class="p-4 text-right text-green-600">+$2,500.00</td>
+                                        <td class="p-4">Checking Account</td>
+                                        <td class="p-4 text-center">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr class="border-b">
+                                        <td class="p-4">05/05/2025</td>
+                                        <td class="p-4">Electric Bill</td>
+                                        <td class="p-4">Utilities</td>
+                                        <td class="p-4 text-right text-red-600">-$120.75</td>
+                                        <td class="p-4">Checking Account</td>
+                                        <td class="p-4 text-center">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -191,6 +418,57 @@
                         </div>
                         <div id="accounts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <!-- Accounts will be populated here -->
+                            <div class="card p-6">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-gray-800">Checking Account</h4>
+                                        <p class="account-card-type">Checking</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-800">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-800">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p class="account-card-balance">$5,250.75</p>
+                            </div>
+                            <div class="card p-6">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-gray-800">Savings Account</h4>
+                                        <p class="account-card-type">Savings</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-800">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-800">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p class="account-card-balance">$18,500.00</p>
+                            </div>
+                            <div class="card p-6">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-gray-800">Credit Card</h4>
+                                        <p class="account-card-type">Credit Card</p>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-blue-600 hover:text-blue-800">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-800">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <p class="account-card-balance">-$2,350.25</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -205,6 +483,69 @@
                         
                         <div id="budgets-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <!-- Budgets will be populated here -->
+                            <div class="card p-6 relative">
+                                <div class="budget-actions">
+                                    <button class="budget-action-btn">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="budget-action-btn">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-800">Groceries</h4>
+                                <div class="mt-4">
+                                    <div class="flex justify-between text-sm text-gray-600">
+                                        <span>Spent: $320</span>
+                                        <span>Limit: $500</span>
+                                    </div>
+                                    <div class="progress-bar mt-2">
+                                        <div class="progress-fill bg-green-500" style="width: 64%"></div>
+                                    </div>
+                                    <p class="mt-2 text-sm text-gray-600">$180 remaining</p>
+                                </div>
+                            </div>
+                            <div class="card p-6 relative">
+                                <div class="budget-actions">
+                                    <button class="budget-action-btn">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="budget-action-btn">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-800">Dining</h4>
+                                <div class="mt-4">
+                                    <div class="flex justify-between text-sm text-gray-600">
+                                        <span>Spent: $220</span>
+                                        <span>Limit: $300</span>
+                                    </div>
+                                    <div class="progress-bar mt-2">
+                                        <div class="progress-fill bg-yellow-500" style="width: 73%"></div>
+                                    </div>
+                                    <p class="mt-2 text-sm text-gray-600">$80 remaining</p>
+                                </div>
+                            </div>
+                            <div class="card p-6 relative">
+                                <div class="budget-actions">
+                                    <button class="budget-action-btn">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="budget-action-btn">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-800">Entertainment</h4>
+                                <div class="mt-4">
+                                    <div class="flex justify-between text-sm text-gray-600">
+                                        <span>Spent: $90</span>
+                                        <span>Limit: $150</span>
+                                    </div>
+                                    <div class="progress-bar mt-2">
+                                        <div class="progress-fill bg-green-500" style="width: 60%"></div>
+                                    </div>
+                                    <p class="mt-2 text-sm text-gray-600">$60 remaining</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -314,6 +655,114 @@
         </div>
     </div>
 
-    <script src="Script.js"></script>
+    <script>
+        // --- SIDEBAR FUNCTIONALITY ---
+        document.addEventListener('DOMContentLoaded', function() {
+            // Hide loading overlay
+            setTimeout(() => {
+                document.getElementById('loading-overlay').classList.add('hidden');
+            }, 1500);
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            const navLinks = document.querySelectorAll('.nav-link');
+            const pages = document.querySelectorAll('.page');
+            const pageTitle = document.getElementById('page-title');
+
+            // Toggle mobile sidebar
+            mobileMenuButton.addEventListener('click', function() {
+                sidebar.classList.toggle('-translate-x-full');
+                sidebarOverlay.classList.toggle('hidden');
+                document.body.classList.toggle('overflow-hidden');
+            });
+
+            // Close sidebar when clicking on overlay
+            sidebarOverlay.addEventListener('click', function() {
+                sidebar.classList.add('-translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            });
+
+            // Handle navigation
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Get target page from href
+                    const targetId = this.getAttribute('href').substring(1);
+                    
+                    // Update active page
+                    pages.forEach(page => {
+                        page.classList.remove('active');
+                        if (page.id === targetId) {
+                            page.classList.add('active');
+                            
+                            // Update page title
+                            const pageName = this.textContent.trim();
+                            pageTitle.textContent = pageName;
+                        }
+                    });
+                    
+                    // Update active nav link
+                    navLinks.forEach(navLink => {
+                        navLink.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Close sidebar on mobile after navigation
+                    if (window.innerWidth < 1024) {
+                        sidebar.classList.add('-translate-x-full');
+                        sidebarOverlay.classList.add('hidden');
+                        document.body.classList.remove('overflow-hidden');
+                    }
+                });
+            });
+
+            // Close sidebar when window is resized to desktop size
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 1024) {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebarOverlay.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                }
+            });
+
+            // Initialize chart
+            initSpendingChart();
+        });
+
+        function initSpendingChart() {
+            const ctx = document.getElementById('spending-doughnut-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Groceries', 'Dining', 'Transportation', 'Utilities', 'Entertainment'],
+                    datasets: [{
+                        data: [500, 300, 150, 200, 150],
+                        backgroundColor: [
+                            '#228B22', // ForestGreen
+                            '#3CB371', // MediumSeaGreen
+                            '#90EE90', // LightGreen
+                            '#32CD32', // LimeGreen
+                            '#98FB98'  // PaleGreen
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 </html>
