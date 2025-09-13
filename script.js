@@ -3,11 +3,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Simulate loading process
     setTimeout(() => {
         document.getElementById('loading-overlay').style.display = 'none';
-        // Uncomment the line below to show auth container by default
-        // document.getElementById('auth-container').classList.remove('hidden');
+        // Show auth container after loading
+        document.getElementById('auth-container').classList.remove('hidden');
         
-        // For demo purposes, let's simulate a successful login
-        simulateLogin('demo@smartgrocer.com');
+        // For quick demo, uncomment the line below to simulate an automatic login
+        // simulateLogin('demo@smartgrocer.com');
     }, 1500);
     
     // Toggle between login and registration forms
@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
             registerForm.classList.add('hidden');
             toggleLink.textContent = 'Need an account? Sign up';
         } else {
-            login极速加速器.classList.add('hidden');
+            loginForm.classList.add('hidden');
             registerForm.classList.remove('hidden');
             toggleLink.textContent = 'Already have an account? Sign in';
         }
@@ -34,13 +34,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
         
-        // Simple validation
         if (!email || !password) {
             showNotification('Please enter both email and password', 'error');
             return;
         }
         
-        // Simulate successful login
         simulateLogin(email);
     });
     
@@ -52,7 +50,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const password = document.getElementById('register-password').value;
         const confirmPassword = document.getElementById('register-confirm-password').value;
         
-        // Simple validation
         if (!name || !email || !password || !confirmPassword) {
             showNotification('Please fill out all fields', 'error');
             return;
@@ -68,7 +65,6 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Simulate successful registration
         simulateLogin(email);
     });
     
@@ -91,7 +87,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const targetId = this.getAttribute('href').substring(1);
             navigateToPage(targetId);
             
-            // Update active state
             document.querySelectorAll('.nav-link').forEach(nav => {
                 nav.classList.remove('active');
             });
@@ -118,17 +113,14 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Reset form
         this.reset();
         
         showNotification(`Added expense: $${amount} for ${description}`, 'success');
         
-        // Update the expenses stat
         const currentExpenses = parseFloat(document.getElementById('total-expenses-stat').textContent.replace('$', '').replace(',', ''));
         const newExpenses = currentExpenses + parseFloat(amount);
         document.getElementById('total-expenses-stat').textContent = '$' + newExpenses.toFixed(2);
         
-        // Update net worth
         const currentNetWorth = parseFloat(document.getElementById('net-worth-stat').textContent.replace('$', '').replace(',', ''));
         const newNetWorth = currentNetWorth - parseFloat(amount);
         document.getElementById('net-worth-stat').textContent = '$' + newNetWorth.toFixed(2);
@@ -146,17 +138,15 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const taxResult = document.getElementById('tax-result-container');
         const taxLoader = document.getElementById('tax-result-loader');
-        const taxText = document.getElementById极速加速器'tax-result-text');
+        const taxText = document.getElementById('tax-result-text');
         
         taxResult.classList.remove('hidden');
         taxLoader.classList.remove('hidden');
         taxText.textContent = '';
         
-        // Simulate calculation
         setTimeout(() => {
             taxLoader.classList.add('hidden');
             
-            // Simple tax estimation logic (for demonstration only)
             const incomeNum = parseFloat(income);
             let taxAmount = 0;
             
@@ -173,10 +163,9 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (incomeNum <= 578125) {
                 taxAmount = 52832 + (incomeNum - 231250) * 0.35;
             } else {
-                taxAmount = 174238.25 + (incomeNum - 578极速加速器) * 0.37;
+                taxAmount = 174238.25 + (incomeNum - 578125) * 0.37;
             }
             
-            // Adjust for filing status (simplified)
             if (filingStatus === 'Married filing jointly') {
                 taxAmount *= 0.85;
             } else if (filingStatus === 'Head of household') {
@@ -189,18 +178,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // AI report generation
     document.getElementById('generate-ai-report-btn').addEventListener('click', function() {
-        const reportContainer = document.getElementById('ai-report-container');
         const reportLoader = document.getElementById('ai-report-loader');
         const reportContent = document.getElementById('ai-report-content');
         
         reportLoader.classList.remove('hidden');
         reportContent.innerHTML = '';
         
-        // Simulate AI analysis
         setTimeout(() => {
             reportLoader.classList.add('hidden');
             
-            // Sample AI report
             reportContent.innerHTML = `
                 <h3 class="text-xl font-semibold text-gray-800">Your Financial Health Report</h3>
                 <p class="text-gray-700 mt-4">Based on your financial data, here's an analysis of your financial health:</p>
@@ -209,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <h4 class="font-semibold text-green-800">Strengths</h4>
                     <ul class="list-disc pl-5 mt-2 text-green-700">
                         <li>You're saving approximately 15% of your income, which is above the recommended 10%</li>
-                        <li>Your emergency fund covers 3 months of expenses, meeting the basic recommendation</极速加速器>
+                        <li>Your emergency fund covers 3 months of expenses, meeting the basic recommendation</li>
                         <li>You have minimal high-interest debt</li>
                     </ul>
                 </div>
@@ -225,23 +211,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 <div class="mt-4 p-4 bg-blue-50 rounded-lg">
                     <h4 class="font-semibold text-blue-800">Recommendations</h4>
-                    <ul class极速加速器list-disc pl-5 mt-2 text-blue-700">
+                    <ul class="list-disc pl-5 mt-2 text-blue-700">
                         <li>Set up automatic transfers to your savings account to increase your emergency fund to 6 months of expenses</li>
                         <li>Create a specific budget category for dining out and set a monthly limit</li>
                         <li>Consider opening a retirement account if you don't have one, or increase contributions to your existing one</li>
-                        <li>Review your investment portfolio to ensure proper diversification</li>
                     </ul>
                 </div>
                 
-                <p class="text-sm text-gray-500 mt-6">Disclaimer: This analysis is generated based on the data you've provided and should not be considered professional financial advice. Consult with a qualified financial advisor for personalized recommendations.</p>
+                <p class="text-sm text-gray-500 mt-6">Disclaimer: This analysis is generated based on the data you've provided and should not be considered professional financial advice.</p>
             `;
         }, 3000);
     });
     
     // Initialize with dashboard page
     navigateToPage('dashboard');
-    
-    // Set dashboard as active nav link
     document.querySelector('a[href="#dashboard"]').classList.add('active');
     
     // Sample data for charts
@@ -256,23 +239,25 @@ function simulateLogin(email) {
 }
 
 function navigateToPage(pageId) {
-    // Hide all pages
     document.querySelectorAll('.page').forEach(page => {
         page.classList.remove('active');
     });
     
-    // Show the selected page
     document.getElementById(pageId).classList.add('active');
     
-    // Update page title
     const pageTitle = document.getElementById('page-title');
-    const navLink = document.querySelector(`a[href="#${pageId}"]`);
+    const navLink = document.querySelector(`a[href="#${pageId}"] .nav-link-text`);
     
     if (navLink) {
-        pageTitle.textContent = navLink.textContent;
+        pageTitle.textContent = navLink.textContent.trim();
+    } else {
+        // Fallback for simple nav links
+        const simpleNavLink = document.querySelector(`a[href="#${pageId}"]`);
+        if(simpleNavLink) {
+           pageTitle.textContent = simpleNavLink.textContent.trim();
+        }
     }
     
-    // Close mobile menu if open
     if (window.innerWidth < 1024) {
         document.querySelector('aside').classList.add('hidden');
     }
@@ -282,7 +267,6 @@ function showNotification(message, type = 'info') {
     const banner = document.getElementById('notification-banner');
     const notificationText = document.getElementById('notification-text');
     
-    // Set message and style based on type
     notificationText.textContent = message;
     
     switch(type) {
@@ -299,10 +283,8 @@ function showNotification(message, type = 'info') {
             banner.style.backgroundColor = '#3B82F6'; // Blue
     }
     
-    // Show the banner
     banner.style.transform = 'translateY(0)';
     
-    // Hide after 5 seconds
     setTimeout(() => {
         banner.style.transform = 'translateY(-100%)';
     }, 5000);
