@@ -1,207 +1,23 @@
-body {
-    font-family: 'PT Sans', sans-serif;
-    background-color: #f0f4f8;
-    color: #1a202c;
+/* Mobile sidebar styles */
+#sidebar {
+    transition: transform 0.3s ease-in-out;
 }
 
-/* Custom 3D card effect */
-.card {
-    background-color: white;
-    border-radius: 16px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    transform-style: preserve-3d;
+#sidebar-overlay {
+    transition: opacity 0.3s ease-in-out;
 }
 
-.card:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 20px 25px -5px rgba(34, 139, 34, 0.1), 0 10px 10px -5px rgba(34, 139, 34, 0.04);
-}
-
-/* Primary color scheme */
-.bg-primary { background-color: #228B22; } /* ForestGreen */
-.text-primary { color: #228B22; }
-.border-primary { border-color: #228B22; }
-
-/* Accent color */
-.bg-accent { background-color: #3CB371; } /* MediumSeaGreen */
-.text-accent { color: #3CB371; }
-
-/* Smooth page transition effect */
-.page {
-    display: none;
-    animation: fadeIn 0.5s ease-in-out;
-}
-
-.page.active {
-    display: block;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f0f4f8;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #3CB371;
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #228B22;
-}
-
-/* Notification Banner */
-#notification-banner {
-    transition: transform 0.5s ease-in-out;
-}
-
-.nav-link.active {
-    background-color: #e6f7e6;
-    color: #228B22;
-    font-weight: bold;
-}
-
-.stat-card {
-    transition: all 0.3s ease;
-}
-
-.stat-card:hover {
-    transform: scale(1.03);
-}
-
-.progress-bar {
-    height: 8px;
-    border-radius: 4px;
+/* Prevent body scrolling when sidebar is open on mobile */
+body.overflow-hidden {
     overflow: hidden;
-    background-color: #e5e7eb;
 }
 
-.progress-fill {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.5s ease;
+/* Responsive adjustments */
+@media (max-width: 1023px) {
+    #sidebar {
+        width: 75%;
+        max-width: 300px;
+    }
 }
 
-/* ... (all previous CSS is unchanged) ... */
-
-/* Style for input fields when editing a transaction in the table */
-.transaction-edit-input {
-    width: 100%;
-    padding: 4px 8px;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    background-color: #f8fafc;
-}
-
-/* ... (all previous CSS is unchanged) ... */
-
-.transaction-edit-input {
-    width: 100%;
-    padding: 4px 8px;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    background-color: #f8fafc;
-    font-size: 14px; /* Added for better fit */
-}
-
-/* ... (all previous CSS is unchanged) ... */
-
-.transaction-edit-input {
-    width: 100%;
-    padding: 4px 8px;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    background-color: #f8fafc;
-    font-size: 14px;
-}
-
-/* Styles for the Edit/Delete buttons on budget cards */
-.budget-actions {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    display: flex;
-    gap: 8px;
-}
-
-.budget-action-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #94a3b8; /* gray-400 */
-    transition: color 0.2s ease;
-}
-
-.budget-action-btn:hover {
-    color: #334155; /* gray-700 */
-}
-
-/* Add relative positioning to the card to contain the action buttons */
-.card {
-    position: relative;
-}
-
-/* ... (all previous CSS is unchanged) ... */
-/* Styles for the Recent Transactions list on the dashboard */
-.recent-transaction-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #e5e7eb; /* gray-200 */
-}
-
-.recent-transaction-item:last-child {
-    border-bottom: none;
-}
-
-.recent-transaction-details {
-    display: flex;
-    flex-direction: column;
-}
-
-.recent-transaction-description {
-    font-weight: 600;
-    color: #374151; /* gray-700 */
-}
-
-.recent-transaction-category {
-    font-size: 0.875rem; /* 14px */
-    color: #6b7280; /* gray-500 */
-}
-
-.recent-transaction-amount {
-    font-weight: 600;
-}
-
-/* ... (all previous CSS is unchanged) ... */
-
-/* Styles for Account Cards */
-.account-card-balance {
-    font-size: 1.875rem; /* 30px */
-    font-weight: 700;
-    color: #1a202c; /* gray-900 */
-    margin-top: 8px;
-}
-
-.account-card-type {
-    font-size: 0.875rem; /* 14px */
-    color: #6b7280; /* gray-500 */
-}
-
-/* ... (all previous CSS is unchanged) ... */
-
-/* Add this new class to slide the sidebar into view on mobile */
-.sidebar-open {
-    transform: translateX(0);
-}
+/* ... rest of your existing CSS ... */
