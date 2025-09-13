@@ -150,3 +150,36 @@ body {
 .card {
     position: relative;
 }
+
+/* ... (all previous CSS is unchanged) ... */
+/* Styles for the Recent Transactions list on the dashboard */
+.recent-transaction-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #e5e7eb; /* gray-200 */
+}
+
+.recent-transaction-item:last-child {
+    border-bottom: none;
+}
+
+.recent-transaction-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.recent-transaction-description {
+    font-weight: 600;
+    color: #374151; /* gray-700 */
+}
+
+.recent-transaction-category {
+    font-size: 0.875rem; /* 14px */
+    color: #6b7280; /* gray-500 */
+}
+
+.recent-transaction-amount {
+    font-weight: 600;
+}
