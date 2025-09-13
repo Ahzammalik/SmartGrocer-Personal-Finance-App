@@ -102,3 +102,14 @@ body {
     border-radius: 6px;
     background-color: #f8fafc;
 }
+
+/* ... (all previous CSS is unchanged) ... */
+
+.transaction-edit-input {
+    width: 100%;
+    padding: 4px 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background-color: #f8fafc;
+    font-size: 14px; /* Added for better fit */
+}
