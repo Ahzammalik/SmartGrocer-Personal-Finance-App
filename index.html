@@ -63,10 +63,6 @@
         </aside>
 
         <div class="flex-1 flex flex-col overflow-hidden relative">
-            <div id="notification-banner" class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-lg p-4 rounded-b-lg shadow-lg text-white text-center z-50 transform -translate-y-full">
-                <p id="notification-text"></p>
-            </div>
-
             <header class="h-20 flex justify-between items-center px-6 bg-white shadow-md">
                 <button id="mobile-menu-button" class="lg:hidden text-gray-600 focus:outline-none">
                     <i class="fas fa-bars text-xl"></i>
@@ -117,94 +113,30 @@
                             <p id="total-debt-stat" class="text-3xl font-bold mt-4 text-gray-800">$8,250.00</p>
                         </div>
                     </div>
-
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-                        <div class="lg:col-span-1 card p-6">
-                            <h3 class="text-xl font-bold mb-4 text-gray-800">Add Quick Expense</h3>
-                            <form id="quick-expense-form" class="space-y-4">
-                                <div>
-                                    <label for="quick-amount" class="block text-sm font-medium text-gray-700">Amount</label>
-                                    <input type="number" id="quick-amount" step="0.01" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500">
-                                </div>
-                                <div>
-                                    <label for="quick-description" class="block text-sm font-medium text-gray-700">Description</label>
-                                    <input type="text" id="quick-description" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500">
-                                </div>
-                                <div>
-                                    <label for="quick-category" class="block text-sm font-medium text-gray-700">Category</label>
-                                    <select id="quick-category" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500 bg-white">
-                                        <option value="">Select a category</option>
-                                        <option value="groceries">Groceries</option>
-                                        <option value="dining">Dining</option>
-                                        <option value="transportation">Transportation</option>
-                                        <option value="utilities">Utilities</option>
-                                        <option value="entertainment">Entertainment</option>
-                                        <option value="shopping">Shopping</option>
-                                        <option value="healthcare">Healthcare</option>
-                                        <option value="other">Other</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="quick-account" class="block text-sm font-medium text-gray-700">Account</label>
-                                    <select id="quick-account" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500 bg-white">
-                                        <option value="">Select an account</option>
-                                        <option value="checking">Checking Account</option>
-                                        <option value="savings">Savings Account</option>
-                                        <option value="credit">Credit Card</option>
-                                        <option value="cash">Cash</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-accent transition-colors duration-300">Add Expense</button>
-                            </form>
-                        </div>
-
-                        <div class="lg:col-span-2 card p-6">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 class="text-xl font-bold text-gray-800">Spending by Category</h3>
-                                <div class="p-3 rounded-full bg-green-100 text-primary">
-                                    <i class="fas fa-chart-pie text-xl"></i>
-                                </div>
+                    <div id="transactions" class="page">
+                        <div class="card p-6">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead>
+                                        <tr class="border-b bg-gray-50">
+                                            <th class="p-4">Date</th>
+                                            <th class="p-4">Description</th>
+                                            <th class="p-4">Category</th>
+                                            <th class="p-4 text-right">Amount</th>
+                                            <th class="p-4">Account</th>
+                                            <th class="p-4 text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transactions-table-body">
+                                        </tbody>
+                                </table>
                             </div>
-                            <p id="ai-tip" class="text-sm mb-4 text-gray-600">Your spending on dining is 15% higher than last month. Consider cooking at home more often to save money.</p>
-                            <div class="h-80"><canvas id="spending-doughnut-chart"></canvas></div>
-                        </div>
+                            </div>
                     </div>
-                    
-                    <div class="mt-6 card p-6">
-                        <h3 class="text-xl font-bold mb-4 text-gray-800">AI-Powered Tax Estimator</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                                <label for="annual-income" class="block text-sm font-medium text-gray-700">Estimated Annual Income</label>
-                                <input type="number" id="annual-income" placeholder="e.g., 60000" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500">
-                            </div>
-                            <div>
-                                <label for="filing-status" class="block text-sm font-medium text-gray-700">Filing Status (US)</label>
-                                <select id="filing-status" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500 bg-white">
-                                    <option>Single</option>
-                                    <option>Married filing jointly</option>
-                                    <option>Married filing separately</option>
-                                    <option>Head of household</option>
-                                </select>
-                            </div>
-                            <div class="flex items-end">
-                                <button id="estimate-tax-btn" class="w-full bg-accent text-white font-bold py-2 px-4 rounded-lg hover:bg-primary transition-colors duration-300">Estimate Taxes</button>
-                            </div>
-                        </div>
-                        <div id="tax-result-container" class="mt-4 p-4 bg-green-50 rounded-lg hidden">
-                            <h4 class="font-semibold text-lg text-primary">Tax Estimation Result:</h4>
-                            <div id="tax-result-loader" class="text-center p-4 hidden">
-                                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                                <p class="mt-2 text-gray-600">Calculating...</p>
-                            </div>
-                            <p id="tax-result-text" class="text-gray-700 mt-2"></p>
-                        </div>
                     </div>
-                </div>
-
-                </main>
+            </main>
         </div>
     </div>
-
     <script src="Script.js"></script>
 </body>
 </html>
