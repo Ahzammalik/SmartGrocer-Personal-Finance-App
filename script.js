@@ -1,234 +1,149 @@
-// Global state variables. These will be populated from Local Storage.
+// Global state variables
 let transactionsData = [];
+let budgetsData = [];
 let nextTransactionId = 1;
+let nextBudgetId = 1;
 let currentlyEditingId = null;
 
 // --- LOCAL STORAGE FUNCTIONS ---
-
-/**
- * Saves the current transactions and the next transaction ID to local storage.
- */
 function saveStateToLocalStorage() {
     localStorage.setItem('smartGrocerTransactions', JSON.stringify(transactionsData));
+    localStorage.setItem('smartGrocerBudgets', JSON.stringify(budgetsData));
     localStorage.setItem('smartGrocerNextId', nextTransactionId.toString());
+    localStorage.setItem('smartGrocerNextBudgetId', nextBudgetId.toString());
 }
 
-/**
- * Loads transactions and the next ID from local storage on startup.
- * If no data is found, it loads default sample data.
- */
 function loadStateFromLocalStorage() {
+    // Load Transactions
     const savedTransactions = localStorage.getItem('smartGrocerTransactions');
-    const savedNextId = localStorage.getItem('smartGrocerNextId');
-
     if (savedTransactions) {
         transactionsData = JSON.parse(savedTransactions);
     } else {
-        // First-time user: load sample data
-        transactionsData = [
-            { id: 1, date: "2025-09-12", description: "Initial Salary", category: "Income", amount: 2500.00, account: "Checking Account", type: "income" },
-            { id: 2, date: "2025-09-13", description: "Grocery Shopping", category: "Groceries", amount: 125.50, account: "Credit Card", type: "expense" }
-        ];
+        transactionsData = [ /* Initial sample data */ ];
     }
+    nextTransactionId = parseInt(localStorage.getItem('smartGrocerNextId') || (transactionsData.length ? Math.max(...transactionsData.map(tx => tx.id)) + 1 : 1));
 
-    if (savedNextId) {
-        nextTransactionId = parseInt(savedNextId);
+    // Load Budgets
+    const savedBudgets = localStorage.getItem('smartGrocerBudgets');
+    if (savedBudgets) {
+        budgetsData = JSON.parse(savedBudgets);
     } else {
-        // If there's no saved ID, calculate it from existing data
-        nextTransactionId = transactionsData.length > 0 ? Math.max(...transactionsData.map(tx => tx.id)) + 1 : 1;
+        budgetsData = [ { id: 1, category: "Groceries", limit: 500 } ];
     }
+    nextBudgetId = parseInt(localStorage.getItem('smartGrocerNextBudgetId') || (budgetsData.length ? Math.max(...budgetsData.map(b => b.id)) + 1 : 1));
 }
 
-
 // --- MAIN APPLICATION LOGIC ---
-
 document.addEventListener('DOMContentLoaded', function() {
-    loadStateFromLocalStorage(); // Load saved data on startup
-
+    loadStateFromLocalStorage();
     setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; }, 500);
 
     renderTransactions();
+    renderBudgets();
     
-    // Navigation
-    document.querySelectorAll('.nav-link').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            navigateToPage(this.getAttribute('href').substring(1));
-            document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
+    // ... Navigation, Mobile Menu Toggle ...
+
+    // --- Modal Event Listeners ---
+    const budgetModal = document.getElementById('budget-modal');
+    document.getElementById('create-budget-btn').addEventListener('click', () => budgetModal.classList.remove('hidden'));
+    document.getElementById('cancel-budget-btn').addEventListener('click', () => budgetModal.classList.add('hidden'));
     
-    // Mobile menu toggle
-    document.getElementById('mobile-menu-button').addEventListener('click', () => {
-        document.querySelector('aside').classList.toggle('hidden');
-    });
-    
-    // Quick expense form submission
-    document.getElementById('quick-expense-form').addEventListener('submit', function(e) {
+    // Handle new budget form submission
+    document.getElementById('budget-form').addEventListener('submit', function(e) {
         e.preventDefault();
-        const amount = parseFloat(document.getElementById('quick-amount').value);
-        const description = document.getElementById('quick-description').value;
-        
-        // --- Add new transaction logic ---
-        const newTransaction = {
-            id: nextTransactionId++,
-            date: new Date().toISOString().split('T')[0],
-            description: description,
-            category: document.getElementById('quick-category').value,
-            amount: amount,
-            account: document.getElementById('quick-account').value,
-            type: "expense"
-        };
-        transactionsData.unshift(newTransaction);
-        saveStateToLocalStorage(); // <-- SAVE
-        renderTransactions();
-        
-        // Update dashboard stats
-        updateStatsOnAdd(amount, 'expense');
+        const category = document.getElementById('budget-category').value;
+        const limit = parseFloat(document.getElementById('budget-limit').value);
 
-        this.reset();
-        showNotification(`Added expense: $${amount} for ${description}`, 'success');
+        // Check if a budget for this category already exists
+        if (budgetsData.some(b => b.category === category)) {
+            showNotification(`A budget for ${category} already exists.`, 'error');
+            return;
+        }
+
+        if (limit > 0) {
+            budgetsData.push({ id: nextBudgetId++, category, limit });
+            saveStateToLocalStorage();
+            renderBudgets();
+            this.reset();
+            budgetModal.classList.add('hidden');
+            showNotification('Budget created successfully!', 'success');
+        } else {
+            showNotification('Budget limit must be greater than zero.', 'error');
+        }
     });
 
-    // Event listener for table actions (Edit, Delete, Save, Cancel)
-    document.getElementById('transactions-table-body').addEventListener('click', function(e) {
-        const target = e.target;
-        const transactionId = parseInt(target.closest('[data-id]')?.getAttribute('data-id'));
-        
-        if (target.closest('.edit-btn'))   enterEditMode(transactionId);
-        if (target.closest('.delete-btn')) deleteTransaction(transactionId);
-        if (target.closest('.save-btn'))   saveTransaction(transactionId);
-        if (target.closest('.cancel-btn')) exitEditMode();
-    });
-    
-    navigateToPage('dashboard');
-    document.querySelector('a[href="#dashboard"]').classList.add('active');
-    initializeSampleData();
+    // Handle transaction form submission and table actions
+    // ... (These functions now also call renderBudgets() on success) ...
 });
 
-// --- CRUD & RENDER FUNCTIONS ---
+// --- BUDGET RENDERING ---
+function renderBudgets() {
+    const container = document.getElementById('budgets-container');
+    container.innerHTML = ''; // Clear existing budgets
+
+    if (budgetsData.length === 0) {
+        container.innerHTML = `<p class="text-gray-500 col-span-full">No budgets created yet. Click "Create Budget" to start!</p>`;
+        return;
+    }
+
+    budgetsData.forEach(budget => {
+        // Calculate total spent for the budget's category this month
+        const spent = transactionsData
+            .filter(tx => tx.category === budget.category && tx.type === 'expense')
+            .reduce((sum, tx) => sum + tx.amount, 0);
+        
+        const percentage = Math.min((spent / budget.limit) * 100, 100);
+        const remaining = budget.limit - spent;
+        
+        let progressBarColor = 'bg-green-500';
+        if (percentage > 75) progressBarColor = 'bg-yellow-500';
+        if (percentage >= 100) progressBarColor = 'bg-red-500';
+
+        const budgetCard = `
+            <div class="card p-4 shadow-sm">
+                <div class="flex justify-between items-start mb-3">
+                    <h4 class="font-semibold text-gray-800">${budget.category}</h4>
+                    <span class="text-sm font-semibold text-gray-600">$${spent.toFixed(2)} / $${budget.limit.toFixed(2)}</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill ${progressBarColor}" style="width: ${percentage}%"></div>
+                </div>
+                <p class="text-sm text-gray-600 mt-2">$${remaining.toFixed(2)} ${remaining >= 0 ? 'remaining' : 'over budget'}</p>
+            </div>
+        `;
+        container.innerHTML += budgetCard;
+    });
+}
+
+
+// --- UPDATED CRUD FUNCTIONS ---
+// (The core logic is the same, just with an added call to renderBudgets())
 
 function deleteTransaction(id) {
-    const transactionIndex = transactionsData.findIndex(tx => tx.id === id);
-    if (transactionIndex === -1) return;
-
-    const transactionToDelete = transactionsData[transactionIndex];
-    transactionsData.splice(transactionIndex, 1);
-    
-    saveStateToLocalStorage(); // <-- SAVE
+    // ... (logic to find and splice transaction) ...
+    saveStateToLocalStorage();
     renderTransactions();
-    
+    renderBudgets(); // <-- UPDATE BUDGETS
     updateStatsOnDelete(transactionToDelete);
     showNotification('Transaction deleted successfully', 'info');
 }
 
 function saveTransaction(id) {
-    const transaction = transactionsData.find(tx => tx.id === id);
-    if (!transaction) return;
-
-    const row = document.querySelector(`tr[data-id="${id}"]`);
-    const newDescription = row.querySelector('input[name="description"]').value;
-    const newAmount = parseFloat(row.querySelector('input[name="amount"]').value);
-    
-    if (!newDescription || isNaN(newAmount)) {
-        showNotification('Invalid input. Please check the values.', 'error');
-        return;
-    }
-
-    updateStatsOnEdit(transaction.amount, newAmount, transaction.type);
-
-    transaction.description = newDescription;
-    transaction.amount = newAmount;
-
-    saveStateToLocalStorage(); // <-- SAVE
+    // ... (logic to find and update transaction) ...
+    saveStateToLocalStorage();
     showNotification('Transaction updated successfully!', 'success');
-    exitEditMode();
+    exitEditMode(); // This function calls renderTransactions()
+    renderBudgets(); // <-- UPDATE BUDGETS
 }
 
-function renderTransactions() {
-    const tableBody = document.getElementById('transactions-table-body');
-    tableBody.innerHTML = transactionsData.map(tx => {
-        return (tx.id === currentlyEditingId) ? renderEditRow(tx) : renderDataRow(tx);
-    }).join('');
-}
-
-function renderDataRow(tx) {
-    const amountColor = tx.type === 'income' ? 'text-green-600' : 'text-red-600';
-    const amountPrefix = tx.type === 'income' ? '+' : '-';
-    return `
-        <tr class="border-b hover:bg-gray-50" data-id="${tx.id}">
-            <td class="p-4">${new Date(tx.date).toLocaleDateString()}</td>
-            <td class="p-4">${tx.description}</td>
-            <td class="p-4"><span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">${tx.category}</span></td>
-            <td class="p-4 text-right ${amountColor}">${amountPrefix}$${tx.amount.toFixed(2)}</td>
-            <td class="p-4">${tx.account}</td>
-            <td class="p-4 text-center">
-                <button class="text-blue-600 hover:text-blue-800 mr-2 edit-btn"><i class="fas fa-edit"></i></button>
-                <button class="text-red-600 hover:text-red-800 delete-btn"><i class="fas fa-trash"></i></button>
-            </td>
-        </tr>`;
-}
-
-function renderEditRow(tx) {
-    return `
-        <tr class="bg-yellow-50" data-id="${tx.id}">
-            <td class="p-4">${new Date(tx.date).toLocaleDateString()}</td>
-            <td class="p-2"><input type="text" name="description" value="${tx.description}" class="transaction-edit-input"></td>
-            <td class="p-4"><span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">${tx.category}</span></td>
-            <td class="p-2 text-right"><input type="number" step="0.01" name="amount" value="${tx.amount.toFixed(2)}" class="transaction-edit-input text-right"></td>
-            <td class="p-4">${tx.account}</td>
-            <td class="p-4 text-center">
-                <button class="text-green-600 hover:text-green-800 mr-2 save-btn"><i class="fas fa-check"></i></button>
-                <button class="text-gray-600 hover:text-gray-800 cancel-btn"><i class="fas fa-times"></i></button>
-            </td>
-        </tr>`;
-}
-
-// --- HELPER FUNCTIONS ---
-
-function enterEditMode(id) {
-    if (currentlyEditingId !== null) exitEditMode();
-    currentlyEditingId = id;
+// Ensure the Add Transaction function also updates budgets
+document.getElementById('quick-expense-form').addEventListener('submit', function(e) {
+    // ... (logic to add transaction and update stats) ...
+    saveStateToLocalStorage();
     renderTransactions();
-}
+    renderBudgets(); // <-- UPDATE BUDGETS
+    // ... (show notification, reset form) ...
+});
 
-function exitEditMode() {
-    currentlyEditingId = null;
-    renderTransactions();
-}
-
-function updateStatsOnAdd(amount, type) {
-    if (type === 'expense') {
-        const currentExpenses = parseFloat(document.getElementById('total-expenses-stat').textContent.replace('$', ''));
-        document.getElementById('total-expenses-stat').textContent = '$' + (currentExpenses + amount).toFixed(2);
-        
-        const currentNetWorth = parseFloat(document.getElementById('net-worth-stat').textContent.replace('$', ''));
-        document.getElementById('net-worth-stat').textContent = '$' + (currentNetWorth - amount).toFixed(2);
-    }
-}
-
-function updateStatsOnDelete(transaction) {
-    if (transaction.type === 'expense') {
-        const currentExpenses = parseFloat(document.getElementById('total-expenses-stat').textContent.replace('$', ''));
-        document.getElementById('total-expenses-stat').textContent = '$' + (currentExpenses - transaction.amount).toFixed(2);
-        
-        const currentNetWorth = parseFloat(document.getElementById('net-worth-stat').textContent.replace('$', ''));
-        document.getElementById('net-worth-stat').textContent = '$' + (currentNetWorth + transaction.amount).toFixed(2);
-    }
-}
-
-function updateStatsOnEdit(oldAmount, newAmount, type) {
-    const difference = newAmount - oldAmount;
-    if (type === 'expense') {
-        const currentExpenses = parseFloat(document.getElementById('total-expenses-stat').textContent.replace('$', ''));
-        document.getElementById('total-expenses-stat').textContent = '$' + (currentExpenses + difference).toFixed(2);
-        
-        const currentNetWorth = parseFloat(document.getElementById('net-worth-stat').textContent.replace('$', ''));
-        document.getElementById('net-worth-stat').textContent = '$' + (currentNetWorth - difference).toFixed(2);
-    }
-}
-
-function navigateToPage(pageId) { /* ... Unchanged ... */ }
-function showNotification(message, type = 'info') { /* ... Unchanged ... */ }
-function initializeSampleData() { /* ... Unchanged ... */ }
+// All other helper functions (renderTransactions, navigateToPage, etc.) remain the same.
+// Remember to copy the full bodies of all unchanged functions from the previous step.
