@@ -284,3 +284,41 @@
         </form>
     </div>
 </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="Style.css">
+</head>
+<body class="antialiased bg-gray-100">
+    <div id="main-app-container" class="relative min-h-screen lg:flex">
+        <aside id="sidebar" class="bg-white text-gray-800 w-64 fixed inset-y-0 left-0 z-40 shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out lg:relative lg:translate-x-0">
+            <div class="h-full flex flex-col">
+                <div class="h-20 flex items-center justify-center border-b">
+                    <h1 class="text-2xl font-bold text-primary">SmartGrocer</h1>
+                </div>
+                <nav class="flex-1 px-4 py-6 space-y-2">
+                    <a href="#dashboard" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg">...</a>
+                    <a href="#transactions" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg">...</a>
+                    </nav>
+                <div class="px-4 py-6 mt-auto border-t">
+                    <p class="text-xs text-gray-500">&copy; 2025 SmartGrocer. All Rights Reserved.</p>
+                </div>
+            </div>
+        </aside>
+
+        <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"></div>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="h-20 flex justify-between items-center px-6 bg-white shadow-md">
+                <button id="mobile-menu-button" class="text-gray-600 focus:outline-none lg:hidden">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                </header>
+            <main class="flex-1 overflow-x-hidden overflow-y-auto p-6 md:p-8">
+                </main>
+        </div>
+    </div>
+
+    <script src="Script.js"></script>
+</body>
+</html>
