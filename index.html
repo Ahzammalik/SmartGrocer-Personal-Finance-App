@@ -204,6 +204,24 @@
             background-color: #f8fafc;
             font-size: 14px; /* Added for better fit */
         }
+
+        /* Blog styles */
+        .blog-card {
+            transition: all 0.3s ease;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Footer styles */
+        .footer-link {
+            transition: color 0.2s ease;
+        }
+
+        .footer-link:hover {
+            color: #3CB371;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -251,6 +269,14 @@
                     <a href="#goals" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
                         <i class="fas fa-bullseye w-6 h-6 mr-3"></i>
                         Goals
+                    </a>
+                    <a href="#blog" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
+                        <i class="fas fa-newspaper w-6 h-6 mr-3"></i>
+                        Blog
+                    </a>
+                    <a href="#about" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
+                        <i class="fas fa-info-circle w-6 h-6 mr-3"></i>
+                        About
                     </a>
                     <a href="#settings" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
                         <i class="fas fa-cog w-6 h-6 mr-3"></i>
@@ -733,11 +759,218 @@
                     </div>
                 </div>
 
+                <!-- Blog Page -->
+                <div id="blog" class="page">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Financial Tips & Insights</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <!-- Blog Post 1 -->
+                            <div class="card p-6 blog-card">
+                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
+                                    <i class="fas fa-piggy-bank text-4xl text-primary"></i>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-2">10 Ways to Save Money on Groceries</h4>
+                                <p class="text-gray-600 mb-4">Learn practical strategies to reduce your grocery bill without sacrificing quality.</p>
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <span>May 15, 2025</span>
+                                    <span class="mx-2">•</span>
+                                    <span>5 min read</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Blog Post 2 -->
+                            <div class="card p-6 blog-card">
+                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
+                                    <i class="fas fa-chart-line text-4xl text-primary"></i>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-2">How to Create a Budget That Actually Works</h4>
+                                <p class="text-gray-600 mb-4">Discover the secrets to creating a sustainable budget that helps you reach your financial goals.</p>
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <span>May 10, 2025</span>
+                                    <span class="mx-2">•</span>
+                                    <span>8 min read</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Blog Post 3 -->
+                            <div class="card p-6 blog-card">
+                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
+                                    <i class="fas fa-credit-card text-4xl text-primary"></i>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Understanding Credit Scores and How to Improve Yours</h4>
+                                <p class="text-gray-600 mb-4">A comprehensive guide to credit scores and actionable steps to improve your rating.</p>
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <span>May 5, 2025</span>
+                                    <span class="mx-2">•</span>
+                                    <span>10 min read</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Blog Post 4 -->
+                            <div class="card p-6 blog-card">
+                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
+                                    <i class="fas fa-home text-4xl text-primary"></i>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-2">First-Time Home Buyer's Guide to Mortgages</h4>
+                                <p class="text-gray-600 mb-4">Everything you need to know about mortgages when buying your first home.</p>
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <span>April 28, 2025</span>
+                                    <span class="mx-2">•</span>
+                                    <span>12 min read</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Blog Post 5 -->
+                            <div class="card p-6 blog-card">
+                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
+                                    <i class="fas fa-university text-4xl text-primary"></i>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Investing 101: A Beginner's Guide to Building Wealth</h4>
+                                <p class="text-gray-600 mb-4">Learn the basics of investing and how to start building wealth for your future.</p>
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <span>April 22, 2025</span>
+                                    <span class="mx-2">•</span>
+                                    <span>15 min read</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Blog Post 6 -->
+                            <div class="card p-6 blog-card">
+                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
+                                    <i class="fas fa-shield-alt text-4xl text-primary"></i>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Insurance Basics: Protecting Your Financial Future</h4>
+                                <p class="text-gray-600 mb-4">Understanding different types of insurance and how they protect your finances.</p>
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <span>April 15, 2025</span>
+                                    <span class="mx-2">•</span>
+                                    <span>9 min read</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Blog Post 7 -->
+                            <div class="card p-6 blog-card">
+                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
+                                    <i class="fas fa-graduation-cap text-4xl text-primary"></i>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Saving for College: 529 Plans and Other Options</h4>
+                                <p class="text-gray-600 mb-4">A guide to saving for education expenses and understanding 529 plans.</p>
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <span>April 8, 2025</span>
+                                    <span class="mx-2">•</span>
+                                    <span>11 min read</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Blog Post 8 -->
+                            <div class="card p-6 blog-card">
+                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
+                                    <i class="fas fa-retirement text-4xl text-primary"></i>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Retirement Planning at Every Age</h4>
+                                <p class="text-gray-600 mb-4">Tailored advice for retirement planning whether you're in your 20s, 30s, 40s, or beyond.</p>
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <span>April 1, 2025</span>
+                                    <span class="mx-2">•</span>
+                                    <span>14 min read</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Blog Post 9 -->
+                            <div class="card p-6 blog-card">
+                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
+                                    <i class="fas fa-money-check-alt text-4xl text-primary"></i>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Digital Banking: Pros, Cons, and Safety Tips</h4>
+                                <p class="text-gray-600 mb-4">Exploring the world of digital banking and how to keep your money safe online.</p>
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <span>March 25, 2025</span>
+                                    <span class="mx-2">•</span>
+                                    <span>7 min read</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Blog Post 10 -->
+                            <div class="card p-6 blog-card">
+                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
+                                    <i class="fas fa-hand-holding-usd text-4xl text-primary"></i>
+                                </div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Side Hustles: 15 Ways to Earn Extra Income</h4>
+                                <p class="text-gray-600 mb-4">Discover legitimate side hustle ideas to boost your income and accelerate your financial goals.</p>
+                                <div class="flex items-center text-sm text-gray-500">
+                                    <span>March 18, 2025</span>
+                                    <span class="mx-2">•</span>
+                                    <span>13 min read</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Page -->
+                <div id="about" class="page">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">About SmartGrocer</h3>
+                        
+                        <div class="prose max-w-none">
+                            <div class="mb-8">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Our Mission</h4>
+                                <p class="text-gray-700 mb-4">
+                                    SmartGrocer was founded with a simple mission: to make personal finance management accessible, intuitive, and effective for everyone. 
+                                    We believe that financial wellness is a fundamental component of overall well-being, and our goal is to empower individuals and families 
+                                    to take control of their financial futures.
+                                </p>
+                            </div>
+                            
+                            <div class="mb-8">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Our Story</h4>
+                                <p class="text-gray-700 mb-4">
+                                    Founded in 2020 by a team of financial experts and technology enthusiasts, SmartGrocer emerged from a shared frustration with the 
+                                    complexity of existing financial management tools. We noticed that many people struggled to track their expenses, stick to budgets, 
+                                    and understand their financial health because available tools were either too complicated or too simplistic.
+                                </p>
+                                <p class="text-gray-700 mb-4">
+                                    Our team set out to create a solution that combines powerful financial tracking capabilities with an intuitive, user-friendly interface. 
+                                    Today, SmartGrocer serves millions of users worldwide, helping them save money, reduce financial stress, and achieve their financial goals.
+                                </p>
+                            </div>
+                            
+                            <div class="mb-8">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Our Values</h4>
+                                <ul class="list-disc pl-5 text-gray-700 space-y-2">
+                                    <li><strong>Transparency:</strong> We believe in being open and honest about our product, our business practices, and how we handle your data.</li>
+                                    <li><strong>Security:</strong> Your financial data is sensitive, and we prioritize its protection with bank-level security measures.</li>
+                                    <li><strong>Innovation:</strong> We continuously strive to improve our platform with new features and technologies that make financial management easier.</li>
+                                    <li><strong>Education:</strong> We're committed to providing not just tools, but also the knowledge needed to make informed financial decisions.</li>
+                                    <li><strong>Accessibility:</strong> We design for everyone, ensuring our platform is usable by people of all financial literacy levels.</li>
+                                </ul>
+                            </div>
+                            
+                            <div class="mb-8">
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Our Team</h4>
+                                <p class="text-gray-700 mb-4">
+                                    The SmartGrocer team comprises financial advisors, software engineers, data scientists, and user experience designers who are passionate 
+                                    about creating the best possible financial management experience. We're based in multiple countries but united by our common goal of 
+                                    improving financial literacy and wellness worldwide.
+                                </p>
+                            </div>
+                            
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Contact Us</h4>
+                                <p class="text-gray-700 mb-2"><strong>Email:</strong> support@smartgrocer.com</p>
+                                <p class="text-gray-700 mb-2"><strong>Phone:</strong> +1 (555) 123-4567</p>
+                                <p class="text-gray-700 mb-2"><strong>Address:</strong> 123 Finance Street, Moneyville, CA 94103, USA</p>
+                                <p class="text-gray-700">For press inquiries: press@smartgrocer.com</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Settings Page -->
                 <div id="settings" class="page">
                     <div class="card p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">Settings</h3>
-                        <div class="grid grid-cols-1 gap-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Settings</h3>
+                        <div class="grid grid-cols-1 gap-8">
                             <div>
                                 <h4 class="text-lg font-semibold text-gray-800 mb-4">Profile Settings</h4>
                                 <div class="space-y-4">
@@ -751,15 +984,22 @@
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700">Currency</label>
-                                        <select class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
-                                            <option>USD ($)</option>
-                                            <option>EUR (€)</option>
-                                            <option>GBP (£)</option>
-                                            <option>JPY (¥)</option>
+                                        <select id="currency-select" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
+                                            <option value="USD">USD ($)</option>
+                                            <option value="EUR">EUR (€)</option>
+                                            <option value="GBP">GBP (£)</option>
+                                            <option value="JPY">JPY (¥)</option>
+                                            <option value="PKR">PKR (₨)</option>
+                                            <option value="INR">INR (₹)</option>
+                                            <option value="CAD">CAD (C$)</option>
+                                            <option value="AUD">AUD (A$)</option>
+                                            <option value="CNY">CNY (¥)</option>
+                                            <option value="BRL">BRL (R$)</option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
+                            
                             <div>
                                 <h4 class="text-lg font-semibold text-gray-800 mb-4">Notification Preferences</h4>
                                 <div class="space-y-2">
@@ -775,8 +1015,44 @@
                                         <input type="checkbox" id="weekly-reports" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
                                         <label for="weekly-reports" class="ml-2 block text-sm text-gray-900">Weekly reports</label>
                                     </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="security-alerts" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded" checked>
+                                        <label for="security-alerts" class="ml-2 block text-sm text-gray-900">Security alerts</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="product-updates" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                                        <label for="product-updates" class="ml-2 block text-sm text-gray-900">Product updates</label>
+                                    </div>
                                 </div>
                             </div>
+                            
+                            <div>
+                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Privacy & Security</h4>
+                                <div class="space-y-4">
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">Two-Factor Authentication</p>
+                                            <p class="text-sm text-gray-500">Add an extra layer of security to your account</p>
+                                        </div>
+                                        <button class="bg-primary text-white text-sm font-bold py-2 px-4 rounded-lg hover:bg-accent">Enable</button>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">Data Export</p>
+                                            <p class="text-sm text-gray-500">Download all your data in CSV format</p>
+                                        </div>
+                                        <button class="bg-gray-200 text-gray-700 text-sm font-bold py-2 px-4 rounded-lg hover:bg-gray-300">Export Data</button>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-sm font-medium text-gray-900">Account Deletion</p>
+                                            <p class="text-sm text-gray-500">Permanently delete your account and all data</p>
+                                        </div>
+                                        <button class="bg-red-600 text-white text-sm font-bold py-2 px-4 rounded-lg hover:bg-red-700">Delete Account</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="flex justify-end">
                                 <button class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Save Settings</button>
                             </div>
@@ -786,6 +1062,73 @@
             </main>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">SmartGrocer</h3>
+                    <p class="text-gray-400">Your personal finance companion for tracking expenses, managing budgets, and achieving financial goals.</p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#about" class="footer-link text-gray-400 hover:text-white">About Us</a></li>
+                        <li><a href="#blog" class="footer-link text-gray-400 hover:text-white">Blog</a></li>
+                        <li><a href="#privacy" class="footer-link text-gray-400 hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#terms" class="footer-link text-gray-400 hover:text-white">Terms of Service</a></li>
+                        <li><a href="#contact" class="footer-link text-gray-400 hover:text-white">Contact Us</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Features</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#dashboard" class="footer-link text-gray-400 hover:text-white">Dashboard</a></li>
+                        <li><a href="#transactions" class="footer-link text-gray-400 hover:text-white">Transactions</a></li>
+                        <li><a href="#budgets" class="footer-link text-gray-400 hover:text-white">Budgets</a></li>
+                        <li><a href="#reports" class="footer-link text-gray-400 hover:text-white">Reports</a></li>
+                        <li><a href="#goals" class="footer-link text-gray-400 hover:text-white">Goals</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold mb-4">Contact Info</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-3 text-gray-400"></i>
+                            <span class="text-gray-400">123 Finance Street, Moneyville, CA 94103</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone mr-3 text-gray-400"></i>
+                            <span class="text-gray-400">+1 (555) 123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope mr-3 text-gray-400"></i>
+                            <span class="text-gray-400">support@smartgrocer.com</span>
+                        </li>
+                    </ul>
+                    <div class="flex space-x-4 mt-4">
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm">© 2025 SmartGrocer. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#privacy" class="footer-link text-gray-400 hover:text-white text-sm">Privacy Policy</a>
+                    <a href="#terms" class="footer-link text-gray-400 hover:text-white text-sm">Terms of Service</a>
+                    <a href="#cookies" class="footer-link text-gray-400 hover:text-white text-sm">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <!-- Account Modal -->
     <div id="account-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -849,6 +1192,128 @@
                     <button type="submit" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Save Budget</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Privacy Policy Modal -->
+    <div id="privacy-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-4xl max-h-screen overflow-y-auto my-8">
+            <h3 class="text-2xl font-bold mb-6 text-gray-800">Privacy Policy</h3>
+            <div class="prose max-w-none">
+                <p class="text-gray-700 mb-4">Last updated: May 15, 2025</p>
+                
+                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">1. Information We Collect</h4>
+                <p class="text-gray-700 mb-4">
+                    We collect information you provide directly to us, including when you create an account, update your profile, add financial information, 
+                    or communicate with us. This may include personal information such as your name, email address, financial transaction data, and account balances.
+                </p>
+                
+                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">2. How We Use Your Information</h4>
+                <p class="text-gray-700 mb-4">
+                    We use the information we collect to provide, maintain, and improve our services; to develop new features; to communicate with you about products, 
+                    services, and promotions; and to protect SmartGrocer and our users.
+                </p>
+                
+                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">3. Information Sharing</h4>
+                <p class="text-gray-700 mb-4">
+                    We do not sell your personal information to third parties. We may share your information with service providers who perform services on our behalf, 
+                    with law enforcement or other third parties when required by law, or in connection with a business transfer.
+                </p>
+                
+                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">4. Data Security</h4>
+                <p class="text-gray-700 mb-4">
+                    We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, 
+                    disclosure, or destruction.
+                </p>
+                
+                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">5. Your Choices</h4>
+                <p class="text-gray-700 mb-4">
+                    You may update, correct, or delete your account information at any time by logging into your account. You can also contact us to request access to 
+                    or deletion of your personal information.
+                </p>
+                
+                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">6. Changes to This Policy</h4>
+                <p class="text-gray-700 mb-4">
+                    We may change this Privacy Policy from time to time. If we make changes, we will notify you by revising the date at the top of the policy and, 
+                    in some cases, we may provide you with additional notice.
+                </p>
+                
+                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">7. Contact Us</h4>
+                <p class="text-gray-700">
+                    If you have any questions about this Privacy Policy, please contact us at privacy@smartgrocer.com.
+                </p>
+            </div>
+            <div class="mt-8 flex justify-end">
+                <button type="button" id="close-privacy-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms and Conditions Modal -->
+    <div id="terms-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-4xl max-h-screen overflow-y-auto my-8">
+            <h3 class="text-2xl font-bold mb-6 text-gray-800">Terms and Conditions</h3>
+            <div class="prose max-w-none">
+                <p class="text-gray-700 mb-4">Last updated: May 15, 2025</p>
+                
+                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">1. Agreement to Terms</h4>
+                <p class="text-gray-700 mb-4">
+                    By accessing or using SmartGrocer's services, you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use our services.
+                </p>
+                
+                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">2. Eligibility</h4>
+                <p class="text-gray-700 mb-4">
+                    You must be at least 18 years old to use our services. By using SmartGrocer, you represent and warrant that you meet this eligibility requirement.
+                </p>
+                
+                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">3. Account Registration</h4>
+                <p class="text-gray-700 mb-4">
+                    You may need to register for an account to access certain features. You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.
+                </p>
+                
+                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">4. User Content</h4>
+                <p class="text-gray-700 mb-4">
+                    You retain all rights to any content you submit to SmartGrocer. By submitting content, you grant us a license to use, store, and display that content for the purpose of providing our services to you.
+                </p>
+                
+                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">5. Prohibited Conduct</h4>
+                <p class="text-gray-700 mb-4">
+                    You agree not to engage in any of the following prohibited activities: (a) using our services for any illegal purpose; (b) attempting to interfere with or compromise our system integrity or security; (c) copying, distributing, or disclosing any part of our services in any medium; (d) using any automated system to access our services.
+                </p>
+                
+                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">6. Termination</h4>
+                <p class="text-gray-700 mb-4">
+                    We may terminate or suspend your account at any time without notice for conduct that we believe violates these Terms and Conditions or is harmful to other users, us, or third parties, or for any other reason.
+                </p>
+                
+                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">7. Disclaimer of Warranties</h4>
+                <p class="text-gray-700 mb-4">
+                    Our services are provided "as is" without any warranty of any kind, either express or implied. We do not guarantee that the services will be uninterrupted, secure, or error-free.
+                </p>
+                
+                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">8. Limitation of Liability</h4>
+                <p class="text-gray-700 mb-4">
+                    To the fullest extent permitted by law, SmartGrocer shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly.
+                </p>
+                
+                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">9. Governing Law</h4>
+                <p class="text-gray-700 mb-4">
+                    These Terms and Conditions shall be governed by the laws of the State of California, without regard to its conflict of law provisions.
+                </p>
+                
+                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">10. Changes to Terms</h4>
+                <p class="text-gray-700 mb-4">
+                    We may modify these Terms and Conditions at any time. If we make changes, we will provide notice through our services or by other means.
+                </p>
+                
+                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">11. Contact Information</h4>
+                <p class="text-gray-700">
+                    If you have any questions about these Terms and Conditions, please contact us at legal@smartgrocer.com.
+                </p>
+            </div>
+            <div class="mt-8 flex justify-end">
+                <button type="button" id="close-terms-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Close</button>
+            </div>
         </div>
     </div>
 
@@ -934,6 +1399,9 @@
 
             // Modal functionality
             setupModals();
+
+            // Setup footer links
+            setupFooterLinks();
         });
 
         function initSpendingChart() {
@@ -1059,6 +1527,39 @@
                 if (e.target === budgetModal) {
                     budgetModal.classList.add('hidden');
                 }
+                if (e.target === document.getElementById('privacy-modal')) {
+                    document.getElementById('privacy-modal').classList.add('hidden');
+                }
+                if (e.target === document.getElementById('terms-modal')) {
+                    document.getElementById('terms-modal').classList.add('hidden');
+                }
+            });
+
+            // Close buttons for policy modals
+            document.getElementById('close-privacy-btn').addEventListener('click', () => {
+                document.getElementById('privacy-modal').classList.add('hidden');
+            });
+
+            document.getElementById('close-terms-btn').addEventListener('click', () => {
+                document.getElementById('terms-modal').classList.add('hidden');
+            });
+        }
+
+        function setupFooterLinks() {
+            // Privacy policy link
+            document.querySelectorAll('a[href="#privacy"]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('privacy-modal').classList.remove('hidden');
+                });
+            });
+
+            // Terms and conditions link
+            document.querySelectorAll('a[href="#terms"]').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById('terms-modal').classList.remove('hidden');
+                });
             });
         }
     </script>
