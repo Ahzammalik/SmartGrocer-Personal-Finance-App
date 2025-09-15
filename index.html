@@ -3,39 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartGrocer - Personal Finance & Expense Tracker</title>
+    <title>SmartGrocer - Professional Accounting Software</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8;
+            background-color: #f8fafc;
             color: #1a202c;
         }
 
         /* Custom 3D card effect */
         .card {
             background-color: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            transform-style: preserve-3d;
         }
 
         .card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 20px 25px -5px rgba(34, 139, 34, 0.1), 0 10px 10px -5px rgba(34, 139, 34, 0.04);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
         /* Primary color scheme */
-        .bg-primary { background-color: #228B22; } /* ForestGreen */
+        .bg-primary { background-color: #228B22; }
         .text-primary { color: #228B22; }
         .border-primary { border-color: #228B22; }
 
         /* Accent color */
-        .bg-accent { background-color: #3CB371; } /* MediumSeaGreen */
+        .bg-accent { background-color: #3CB371; }
         .text-accent { color: #3CB371; }
+
+        /* Income color */
+        .bg-income { background-color: #10B981; }
+        .text-income { color: #10B981; }
+
+        /* Expense color */
+        .bg-expense { background-color: #EF4444; }
+        .text-expense { color: #EF4444; }
 
         /* Smooth page transition effect */
         .page {
@@ -70,11 +77,6 @@
             background: #228B22;
         }
 
-        /* Notification Banner */
-        #notification-banner {
-            transition: transform 0.5s ease-in-out;
-        }
-
         .nav-link.active {
             background-color: #e6f7e6;
             color: #228B22;
@@ -86,7 +88,7 @@
         }
 
         .stat-card:hover {
-            transform: scale(1.03);
+            transform: scale(1.02);
         }
 
         .progress-bar {
@@ -124,105 +126,6 @@
             }
         }
 
-        /* Styles for the Recent Transactions list on the dashboard */
-        .recent-transaction-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #e5e7eb; /* gray-200 */
-        }
-
-        .recent-transaction-item:last-child {
-            border-bottom: none;
-        }
-
-        .recent-transaction-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .recent-transaction-description {
-            font-weight: 600;
-            color: #374151; /* gray-700 */
-        }
-
-        .recent-transaction-category {
-            font-size: 0.875rem; /* 14px */
-            color: #6b7280; /* gray-500 */
-        }
-
-        .recent-transaction-amount {
-            font-weight: 600;
-        }
-
-        /* Styles for Account Cards */
-        .account-card-balance {
-            font-size: 1.875rem; /* 30px */
-            font-weight: 700;
-            color: #1a202c; /* gray-900 */
-            margin-top: 8px;
-        }
-
-        .account-card-type {
-            font-size: 0.875rem; /* 14px */
-            color: #6b7280; /* gray-500 */
-        }
-        
-        /* Styles for the Edit/Delete buttons on budget cards */
-        .budget-actions {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            display: flex;
-            gap: 8px;
-        }
-
-        .budget-action-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: #94a3b8; /* gray-400 */
-            transition: color 0.2s ease;
-        }
-
-        .budget-action-btn:hover {
-            color: #334155; /* gray-700 */
-        }
-
-        /* Add relative positioning to the card to contain the action buttons */
-        .card {
-            position: relative;
-        }
-        
-        /* Style for input fields when editing a transaction in the table */
-        .transaction-edit-input {
-            width: 100%;
-            padding: 4px 8px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            background-color: #f8fafc;
-            font-size: 14px; /* Added for better fit */
-        }
-
-        /* Blog styles */
-        .blog-card {
-            transition: all 0.3s ease;
-        }
-
-        .blog-card:hover {
-            transform: translateY(-3px);
-        }
-
-        /* Footer styles */
-        .footer-link {
-            transition: color 0.2s ease;
-        }
-
-        .footer-link:hover {
-            color: #3CB371;
-        }
-
         /* Notification styles */
         .notification {
             position: fixed;
@@ -246,28 +149,58 @@
             background-color: #e53e3e;
         }
 
-        /* Payment method styles */
-        .payment-method {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
+        /* Financial summary cards */
+        .financial-summary {
+            border-left: 4px solid;
+        }
+
+        .income-summary {
+            border-left-color: #10B981;
+        }
+
+        .expense-summary {
+            border-left-color: #EF4444;
+        }
+
+        .balance-summary {
+            border-left-color: #3B82F6;
+        }
+
+        /* Tabs */
+        .tab-button {
+            padding: 10px 20px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.2s ease;
         }
 
-        .payment-method:hover {
-            border-color: #3CB371;
+        .tab-button.active {
+            background-color: #228B22;
+            color: white;
         }
 
-        .payment-method.selected {
-            border-color: #228B22;
-            background-color: #f0fdf4;
+        /* Table styles */
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
         }
 
-        .payment-method input[type="radio"] {
-            margin-right: 10px;
+        .transaction-table th {
+            background-color: #f8fafc;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .transaction-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .transaction-table tr:hover {
+            background-color: #f9fafb;
         }
     </style>
 </head>
@@ -296,9 +229,13 @@
                         <i class="fas fa-home w-6 h-6 mr-3"></i>
                         Dashboard
                     </a>
-                    <a href="#transactions" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
-                        <i class="fas fa-exchange-alt w-6 h-6 mr-3"></i>
-                        Transactions
+                    <a href="#income" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
+                        <i class="fas fa-money-bill-wave w-6 h-6 mr-3"></i>
+                        Income
+                    </a>
+                    <a href="#expenses" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
+                        <i class="fas fa-credit-card w-6 h-6 mr-3"></i>
+                        Expenses
                     </a>
                     <a href="#accounts" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
                         <i class="fas fa-wallet w-6 h-6 mr-3"></i>
@@ -315,22 +252,6 @@
                     <a href="#insights" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
                         <i class="fas fa-lightbulb w-6 h-6 mr-3"></i>
                         AI Insights
-                    </a>
-                    <a href="#goals" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
-                        <i class="fas fa-bullseye w-6 h-6 mr-3"></i>
-                        Goals
-                    </a>
-                    <a href="#blog" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
-                        <i class="fas fa-newspaper w-6 h-6 mr-3"></i>
-                        Blog
-                    </a>
-                    <a href="#about" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
-                        <i class="fas fa-info-circle w-6 h-6 mr-3"></i>
-                        About
-                    </a>
-                    <a href="#settings" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary transition-colors duration-200">
-                        <i class="fas fa-cog w-6 h-6 mr-3"></i>
-                        Settings
                     </a>
                 </nav>
                 <div class="px-4 py-6 mt-auto border-t">
@@ -353,547 +274,471 @@
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6 md:p-8">
                 <!-- Dashboard Page -->
                 <div id="dashboard" class="page active">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div class="card p-6 stat-card">
-                            <div class="flex items-center">
-                                <div class="p-3 rounded-full bg-green-100 text-primary">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                        <!-- Financial Summary Cards -->
+                        <div class="card p-6 financial-summary income-summary">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-500">Total Income</p>
+                                    <p id="total-income-stat" class="text-3xl font-bold text-income">$5,420.00</p>
+                                </div>
+                                <div class="p-3 rounded-full bg-green-100 text-income">
                                     <i class="fas fa-money-bill-wave text-xl"></i>
                                 </div>
-                                <h3 class="ml-4 text-lg font-semibold text-gray-600">Total Income (<span id="income-period">Month</span>)</h3>
                             </div>
-                            <p id="total-income-stat" class="text-3xl font-bold mt-4 text-gray-800">$4,250.00</p>
-                        </div>
-                        <div class="card p-6 stat-card">
-                            <div class="flex items-center">
-                                <div class="p-3 rounded-full bg-green-100 text-primary">
-                                    <i class="fas fa-credit-card text-xl"></i>
-                                </div>
-                                <h3 class="ml-4 text-lg font-semibold text-gray-600">Total Expenses (<span id="expenses-period">Month</span>)</h3>
-                            </div>
-                            <p id="total-expenses-stat" class="text-3xl font-bold mt-4 text-gray-800">$2,845.50</p>
-                        </div>
-                        <div class="card p-6 stat-card">
-                            <div class="flex items-center">
-                                <div class="p-3 rounded-full bg-green-100 text-primary">
-                                    <i class="fas fa-piggy-bank text-xl"></i>
-                                </div>
-                                <h3 class="ml-4 text-lg font-semibold text-gray-600">Net Worth</h3>
-                            </div>
-                            <p id="net-worth-stat" class="text-3xl font-bold mt-4 text-gray-800">$42,500.00</p>
-                        </div>
-                        <div class="card p-6 stat-card">
-                            <div class="flex items-center">
-                                <div class="p-3 rounded-full bg-green-100 text-primary">
-                                    <i class="fas fa-hand-holding-usd text-xl"></i>
-                                </div>
-                                <h3 class="ml-4 text-lg font-semibold text-gray-600">Total Debt</h3>
-                            </div>
-                            <p id="total-debt-stat" class="text-3xl font-bold mt-4 text-gray-800">$8,250.00</p>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-6">
-                        <div class="lg:col-span-3 card p-6">
-                            <h3 class="text-xl font-bold text-gray-800 mb-4">Monthly Spending by Category</h3>
-                            <div class="h-80"><canvas id="spending-doughnut-chart"></canvas></div>
+                            <p class="text-sm text-gray-600 mt-2">+12% from last month</p>
                         </div>
 
+                        <div class="card p-6 financial-summary expense-summary">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-500">Total Expenses</p>
+                                    <p id="total-expenses-stat" class="text-3xl font-bold text-expense">$3,845.50</p>
+                                </div>
+                                <div class="p-3 rounded-full bg-red-100 text-expense">
+                                    <i class="fas fa-credit-card text-xl"></i>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2">+8% from last month</p>
+                        </div>
+
+                        <div class="card p-6 financial-summary balance-summary">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-gray-500">Net Balance</p>
+                                    <p id="net-balance-stat" class="text-3xl font-bold text-blue-500">$1,574.50</p>
+                                </div>
+                                <div class="p-3 rounded-full bg-blue-100 text-blue-500">
+                                    <i class="fas fa-piggy-bank text-xl"></i>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-600 mt-2">+22% from last month</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <!-- Income vs Expenses Chart -->
                         <div class="lg:col-span-2 card p-6">
-                            <h3 class="text-xl font-bold text-gray-800 mb-4">Recent Transactions</h3>
-                            <div id="recent-transactions-container" class="space-y-4">
-                                <!-- Recent transactions will be populated here -->
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">Income vs Expenses</h3>
+                            <div class="h-80"><canvas id="income-expense-chart"></canvas></div>
+                        </div>
+
+                        <!-- Cash Flow Overview -->
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">Cash Flow Overview</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">Operating Income</span>
+                                        <span class="text-sm font-medium text-income">$4,250.00</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill bg-income" style="width: 78%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">Other Income</span>
+                                        <span class="text-sm font-medium text-income">$1,170.00</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill bg-green-300" style="width: 22%"></div>
+                                    </div>
+                                </div>
+                                <div class="pt-4 border-t border-gray-200">
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">Fixed Expenses</span>
+                                        <span class="text-sm font-medium text-expense">$2,120.75</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill bg-expense" style="width: 55%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">Variable Expenses</span>
+                                        <span class="text-sm font-medium text-expense">$1,724.75</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill bg-red-300" style="width: 45%"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="mt-6 card p-6">
-                        <h3 class="text-xl font-bold mb-4 text-gray-800">Add Quick Expense</h3>
-                        <form id="quick-expense-form" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-                            <div class="md:col-span-2">
-                                <label for="quick-description" class="block text-sm font-medium text-gray-700">Description</label>
-                                <input type="text" id="quick-description" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Recent Transactions -->
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">Recent Transactions</h3>
+                            <div class="overflow-x-auto">
+                                <table class="transaction-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Description</th>
+                                            <th>Category</th>
+                                            <th class="text-right">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>05/15/2025</td>
+                                            <td>Salary Deposit</td>
+                                            <td>Salary</td>
+                                            <td class="text-right text-income">+$2,500.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td>05/15/2025</td>
+                                            <td>Grocery Shopping</td>
+                                            <td>Groceries</td>
+                                            <td class="text-right text-expense">-$85.25</td>
+                                        </tr>
+                                        <tr>
+                                            <td>05/10/2025</td>
+                                            <td>Freelance Project</td>
+                                            <td>Freelance</td>
+                                            <td class="text-right text-income">+$1,200.00</td>
+                                        </tr>
+                                        <tr>
+                                            <td>05/05/2025</td>
+                                            <td>Electric Bill</td>
+                                            <td>Utilities</td>
+                                            <td class="text-right text-expense">-$120.75</td>
+                                        </tr>
+                                        <tr>
+                                            <td>05/03/2025</td>
+                                            <td>Investment Dividends</td>
+                                            <td>Investment</td>
+                                            <td class="text-right text-income">+$420.00</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
-                            <div>
-                                <label for="quick-amount" class="block text-sm font-medium text-gray-700">Amount ($)</label>
-                                <input type="number" id="quick-amount" step="0.01" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                            </div>
-                            <div>
-                                <label for="quick-category" class="block text-sm font-medium text-gray-700">Category</label>
-                                <select id="quick-category" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
-                                    <option value="Groceries">Groceries</option>
-                                    <option value="Dining">Dining</option>
-                                    <option value="Transportation">Transportation</option>
-                                    <option value="Utilities">Utilities</option>
-                                    <option value="Entertainment">Entertainment</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
-                                <div class="flex space-x-4">
-                                    <label class="payment-method">
-                                        <input type="radio" name="payment-method" value="cash" checked>
-                                        <span>Cash</span>
-                                    </label>
-                                    <label class="payment-method">
-                                        <input type="radio" name="payment-method" value="bank">
-                                        <span>Bank</span>
-                                    </label>
+                        </div>
+
+                        <!-- Budget Progress -->
+                        <div class="card p-6">
+                            <h3 class="text-xl font-bold text-gray-800 mb-4">Budget Progress</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">Groceries</span>
+                                        <span class="text-sm font-medium text-gray-700">$320/$500</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill bg-income" style="width: 64%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">Dining</span>
+                                        <span class="text-sm font-medium text-gray-700">$220/$300</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill bg-yellow-500" style="width: 73%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">Entertainment</span>
+                                        <span class="text-sm font-medium text-gray-700">$90/$150</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill bg-green-500" style="width: 60%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">Transportation</span>
+                                        <span class="text-sm font-medium text-gray-700">$180/$250</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill bg-red-500" style="width: 72%"></div>
+                                    </div>
                                 </div>
                             </div>
-                            <button type="submit" class="w-full bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Add</button>
-                        </form>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Transactions Page -->
-                <div id="transactions" class="page">
+                <!-- Income Page -->
+                <div id="income" class="page">
                     <div class="card p-6">
                         <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-xl font-bold text-gray-800">All Transactions</h3>
-                            <button id="add-transaction-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent transition-colors">Add Transaction</button>
+                            <h3 class="text-xl font-bold text-gray-800">Income Management</h3>
+                            <button id="add-income-btn" class="bg-income text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600 transition-colors">
+                                <i class="fas fa-plus mr-2"></i>Add Income
+                            </button>
                         </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                            <div class="tab-button active" data-category="all">
+                                <i class="fas fa-list mr-2"></i>All Income
+                            </div>
+                            <div class="tab-button" data-category="salary">
+                                <i class="fas fa-building mr-2"></i>Salary
+                            </div>
+                            <div class="tab-button" data-category="freelance">
+                                <i class="fas fa-laptop-code mr-2"></i>Freelance
+                            </div>
+                            <div class="tab-button" data-category="investment">
+                                <i class="fas fa-chart-line mr-2"></i>Investments
+                            </div>
+                        </div>
+
                         <div class="overflow-x-auto">
-                            <table class="w-full text-left">
+                            <table class="transaction-table">
                                 <thead>
-                                    <tr class="border-b bg-gray-50">
-                                        <th class="p-4">Date</th>
-                                        <th class="p-4">Description</th>
-                                        <th class="p-4">Category</th>
-                                        <th class="p-4 text-right">Amount</th>
-                                        <th class="p-4">Account</th>
-                                        <th class="p-4">Payment Method</th>
-                                        <th class="p-4 text-center">Actions</th>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Description</th>
+                                        <th>Category</th>
+                                        <th>Payment Method</th>
+                                        <th class="text-right">Amount</th>
+                                        <th class="text-center">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="transactions-table-body">
-                                    <!-- Transactions will be populated here -->
+                                <tbody>
+                                    <tr>
+                                        <td>05/15/2025</td>
+                                        <td>Monthly Salary</td>
+                                        <td><span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Salary</span></td>
+                                        <td>Direct Deposit</td>
+                                        <td class="text-right text-income font-medium">+$2,500.00</td>
+                                        <td class="text-center">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>05/10/2025</td>
+                                        <td>Web Development Project</td>
+                                        <td><span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">Freelance</span></td>
+                                        <td>Bank Transfer</td>
+                                        <td class="text-right text-income font-medium">+$1,200.00</td>
+                                        <td class="text-center">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>05/03/2025</td>
+                                        <td>Stock Dividends</td>
+                                        <td><span class="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs">Investment</span></td>
+                                        <td>Direct Deposit</td>
+                                        <td class="text-right text-income font-medium">+$420.00</td>
+                                        <td class="text-center">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>04/28/2025</td>
+                                        <td>Consulting Work</td>
+                                        <td><span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">Freelance</span></td>
+                                        <td>PayPal</td>
+                                        <td class="text-right text-income font-medium">+$850.00</td>
+                                        <td class="text-center">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>04/15/2025</td>
+                                        <td>Monthly Salary</td>
+                                        <td><span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Salary</span></td>
+                                        <td>Direct Deposit</td>
+                                        <td class="text-right text-income font-medium">+$2,500.00</td>
+                                        <td class="text-center">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- Accounts Page -->
-                <div id="accounts" class="page">
+                <!-- Expenses Page -->
+                <div id="expenses" class="page">
                     <div class="card p-6">
                         <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-xl font-bold text-gray-800">Your Accounts</h3>
-                            <button id="create-account-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent transition-colors">Add Account</button>
+                            <h3 class="text-xl font-bold text-gray-800">Expense Management</h3>
+                            <button id="add-expense-btn" class="bg-expense text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 transition-colors">
+                                <i class="fas fa-plus mr-2"></i>Add Expense
+                            </button>
                         </div>
-                        <div id="accounts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <!-- Accounts will be populated here -->
+
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                            <div class="tab-button active" data-category="all">
+                                <i class="fas fa-list mr-2"></i>All Expenses
+                            </div>
+                            <div class="tab-button" data-category="groceries">
+                                <i class="fas fa-shopping-cart mr-2"></i>Groceries
+                            </div>
+                            <div class="tab-button" data-category="utilities">
+                                <i class="fas fa-bolt mr-2"></i>Utilities
+                            </div>
+                            <div class="tab-button" data-category="entertainment">
+                                <i class="fas fa-film mr-2"></i>Entertainment
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="transaction-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Description</th>
+                                        <th>Category</th>
+                                        <th>Payment Method</th>
+                                        <th class="text-right">Amount</th>
+                                        <th class="text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>05/15/2025</td>
+                                        <td>Grocery Shopping</td>
+                                        <td><span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">Groceries</span></td>
+                                        <td>Credit Card</td>
+                                        <td class="text-right text-expense font-medium">-$85.25</td>
+                                        <td class="text-center">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>05/05/2025</td>
+                                        <td>Electric Bill</td>
+                                        <td><span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Utilities</span></td>
+                                        <td>Bank Transfer</td>
+                                        <td class="text-right text-expense font-medium">-$120.75</td>
+                                        <td class="text-center">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>05/03/2025</td>
+                                        <td>Netflix Subscription</td>
+                                        <td><span class="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs">Entertainment</span></td>
+                                        <td>Credit Card</td>
+                                        <td class="text-right text-expense font-medium">-$15.99</td>
+                                        <td class="text-center">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>05/01/2025</td>
+                                        <td>Gasoline</td>
+                                        <td><span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">Transportation</span></td>
+                                        <td>Cash</td>
+                                        <td class="text-right text-expense font-medium">-$45.00</td>
+                                        <td class="text-center">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>04/28/2025</td>
+                                        <td>Restaurant Dinner</td>
+                                        <td><span class="px-2 py-1 bg-pink-100 text-pink-800 rounded-full text-xs">Dining</span></td>
+                                        <td>Credit Card</td>
+                                        <td class="text-right text-expense font-medium">-$67.50</td>
+                                        <td class="text-center">
+                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- Budgets Page -->
-                <div id="budgets" class="page">
-                    <div class="card p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-xl font-bold text-gray-800">Your Budgets</h3>
-                            <button id="create-budget-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent transition-colors">Create Budget</button>
-                        </div>
-                        
-                        <div id="budgets-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <!-- Budgets will be populated here -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Reports Page -->
-                <div id="reports" class="page">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">Financial Reports</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="card p-6">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Monthly Income vs Expenses</h4>
-                                <div class="h-64"><canvas id="income-expense-chart"></canvas></div>
-                            </div>
-                            <div class="card p-6">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Net Worth Trend</h4>
-                                <div class="h-64"><canvas id="net-worth-chart"></canvas></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- AI Insights Page -->
-                <div id="insights" class="page">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">AI Insights</h3>
-                        <button id="generate-ai-report-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent transition-colors">Generate Insights</button>
-                        <div id="ai-report-loader" class="hidden mt-6 p-4 bg-gray-50 rounded-lg text-center">
-                            <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-primary mx-auto"></div>
-                            <p class="mt-4 text-gray-600">Generating your financial insights...</p>
-                        </div>
-                        <div id="ai-report-content" class="mt-6"></div>
-                    </div>
-                </div>
-
-                <!-- Goals Page -->
-                <div id="goals" class="page">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-4">Financial Goals</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <div class="card p-6">
-                                <h4 class="text-lg font-semibold text-gray-800">Emergency Fund</h4>
-                                <div class="mt-4">
-                                    <div class="flex justify-between text-sm text-gray-600">
-                                        <span>Saved: $3,500</span>
-                                        <span>Target: $10,000</span>
-                                    </div>
-                                    <div class="progress-bar mt-2">
-                                        <div class="progress-fill bg-green-500" style="width: 35%"></div>
-                                    </div>
-                                    <p class="mt-2 text-sm text-gray-600">$6,500 to go</p>
-                                </div>
-                            </div>
-                            <div class="card p-6">
-                                <h4 class="text-lg font-semibold text-gray-800">Vacation Fund</h4>
-                                <div class="mt-4">
-                                    <div class="flex justify-between text-sm text-gray-600">
-                                        <span>Saved: $1,200</span>
-                                        <span>Target: $3,000</span>
-                                    </div>
-                                    <div class="progress-bar mt-2">
-                                        <div class="progress-fill bg-blue-500" style="width: 40%"></div>
-                                    </div>
-                                    <p class="mt-2 text-sm text-gray-600">$1,800 to go</p>
-                                </div>
-                            </div>
-                            <div class="card p-6">
-                                <h4 class="text-lg font-semibold text-gray-800">Credit Card Payoff</h4>
-                                <div class="mt-4">
-                                    <div class="flex justify-between text-sm text-gray-600">
-                                        <span>Paid: $1,650</span>
-                                        <span>Target: $2,350</span>
-                                    </div>
-                                    <div class="progress-bar mt-2">
-                                        <div class="progress-fill bg-yellow-500" style="width: 70%"></div>
-                                    </div>
-                                    <p class="mt-2 text-sm text-gray-600">$700 to go</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Blog Page -->
-                <div id="blog" class="page">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-6">Financial Tips & Insights</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <!-- Blog posts will be populated here -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- About Page -->
-                <div id="about" class="page">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-6">About SmartGrocer</h3>
-                        <div class="prose max-w-none">
-                            <!-- About content will be populated here -->
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Settings Page -->
-                <div id="settings" class="page">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-6">Settings</h3>
-                        <div class="grid grid-cols-1 gap-8">
-                            <div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Profile Settings</h4>
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Name</label>
-                                        <input type="text" id="user-name" value="John Doe" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Email</label>
-                                        <input type="email" id="user-email" value="john.doe@example.com" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700">Currency</label>
-                                        <select id="currency-select" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
-                                            <option value="USD">USD ($)</option>
-                                            <option value="EUR">EUR (€)</option>
-                                            <option value="GBP">GBP (£)</option>
-                                            <option value="JPY">JPY (¥)</option>
-                                            <option value="PKR">PKR (₨)</option>
-                                            <option value="INR">INR (₹)</option>
-                                            <option value="CAD">CAD (C$)</option>
-                                            <option value="AUD">AUD (A$)</option>
-                                            <option value="CNY">CNY (¥)</option>
-                                            <option value="BRL">BRL (R$)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Notification Preferences</h4>
-                                <div class="space-y-2">
-                                    <div class="flex items-center">
-                                        <input type="checkbox" id="budget-alerts" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded" checked>
-                                        <label for="budget-alerts" class="ml-2 block text-sm text-gray-900">Budget alerts</label>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <input type="checkbox" id="bill-reminders" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded" checked>
-                                        <label for="bill-reminders" class="ml-2 block text-sm text-gray-900">Bill reminders</label>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <input type="checkbox" id="weekly-reports" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
-                                        <label for="weekly-reports" class="ml-2 block text-sm text-gray-900">Weekly reports</label>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="flex justify-end">
-                                <button id="save-settings-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Save Settings</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- Other pages would go here (Accounts, Budgets, Reports, Insights) -->
+                
             </main>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 text-white py-12">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div>
-                    <h3 class="text-xl font-bold mb-4">SmartGrocer</h3>
-                    <p class="text-gray-400">Your personal finance companion for tracking expenses, managing budgets, and achieving financial goals.</p>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#about" class="footer-link text-gray-400 hover:text-white">About Us</a></li>
-                        <li><a href="#blog" class="footer-link text-gray-400 hover:text-white">Blog</a></li>
-                        <li><a href="#privacy" class="footer-link text-gray-400 hover:text-white">Privacy Policy</a></li>
-                        <li><a href="#terms" class="footer-link text-gray-400 hover:text-white">Terms of Service</a></li>
-                        <li><a href="#contact" class="footer-link text-gray-400 hover:text-white">Contact Us</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Features</h4>
-                    <ul class="space-y-2">
-                        <li><a href="#dashboard" class="footer-link text-gray-400 hover:text-white">Dashboard</a></li>
-                        <li><a href="#transactions" class="footer-link text-gray-400 hover:text-white">Transactions</a></li>
-                        <li><a href="#budgets" class="footer-link text-gray-400 hover:text-white">Budgets</a></li>
-                        <li><a href="#reports" class="footer-link text-gray-400 hover:text-white">Reports</a></li>
-                        <li><a href="#goals" class="footer-link text-gray-400 hover:text-white">Goals</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-semibold mb-4">Contact Info</h4>
-                    <ul class="space-y-2">
-                        <li class="flex items-center">
-                            <i class="fas fa-map-marker-alt mr-3 text-gray-400"></i>
-                            <span class="text-gray-400">123 Finance Street, Moneyville, CA 94103</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-phone mr-3 text-gray-400"></i>
-                            <span class="text-gray-400">+1 (555) 123-4567</span>
-                        </li>
-                        <li class="flex items-center">
-                            <i class="fas fa-envelope mr-3 text-gray-400"></i>
-                            <span class="text-gray-400">support@smartgrocer.com</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="border-t border-gray-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-                <p class="text-gray-400 text-sm">© 2025 SmartGrocer. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Account Modal -->
-    <div id="account-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
-            <h3 id="account-modal-title" class="text-2xl font-bold mb-6 text-gray-800">Create New Account</h3>
-            <form id="account-form">
-                <div class="space-y-4">
-                    <div>
-                        <label for="account-name" class="block text-sm font-medium text-gray-700">Account Name</label>
-                        <input type="text" id="account-name" required placeholder="e.g., Chase Checking" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                    </div>
-                    <div>
-                        <label for="account-type" class="block text-sm font-medium text-gray-700">Account Type</label>
-                        <select id="account-type" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
-                            <option>Checking</option>
-                            <option>Savings</option>
-                            <option>Credit Card</option>
-                            <option>Cash</option>
-                            <option>Investment</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="account-balance" class="block text-sm font-medium text-gray-700">Current Balance ($)</label>
-                        <input type="number" id="account-balance" step="0.01" required placeholder="e.g., 1500.00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                    </div>
-                </div>
-                <div class="mt-8 flex justify-end space-x-4">
-                    <button type="button" id="cancel-account-btn" class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button>
-                    <button type="submit" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Save Account</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Budget Modal -->
-    <div id="budget-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
-            <h3 class="text-2xl font-bold mb-6 text-gray-800">Create a New Budget</h3>
-            <form id="budget-form">
-                <div class="space-y-4">
-                    <div>
-                        <label for="budget-category" class="block text-sm font-medium text-gray-700">Category</label>
-                        <select id="budget-category" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500 bg-white">
-                            <option value="Groceries">Groceries</option>
-                            <option value="Dining">Dining</option>
-                            <option value="Transportation">Transportation</option>
-                            <option value="Utilities">Utilities</option>
-                            <option value="Entertainment">Entertainment</option>
-                            <option value="Shopping">Shopping</option>
-                            <option value="Healthcare">Healthcare</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="budget-limit" class="block text-sm font-medium text-gray-700">Monthly Limit ($)</label>
-                        <input type="number" id="budget-limit" step="1" min="0" required placeholder="e.g., 500" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500">
-                    </div>
-                </div>
-                <div class="mt-8 flex justify-end space-x-4">
-                    <button type="button" id="cancel-budget-btn" class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button>
-                    <button type="submit" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Save Budget</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Transaction Modal -->
-    <div id="transaction-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
-            <h3 id="transaction-modal-title" class="text-2xl font-bold mb-6 text-gray-800">Add New Transaction</h3>
-            <form id="transaction-form">
-                <div class="space-y-4">
-                    <div>
-                        <label for="transaction-date" class="block text-sm font-medium text-gray-700">Date</label>
-                        <input type="date" id="transaction-date" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                    </div>
-                    <div>
-                        <label for="transaction-description" class="block text-sm font-medium text-gray-700">Description</label>
-                        <input type="text" id="transaction-description" required placeholder="e.g., Grocery Shopping" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                    </div>
-                    <div>
-                        <label for="transaction-category" class="block text-sm font-medium text-gray-700">Category</label>
-                        <select id="transaction-category" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
-                            <option value="Groceries">Groceries</option>
-                            <option value="Dining">Dining</option>
-                            <option value="Transportation">Transportation</option>
-                            <option value="Utilities">Utilities</option>
-                            <option value="Entertainment">Entertainment</option>
-                            <option value="Shopping">Shopping</option>
-                            <option value="Healthcare">Healthcare</option>
-                            <option value="Income">Income</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="transaction-amount" class="block text-sm font-medium text-gray-700">Amount ($)</label>
-                        <input type="number" id="transaction-amount" step="0.01" required placeholder="e.g., 150.00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                    </div>
-                    <div>
-                        <label for="transaction-account" class="block text-sm font-medium text-gray-700">Account</label>
-                        <select id="transaction-account" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
-                            <option value="Checking Account">Checking Account</option>
-                            <option value="Savings Account">Savings Account</option>
-                            <option value="Credit Card">Credit Card</option>
-                            <option value="Cash">Cash</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
-                        <div class="flex space-x-4">
-                            <label class="payment-method">
-                                <input type="radio" name="transaction-payment-method" value="cash" checked>
-                                <span>Cash</span>
-                            </label>
-                            <label class="payment-method">
-                                <input type="radio" name="transaction-payment-method" value="bank">
-                                <span>Bank</span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-8 flex justify-end space-x-4">
-                    <button type="button" id="cancel-transaction-btn" class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button>
-                    <button type="submit" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Save Transaction</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <script>
-        // Application State
-        const state = {
-            transactions: [],
-            accounts: [],
-            budgets: [],
-            currency: 'USD',
-            currencySymbols: {
-                'USD': '$',
-                'EUR': '€',
-                'GBP': '£',
-                'JPY': '¥',
-                'PKR': '₨',
-                'INR': '₹',
-                'CAD': 'C$',
-                'AUD': 'A$',
-                'CNY': '¥',
-                'BRL': 'R$'
-            }
-        };
-
-        // --- SIDEBAR FUNCTIONALITY ---
+        // Initialize charts and handle tab switching
         document.addEventListener('DOMContentLoaded', function() {
             // Hide loading overlay
             setTimeout(() => {
                 document.getElementById('loading-overlay').classList.add('hidden');
             }, 1500);
-            
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const sidebar = document.getElementById('sidebar');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            // Initialize charts
+            initIncomeExpenseChart();
+
+            // Setup tab functionality
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    document.querySelectorAll('.tab-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Here you would filter the table based on the category
+                    const category = this.getAttribute('data-category');
+                    // filterTransactions(category);
+                });
+            });
+
+            // Setup navigation
             const navLinks = document.querySelectorAll('.nav-link');
             const pages = document.querySelectorAll('.page');
             const pageTitle = document.getElementById('page-title');
 
-            // Toggle mobile sidebar
-            mobileMenuButton.addEventListener('click', function() {
-                sidebar.classList.toggle('-translate-x-full');
-                sidebarOverlay.classList.toggle('hidden');
-                document.body.classList.toggle('overflow-hidden');
-            });
-
-            // Close sidebar when clicking on overlay
-            sidebarOverlay.addEventListener('click', function() {
-                sidebar.classList.add('-translate-x-full');
-                sidebarOverlay.classList.add('hidden');
-                document.body.classList.remove('overflow-hidden');
-            });
-
-            // Handle navigation
             navLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -918,163 +763,59 @@
                         navLink.classList.remove('active');
                     });
                     this.classList.add('active');
-                    
-                    // Close sidebar on mobile after navigation
-                    if (window.innerWidth < 1024) {
-                        sidebar.classList.add('-translate-x-full');
-                        sidebarOverlay.classList.add('hidden');
-                        document.body.classList.remove('overflow-hidden');
-                    }
-
-                    // Load data for the page if needed
-                    if (targetId === 'transactions') {
-                        renderTransactions();
-                    } else if (targetId === 'accounts') {
-                        renderAccounts();
-                    } else if (targetId === 'budgets') {
-                        renderBudgets();
-                    } else if (targetId === 'dashboard') {
-                        updateDashboard();
-                    }
                 });
             });
-
-            // Close sidebar when window is resized to desktop size
-            window.addEventListener('resize', function() {
-                if (window.innerWidth >= 1024) {
-                    sidebar.classList.remove('-translate-x-full');
-                    sidebarOverlay.classList.add('hidden');
-                    document.body.classList.remove('overflow-hidden');
-                } else {
-                    sidebar.classList.add('-translate-x-full');
-                }
-            });
-
-            // Initialize sample data
-            initializeSampleData();
-
-            // Initialize charts
-            initSpendingChart();
-            initIncomeExpenseChart();
-            initNetWorthChart();
-
-            // Setup all event listeners
-            setupEventListeners();
-
-            // Update dashboard with current data
-            updateDashboard();
         });
 
-        // Initialize sample data
-        function initializeSampleData() {
-            // Sample transactions
-            state.transactions = [
-                { id: 1, date: '2025-05-15', description: 'Grocery Shopping', category: 'Groceries', amount: -85.25, account: 'Credit Card', paymentMethod: 'bank' },
-                { id: 2, date: '2025-05-10', description: 'Salary Deposit', category: 'Income', amount: 2500.00, account: 'Checking Account', paymentMethod: 'bank' },
-                { id: 3, date: '2025-05-05', description: 'Electric Bill', category: 'Utilities', amount: -120.75, account: 'Checking Account', paymentMethod: 'bank' },
-                { id: 4, date: '2025-05-03', description: 'Dinner Out', category: 'Dining', amount: -67.50, account: 'Credit Card', paymentMethod: 'bank' },
-                { id: 5, date: '2025-05-01', description: 'Gasoline', category: 'Transportation', amount: -45.00, account: 'Credit Card', paymentMethod: 'cash' }
-            ];
-
-            // Sample accounts
-            state.accounts = [
-                { id: 1, name: 'Checking Account', type: 'Checking', balance: 5250.75 },
-                { id: 2, name: 'Savings Account', type: 'Savings', balance: 18500.00 },
-                { id: 3, name: 'Credit Card', type: 'Credit Card', balance: -2350.25 },
-                { id: 4, name: 'Cash', type: 'Cash', balance: 250.00 }
-            ];
-
-            // Sample budgets
-            state.budgets = [
-                { id: 1, category: 'Groceries', limit: 500, spent: 320 },
-                { id: 2, category: 'Dining', limit: 300, spent: 220 },
-                { id: 3, category: 'Entertainment', limit: 150, spent: 90 }
-            ];
-        }
-
-        // Setup all event listeners
-        function setupEventListeners() {
-            // Account modal
-            document.getElementById('create-account-btn').addEventListener('click', () => {
-                document.getElementById('account-modal').classList.remove('hidden');
-            });
-            
-            document.getElementById('cancel-account-btn').addEventListener('click', () => {
-                document.getElementById('account-modal').classList.add('hidden');
-            });
-            
-            document.getElementById('account-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                addAccount();
-            });
-            
-            // Budget modal
-            document.getElementById('create-budget-btn').addEventListener('click', () => {
-                document.getElementById('budget-modal').classList.remove('hidden');
-            });
-            
-            document.getElementById('cancel-budget-btn').addEventListener('click', () => {
-                document.getElementById('budget-modal').classList.add('hidden');
-            });
-            
-            document.getElementById('budget-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                addBudget();
-            });
-            
-            // Transaction modal
-            document.getElementById('add-transaction-btn').addEventListener('click', () => {
-                document.getElementById('transaction-modal').classList.remove('hidden');
-            });
-            
-            document.getElementById('cancel-transaction-btn').addEventListener('click', () => {
-                document.getElementById('transaction-modal').classList.add('hidden');
-            });
-            
-            document.getElementById('transaction-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                addTransaction();
-            });
-            
-            // Quick expense form
-            document.getElementById('quick-expense-form').addEventListener('submit', (e) => {
-                e.preventDefault();
-                addQuickExpense();
-            });
-            
-            // Settings save button
-            document.getElementById('save-settings-btn').addEventListener('click', saveSettings);
-            
-            // Close modals when clicking outside
-            window.addEventListener('click', (e) => {
-                if (e.target === document.getElementById('account-modal')) {
-                    document.getElementById('account-modal').classList.add('hidden');
+        function initIncomeExpenseChart() {
+            const ctx = document.getElementById('income-expense-chart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                    datasets: [
+                        {
+                            label: 'Income',
+                            data: [4200, 4300, 4400, 4800, 5420],
+                            backgroundColor: '#10B981',
+                            borderColor: '#10B981',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Expenses',
+                            data: [3100, 3200, 3000, 3500, 3845],
+                            backgroundColor: '#EF4444',
+                            borderColor: '#EF4444',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    }
                 }
-                if (e.target === document.getElementById('budget-modal')) {
-                    document.getElementById('budget-modal').classList.add('hidden');
-                }
-                if (e.target === document.getElementById('transaction-modal')) {
-                    document.getElementById('transaction-modal').classList.add('hidden');
-                }
-            });
-
-            // Style payment method selection
-            document.querySelectorAll('.payment-method').forEach(method => {
-                method.addEventListener('click', function() {
-                    document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
-                    this.classList.add('selected');
-                    this.querySelector('input[type="radio"]').checked = true;
-                });
             });
         }
 
-        // Format currency based on selected currency
-        function formatCurrency(amount) {
-            const symbol = state.currencySymbols[state.currency] || '$';
-            return `${symbol}${Math.abs(amount).toFixed(2)}`;
-        }
-
-        // Show notification
+        // Function to show notification
         function showNotification(message, isError = false) {
             const notification = document.getElementById('notification');
             notification.textContent = message;
@@ -1092,452 +833,6 @@
                     notification.classList.add('hidden');
                 }, 300);
             }, 3000);
-        }
-
-        // Add a new account
-        function addAccount() {
-            const name = document.getElementById('account-name').value;
-            const type = document.getElementById('account-type').value;
-            const balance = parseFloat(document.getElementById('account-balance').value);
-            
-            const newAccount = {
-                id: state.accounts.length + 1,
-                name,
-                type,
-                balance
-            };
-            
-            state.accounts.push(newAccount);
-            renderAccounts();
-            document.getElementById('account-modal').classList.add('hidden');
-            document.getElementById('account-form').reset();
-            
-            showNotification('Account added successfully!');
-            updateDashboard();
-        }
-
-        // Delete an account
-        function deleteAccount(id) {
-            state.accounts = state.accounts.filter(account => account.id !== id);
-            renderAccounts();
-            showNotification('Account deleted successfully!');
-            updateDashboard();
-        }
-
-        // Render accounts
-        function renderAccounts() {
-            const accountsContainer = document.getElementById('accounts-container');
-            accountsContainer.innerHTML = '';
-            
-            state.accounts.forEach(account => {
-                const accountCard = document.createElement('div');
-                accountCard.className = 'card p-6';
-                accountCard.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <h4 class="text-lg font-semibold text-gray-800">${account.name}</h4>
-                            <p class="account-card-type">${account.type}</p>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button class="text-blue-600 hover:text-blue-800">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="text-red-600 hover:text-red-800" onclick="deleteAccount(${account.id})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <p class="account-card-balance ${account.balance < 0 ? 'text-red-600' : ''}">${formatCurrency(account.balance)}</p>
-                `;
-                
-                accountsContainer.appendChild(accountCard);
-            });
-        }
-
-        // Add a new budget
-        function addBudget() {
-            const category = document.getElementById('budget-category').value;
-            const limit = parseFloat(document.getElementById('budget-limit').value);
-            
-            const newBudget = {
-                id: state.budgets.length + 1,
-                category,
-                limit,
-                spent: 0
-            };
-            
-            state.budgets.push(newBudget);
-            renderBudgets();
-            document.getElementById('budget-modal').classList.add('hidden');
-            document.getElementById('budget-form').reset();
-            
-            showNotification('Budget created successfully!');
-        }
-
-        // Delete a budget
-        function deleteBudget(id) {
-            state.budgets = state.budgets.filter(budget => budget.id !== id);
-            renderBudgets();
-            showNotification('Budget deleted successfully!');
-        }
-
-        // Render budgets
-        function renderBudgets() {
-            const budgetsContainer = document.getElementById('budgets-container');
-            budgetsContainer.innerHTML = '';
-            
-            state.budgets.forEach(budget => {
-                const percentage = (budget.spent / budget.limit) * 100;
-                let progressColor = 'bg-green-500';
-                
-                if (percentage > 90) {
-                    progressColor = 'bg-red-500';
-                } else if (percentage > 75) {
-                    progressColor = 'bg-yellow-500';
-                }
-                
-                const budgetCard = document.createElement('div');
-                budgetCard.className = 'card p-6 relative';
-                budgetCard.innerHTML = `
-                    <div class="budget-actions">
-                        <button class="budget-action-btn">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="budget-action-btn" onclick="deleteBudget(${budget.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                    <h4 class="text-lg font-semibold text-gray-800">${budget.category}</h4>
-                    <div class="mt-4">
-                        <div class="flex justify-between text-sm text-gray-600">
-                            <span>Spent: ${formatCurrency(budget.spent)}</span>
-                            <span>Limit: ${formatCurrency(budget.limit)}</span>
-                        </div>
-                        <div class="progress-bar mt-2">
-                            <div class="progress-fill ${progressColor}" style="width: ${percentage}%"></div>
-                        </div>
-                        <p class="mt-2 text-sm text-gray-600">${formatCurrency(budget.limit - budget.spent)} remaining</p>
-                    </div>
-                `;
-                
-                budgetsContainer.appendChild(budgetCard);
-            });
-        }
-
-        // Add a new transaction
-        function addTransaction() {
-            const date = document.getElementById('transaction-date').value;
-            const description = document.getElementById('transaction-description').value;
-            const category = document.getElementById('transaction-category').value;
-            const amount = parseFloat(document.getElementById('transaction-amount').value);
-            const account = document.getElementById('transaction-account').value;
-            const paymentMethod = document.querySelector('input[name="transaction-payment-method"]:checked').value;
-            
-            const newTransaction = {
-                id: state.transactions.length + 1,
-                date,
-                description,
-                category,
-                amount,
-                account,
-                paymentMethod
-            };
-            
-            state.transactions.push(newTransaction);
-            renderTransactions();
-            document.getElementById('transaction-modal').classList.add('hidden');
-            document.getElementById('transaction-form').reset();
-            
-            // Update the account balance
-            const accountToUpdate = state.accounts.find(acc => acc.name === account);
-            if (accountToUpdate) {
-                accountToUpdate.balance += amount;
-                renderAccounts();
-            }
-            
-            // Update budget if it's an expense
-            if (amount < 0) {
-                const budgetToUpdate = state.budgets.find(b => b.category === category);
-                if (budgetToUpdate) {
-                    budgetToUpdate.spent += Math.abs(amount);
-                    renderBudgets();
-                }
-            }
-            
-            showNotification('Transaction added successfully!');
-            updateDashboard();
-        }
-
-        // Add quick expense
-        function addQuickExpense() {
-            const description = document.getElementById('quick-description').value;
-            const amount = -Math.abs(parseFloat(document.getElementById('quick-amount').value));
-            const category = document.getElementById('quick-category').value;
-            const paymentMethod = document.querySelector('input[name="payment-method"]:checked').value;
-            
-            // Determine account based on payment method
-            const account = paymentMethod === 'cash' ? 'Cash' : 'Credit Card';
-            
-            const newTransaction = {
-                id: state.transactions.length + 1,
-                date: new Date().toISOString().split('T')[0],
-                description,
-                category,
-                amount,
-                account,
-                paymentMethod
-            };
-            
-            state.transactions.push(newTransaction);
-            renderTransactions();
-            document.getElementById('quick-expense-form').reset();
-            
-            // Update the account balance
-            const accountToUpdate = state.accounts.find(acc => acc.name === account);
-            if (accountToUpdate) {
-                accountToUpdate.balance += amount;
-                renderAccounts();
-            }
-            
-            // Update budget
-            const budgetToUpdate = state.budgets.find(b => b.category === category);
-            if (budgetToUpdate) {
-                budgetToUpdate.spent += Math.abs(amount);
-                renderBudgets();
-            }
-            
-            showNotification('Expense added successfully!');
-            updateDashboard();
-        }
-
-        // Delete a transaction
-        function deleteTransaction(id) {
-            const transaction = state.transactions.find(t => t.id === id);
-            
-            // Update the account balance
-            const accountToUpdate = state.accounts.find(acc => acc.name === transaction.account);
-            if (accountToUpdate) {
-                accountToUpdate.balance -= transaction.amount;
-                renderAccounts();
-            }
-            
-            // Update budget if it was an expense
-            if (transaction.amount < 0) {
-                const budgetToUpdate = state.budgets.find(b => b.category === transaction.category);
-                if (budgetToUpdate) {
-                    budgetToUpdate.spent -= Math.abs(transaction.amount);
-                    renderBudgets();
-                }
-            }
-            
-            state.transactions = state.transactions.filter(transaction => transaction.id !== id);
-            renderTransactions();
-            showNotification('Transaction deleted successfully!');
-            updateDashboard();
-        }
-
-        // Render transactions
-        function renderTransactions() {
-            const transactionsBody = document.getElementById('transactions-table-body');
-            transactionsBody.innerHTML = '';
-            
-            state.transactions.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(transaction => {
-                const row = document.createElement('tr');
-                row.className = 'border-b';
-                row.innerHTML = `
-                    <td class="p-4">${transaction.date}</td>
-                    <td class="p-4">${transaction.description}</td>
-                    <td class="p-4">${transaction.category}</td>
-                    <td class="p-4 text-right ${transaction.amount < 0 ? 'text-red-600' : 'text-green-600'}">${formatCurrency(transaction.amount)}</td>
-                    <td class="p-4">${transaction.account}</td>
-                    <td class="p-4">${transaction.paymentMethod.charAt(0).toUpperCase() + transaction.paymentMethod.slice(1)}</td>
-                    <td class="p-4 text-center">
-                        <button class="text-blue-600 hover:text-blue-800 mr-2">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="text-red-600 hover:text-red-800" onclick="deleteTransaction(${transaction.id})">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                `;
-                
-                transactionsBody.appendChild(row);
-            });
-        }
-
-        // Update dashboard with current data
-        function updateDashboard() {
-            // Calculate total income (positive amounts)
-            const totalIncome = state.transactions
-                .filter(t => t.amount > 0)
-                .reduce((sum, t) => sum + t.amount, 0);
-            
-            // Calculate total expenses (negative amounts)
-            const totalExpenses = state.transactions
-                .filter(t => t.amount < 0)
-                .reduce((sum, t) => sum + Math.abs(t.amount), 0);
-            
-            // Calculate net worth (sum of all account balances)
-            const netWorth = state.accounts.reduce((sum, a) => sum + a.balance, 0);
-            
-            // Calculate total debt (negative account balances)
-            const totalDebt = state.accounts
-                .filter(a => a.balance < 0)
-                .reduce((sum, a) => sum + Math.abs(a.balance), 0);
-            
-            // Update dashboard stats
-            document.getElementById('total-income-stat').textContent = formatCurrency(totalIncome);
-            document.getElementById('total-expenses-stat').textContent = formatCurrency(totalExpenses);
-            document.getElementById('net-worth-stat').textContent = formatCurrency(netWorth);
-            document.getElementById('total-debt-stat').textContent = formatCurrency(totalDebt);
-            
-            // Update recent transactions
-            const recentTransactionsContainer = document.getElementById('recent-transactions-container');
-            recentTransactionsContainer.innerHTML = '';
-            
-            const recentTransactions = [...state.transactions]
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .slice(0, 5);
-            
-            recentTransactions.forEach(transaction => {
-                const transactionItem = document.createElement('div');
-                transactionItem.className = 'recent-transaction-item';
-                transactionItem.innerHTML = `
-                    <div class="recent-transaction-details">
-                        <span class="recent-transaction-description">${transaction.description}</span>
-                        <span class="recent-transaction-category">${transaction.category}</span>
-                    </div>
-                    <span class="recent-transaction-amount ${transaction.amount < 0 ? 'text-red-600' : 'text-green-600'}">${formatCurrency(transaction.amount)}</span>
-                `;
-                
-                recentTransactionsContainer.appendChild(transactionItem);
-            });
-            
-            // Update charts
-            updateCharts();
-        }
-
-        // Save settings
-        function saveSettings() {
-            const name = document.getElementById('user-name').value;
-            const email = document.getElementById('user-email').value;
-            const currency = document.getElementById('currency-select').value;
-            
-            // Update currency
-            state.currency = currency;
-            
-            // Update welcome message
-            document.getElementById('welcome-user-text').textContent = `Welcome, ${name}!`;
-            
-            // Update all displayed values with new currency
-            updateDashboard();
-            renderAccounts();
-            renderBudgets();
-            renderTransactions();
-            
-            showNotification('Settings saved successfully!');
-        }
-
-        // Initialize charts
-        function initSpendingChart() {
-            const ctx = document.getElementById('spending-doughnut-chart').getContext('2d');
-            window.spendingChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        data: [],
-                        backgroundColor: [
-                            '#228B22', '#3CB371', '#90EE90', '#32CD32', '#98FB98',
-                            '#20B2AA', '#00FA9A', '#00FF7F', '#7CFC00', '#ADFF2F'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    }
-                }
-            });
-        }
-
-        function initIncomeExpenseChart() {
-            const ctx = document.getElementById('income-expense-chart').getContext('2d');
-            window.incomeExpenseChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-                    datasets: [
-                        {
-                            label: 'Income',
-                            data: [4200, 4300, 4400, 4300, 4250],
-                            backgroundColor: '#3CB371',
-                        },
-                        {
-                            label: 'Expenses',
-                            data: [3100, 3200, 3000, 2900, 2845],
-                            backgroundColor: '#228B22',
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
-
-        function initNetWorthChart() {
-            const ctx = document.getElementById('net-worth-chart').getContext('2d');
-            window.netWorthChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-                    datasets: [{
-                        label: 'Net Worth',
-                        data: [38000, 39500, 40500, 41500, 42500],
-                        borderColor: '#228B22',
-                        backgroundColor: 'rgba(34, 139, 34, 0.1)',
-                        fill: true,
-                        tension: 0.3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: false
-                        }
-                    }
-                }
-            });
-        }
-
-        // Update charts with current data
-        function updateCharts() {
-            // Update spending chart
-            const spendingByCategory = {};
-            state.transactions
-                .filter(t => t.amount < 0) // Only expenses
-                .forEach(t => {
-                    const amount = Math.abs(t.amount);
-                    spendingByCategory[t.category] = (spendingByCategory[t.category] || 0) + amount;
-                });
-            
-            window.spendingChart.data.labels = Object.keys(spendingByCategory);
-            window.spendingChart.data.datasets[0].data = Object.values(spendingByCategory);
-            window.spendingChart.update();
         }
     </script>
 </body>
