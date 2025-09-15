@@ -222,9 +222,35 @@
         .footer-link:hover {
             color: #3CB371;
         }
+
+        /* Notification styles */
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            background-color: #3CB371;
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background-color: #e53e3e;
+        }
     </style>
 </head>
 <body class="antialiased">
+    <!-- Notification Element -->
+    <div id="notification" class="notification hidden"></div>
+
     <div id="loading-overlay" class="fixed inset-0 bg-white bg-opacity-75 flex flex-col items-center justify-center z-50">
         <h1 class="text-3xl font-bold text-primary mb-4">SmartGrocer</h1>
         <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-primary"></div>
@@ -309,7 +335,7 @@
                                 <div class="p-3 rounded-full bg-green-100 text-primary">
                                     <i class="fas fa-money-bill-wave text-xl"></i>
                                 </div>
-                                <h3 class="ml-4 text-lg font-semibold text-gray-600">Total Income (Month)</h3>
+                                <h3 class="ml-4 text-lg font-semibold text-gray-600">Total Income (<span id="income-period">Month</span>)</h3>
                             </div>
                             <p id="total-income-stat" class="text-3xl font-bold mt-4 text-gray-800">$4,250.00</p>
                         </div>
@@ -318,7 +344,7 @@
                                 <div class="p-3 rounded-full bg-green-100 text-primary">
                                     <i class="fas fa-credit-card text-xl"></i>
                                 </div>
-                                <h3 class="ml-4 text-lg font-semibold text-gray-600">Total Expenses (Month)</h3>
+                                <h3 class="ml-4 text-lg font-semibold text-gray-600">Total Expenses (<span id="expenses-period">Month</span>)</h3>
                             </div>
                             <p id="total-expenses-stat" class="text-3xl font-bold mt-4 text-gray-800">$2,845.50</p>
                         </div>
@@ -352,41 +378,6 @@
                             <h3 class="text-xl font-bold text-gray-800 mb-4">Recent Transactions</h3>
                             <div id="recent-transactions-container" class="space-y-4">
                                 <!-- Recent transactions will be populated here -->
-                                <div class="recent-transaction-item">
-                                    <div class="recent-transaction-details">
-                                        <span class="recent-transaction-description">Grocery Shopping</span>
-                                        <span class="recent-transaction-category">Groceries</span>
-                                    </div>
-                                    <span class="recent-transaction-amount text-red-600">-$85.25</span>
-                                </div>
-                                <div class="recent-transaction-item">
-                                    <div class="recent-transaction-details">
-                                        <span class="recent-transaction-description">Salary Deposit</span>
-                                        <span class="recent-transaction-category">Income</span>
-                                    </div>
-                                    <span class="recent-transaction-amount text-green-600">+$2,500.00</span>
-                                </div>
-                                <div class="recent-transaction-item">
-                                    <div class="recent-transaction-details">
-                                        <span class="recent-transaction-description">Electric Bill</span>
-                                        <span class="recent-transaction-category">Utilities</span>
-                                    </div>
-                                    <span class="recent-transaction-amount text-red-600">-$120.75</span>
-                                </div>
-                                <div class="recent-transaction-item">
-                                    <div class="recent-transaction-details">
-                                        <span class="recent-transaction-description">Dinner Out</span>
-                                        <span class="recent-transaction-category">Dining</span>
-                                    </div>
-                                    <span class="recent-transaction-amount text-red-600">-$67.50</span>
-                                </div>
-                                <div class="recent-transaction-item">
-                                    <div class="recent-transaction-details">
-                                        <span class="recent-transaction-description">Gasoline</span>
-                                        <span class="recent-transaction-category">Transportation</span>
-                                    </div>
-                                    <span class="recent-transaction-amount text-red-600">-$45.00</span>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -399,7 +390,7 @@
                                 <input type="text" id="quick-description" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                             </div>
                             <div>
-                                <label for="quick-amount" class="block text-sm font-medium text-gray-700">Amount ($)</label>
+                                <label for="quick-amount" class="block text-sm font-medium text-gray-700">Amount</label>
                                 <input type="number" id="quick-amount" step="0.01" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                             </div>
                             <div>
@@ -438,81 +429,6 @@
                                 </thead>
                                 <tbody id="transactions-table-body">
                                     <!-- Transactions will be populated here -->
-                                    <tr class="border-b">
-                                        <td class="p-4">05/15/2025</td>
-                                        <td class="p-4">Grocery Shopping</td>
-                                        <td class="p-4">Groceries</td>
-                                        <td class="p-4 text-right text-red-600">-$85.25</td>
-                                        <td class="p-4">Credit Card</td>
-                                        <td class="p-4 text-center">
-                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="text-red-600 hover:text-red-800">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr class="border-b">
-                                        <td class="p-4">05/10/2025</td>
-                                        <td class="p-4">Salary Deposit</td>
-                                        <td class="p-4">Income</td>
-                                        <td class="p-4 text-right text-green-600">+$2,500.00</td>
-                                        <td class="p-4">Checking Account</td>
-                                        <td class="p-4 text-center">
-                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="text-red-600 hover:text-red-800">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr class="border-b">
-                                        <td class="p-4">05/05/2025</td>
-                                        <td class="p-4">Electric Bill</td>
-                                        <td class="p-4">Utilities</td>
-                                        <td class="p-4 text-right text-red-600">-$120.75</td>
-                                        <td class="p-4">Checking Account</td>
-                                        <td class="p-4 text-center">
-                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="text-red-600 hover:text-red-800">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr class="border-b">
-                                        <td class="p-4">05/03/2025</td>
-                                        <td class="p-4">Dinner Out</td>
-                                        <td class="p-4">Dining</td>
-                                        <td class="p-4 text-right text-red-600">-$67.50</td>
-                                        <td class="p-4">Credit Card</td>
-                                        <td class="p-4 text-center">
-                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="text-red-600 hover:text-red-800">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr class="border-b">
-                                        <td class="p-4">05/01/2025</td>
-                                        <td class="p-4">Gasoline</td>
-                                        <td class="p-4">Transportation</td>
-                                        <td class="p-4 text-right text-red-600">-$45.00</td>
-                                        <td class="p-4">Credit Card</td>
-                                        <td class="p-4 text-center">
-                                            <button class="text-blue-600 hover:text-blue-800 mr-2">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="text-red-600 hover:text-red-800">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -528,57 +444,6 @@
                         </div>
                         <div id="accounts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <!-- Accounts will be populated here -->
-                            <div class="card p-6">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <h4 class="text-lg font-semibold text-gray-800">Checking Account</h4>
-                                        <p class="account-card-type">Checking</p>
-                                    </div>
-                                    <div class="flex space-x-2">
-                                        <button class="text-blue-600 hover:text-blue-800">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="text-red-600 hover:text-red-800">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <p class="account-card-balance">$5,250.75</p>
-                            </div>
-                            <div class="card p-6">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <h4 class="text-lg font-semibold text-gray-800">Savings Account</h4>
-                                        <p class="account-card-type">Savings</p>
-                                    </div>
-                                    <div class="flex space-x-2">
-                                        <button class="text-blue-600 hover:text-blue-800">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="text-red-600 hover:text-red-800">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <p class="account-card-balance">$18,500.00</p>
-                            </div>
-                            <div class="card p-6">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <h4 class="text-lg font-semibold text-gray-800">Credit Card</h4>
-                                        <p class="account-card-type">Credit Card</p>
-                                    </div>
-                                    <div class="flex space-x-2">
-                                        <button class="text-blue-600 hover:text-blue-800">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="text-red-600 hover:text-red-800">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <p class="account-card-balance">-$2,350.25</p>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -593,69 +458,6 @@
                         
                         <div id="budgets-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <!-- Budgets will be populated here -->
-                            <div class="card p-6 relative">
-                                <div class="budget-actions">
-                                    <button class="budget-action-btn">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="budget-action-btn">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800">Groceries</h4>
-                                <div class="mt-4">
-                                    <div class="flex justify-between text-sm text-gray-600">
-                                        <span>Spent: $320</span>
-                                        <span>Limit: $500</span>
-                                    </div>
-                                    <div class="progress-bar mt-2">
-                                        <div class="progress-fill bg-green-500" style="width: 64%"></div>
-                                    </div>
-                                    <p class="mt-2 text-sm text-gray-600">$180 remaining</p>
-                                </div>
-                            </div>
-                            <div class="card p-6 relative">
-                                <div class="budget-actions">
-                                    <button class="budget-action-btn">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="budget-action-btn">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800">Dining</h4>
-                                <div class="mt-4">
-                                    <div class="flex justify-between text-sm text-gray-600">
-                                        <span>Spent: $220</span>
-                                        <span>Limit: $300</span>
-                                    </div>
-                                    <div class="progress-bar mt-2">
-                                        <div class="progress-fill bg-yellow-500" style="width: 73%"></div>
-                                    </div>
-                                    <p class="mt-2 text-sm text-gray-600">$80 remaining</p>
-                                </div>
-                            </div>
-                            <div class="card p-6 relative">
-                                <div class="budget-actions">
-                                    <button class="budget-action-btn">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="budget-action-btn">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800">Entertainment</h4>
-                                <div class="mt-4">
-                                    <div class="flex justify-between text-sm text-gray-600">
-                                        <span>Spent: $90</span>
-                                        <span>Limit: $150</span>
-                                    </div>
-                                    <div class="progress-bar mt-2">
-                                        <div class="progress-fill bg-green-500" style="width: 60%"></div>
-                                    </div>
-                                    <p class="mt-2 text-sm text-gray-600">$60 remaining</p>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -686,28 +488,7 @@
                             <div class="animate-spin rounded-full h-12 w-12 border-b-4 border-primary mx-auto"></div>
                             <p class="mt-4 text-gray-600">Generating your financial insights...</p>
                         </div>
-                        <div id="ai-report-content" class="mt-6">
-                            <div class="p-4 bg-green-50 rounded-lg">
-                                <h4 class="font-semibold text-green-800">Strengths 💪</h4>
-                                <ul class="list-disc pl-5 mt-2 text-green-700 space-y-1">
-                                    <li>Great job staying on track with <strong>2</strong> of your budgets!</li>
-                                    <li>Excellent! Your overall spending is down by <strong>15%</strong> compared to last month.</li>
-                                </ul>
-                            </div>
-                            <div class="mt-4 p-4 bg-yellow-50 rounded-lg">
-                                <h4 class="font-semibold text-yellow-800">Areas for Improvement 🧐</h4>
-                                <ul class="list-disc pl-5 mt-2 text-yellow-700 space-y-1">
-                                    <li>You're close to your <strong>$300</strong> budget for <strong>Dining</strong>, with <strong>$80</strong> remaining.</li>
-                                </ul>
-                            </div>
-                            <div class="mt-4 p-4 bg-blue-50 rounded-lg">
-                                <h4 class="font-semibold text-blue-800">Observations 📊</h4>
-                                <ul class="list-disc pl-5 mt-2 text-blue-700 space-y-1">
-                                    <li>Your top spending category this month is <strong>Groceries</strong> with <strong>$320.00</strong> spent.</li>
-                                    <li>You've saved <strong>$1,404.50</strong> this month after expenses.</li>
-                                </ul>
-                            </div>
-                        </div>
+                        <div id="ai-report-content" class="mt-6"></div>
                     </div>
                 </div>
 
@@ -764,145 +545,7 @@
                     <div class="card p-6">
                         <h3 class="text-xl font-bold text-gray-800 mb-6">Financial Tips & Insights</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <!-- Blog Post 1 -->
-                            <div class="card p-6 blog-card">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-piggy-bank text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">10 Ways to Save Money on Groceries</h4>
-                                <p class="text-gray-600 mb-4">Learn practical strategies to reduce your grocery bill without sacrificing quality.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>May 15, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>5 min read</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Blog Post 2 -->
-                            <div class="card p-6 blog-card">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-chart-line text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">How to Create a Budget That Actually Works</h4>
-                                <p class="text-gray-600 mb-4">Discover the secrets to creating a sustainable budget that helps you reach your financial goals.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>May 10, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>8 min read</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Blog Post 3 -->
-                            <div class="card p-6 blog-card">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-credit-card text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Understanding Credit Scores and How to Improve Yours</h4>
-                                <p class="text-gray-600 mb-4">A comprehensive guide to credit scores and actionable steps to improve your rating.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>May 5, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>10 min read</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Blog Post 4 -->
-                            <div class="card p-6 blog-card">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-home text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">First-Time Home Buyer's Guide to Mortgages</h4>
-                                <p class="text-gray-600 mb-4">Everything you need to know about mortgages when buying your first home.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>April 28, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>12 min read</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Blog Post 5 -->
-                            <div class="card p-6 blog-card">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-university text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Investing 101: A Beginner's Guide to Building Wealth</h4>
-                                <p class="text-gray-600 mb-4">Learn the basics of investing and how to start building wealth for your future.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>April 22, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>15 min read</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Blog Post 6 -->
-                            <div class="card p-6 blog-card">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-shield-alt text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Insurance Basics: Protecting Your Financial Future</h4>
-                                <p class="text-gray-600 mb-4">Understanding different types of insurance and how they protect your finances.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>April 15, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>9 min read</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Blog Post 7 -->
-                            <div class="card p-6 blog-card">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-graduation-cap text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Saving for College: 529 Plans and Other Options</h4>
-                                <p class="text-gray-600 mb-4">A guide to saving for education expenses and understanding 529 plans.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>April 8, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>11 min read</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Blog Post 8 -->
-                            <div class="card p-6 blog-card">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-retirement text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Retirement Planning at Every Age</h4>
-                                <p class="text-gray-600 mb-4">Tailored advice for retirement planning whether you're in your 20s, 30s, 40s, or beyond.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>April 1, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>14 min read</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Blog Post 9 -->
-                            <div class="card p-6 blog-card">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-money-check-alt text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Digital Banking: Pros, Cons, and Safety Tips</h4>
-                                <p class="text-gray-600 mb-4">Exploring the world of digital banking and how to keep your money safe online.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>March 25, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>7 min read</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Blog Post 10 -->
-                            <div class="card p-6 blog-card">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-hand-holding-usd text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Side Hustles: 15 Ways to Earn Extra Income</h4>
-                                <p class="text-gray-600 mb-4">Discover legitimate side hustle ideas to boost your income and accelerate your financial goals.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>March 18, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>13 min read</span>
-                                </div>
-                            </div>
+                            <!-- Blog posts will be populated here -->
                         </div>
                     </div>
                 </div>
@@ -911,57 +554,8 @@
                 <div id="about" class="page">
                     <div class="card p-6">
                         <h3 class="text-xl font-bold text-gray-800 mb-6">About SmartGrocer</h3>
-                        
                         <div class="prose max-w-none">
-                            <div class="mb-8">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Our Mission</h4>
-                                <p class="text-gray-700 mb-4">
-                                    SmartGrocer was founded with a simple mission: to make personal finance management accessible, intuitive, and effective for everyone. 
-                                    We believe that financial wellness is a fundamental component of overall well-being, and our goal is to empower individuals and families 
-                                    to take control of their financial futures.
-                                </p>
-                            </div>
-                            
-                            <div class="mb-8">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Our Story</h4>
-                                <p class="text-gray-700 mb-4">
-                                    Founded in 2020 by a team of financial experts and technology enthusiasts, SmartGrocer emerged from a shared frustration with the 
-                                    complexity of existing financial management tools. We noticed that many people struggled to track their expenses, stick to budgets, 
-                                    and understand their financial health because available tools were either too complicated or too simplistic.
-                                </p>
-                                <p class="text-gray-700 mb-4">
-                                    Our team set out to create a solution that combines powerful financial tracking capabilities with an intuitive, user-friendly interface. 
-                                    Today, SmartGrocer serves millions of users worldwide, helping them save money, reduce financial stress, and achieve their financial goals.
-                                </p>
-                            </div>
-                            
-                            <div class="mb-8">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Our Values</h4>
-                                <ul class="list-disc pl-5 text-gray-700 space-y-2">
-                                    <li><strong>Transparency:</strong> We believe in being open and honest about our product, our business practices, and how we handle your data.</li>
-                                    <li><strong>Security:</strong> Your financial data is sensitive, and we prioritize its protection with bank-level security measures.</li>
-                                    <li><strong>Innovation:</strong> We continuously strive to improve our platform with new features and technologies that make financial management easier.</li>
-                                    <li><strong>Education:</strong> We're committed to providing not just tools, but also the knowledge needed to make informed financial decisions.</li>
-                                    <li><strong>Accessibility:</strong> We design for everyone, ensuring our platform is usable by people of all financial literacy levels.</li>
-                                </ul>
-                            </div>
-                            
-                            <div class="mb-8">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Our Team</h4>
-                                <p class="text-gray-700 mb-4">
-                                    The SmartGrocer team comprises financial advisors, software engineers, data scientists, and user experience designers who are passionate 
-                                    about creating the best possible financial management experience. We're based in multiple countries but united by our common goal of 
-                                    improving financial literacy and wellness worldwide.
-                                </p>
-                            </div>
-                            
-                            <div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Contact Us</h4>
-                                <p class="text-gray-700 mb-2"><strong>Email:</strong> support@smartgrocer.com</p>
-                                <p class="text-gray-700 mb-2"><strong>Phone:</strong> +1 (555) 123-4567</p>
-                                <p class="text-gray-700 mb-2"><strong>Address:</strong> 123 Finance Street, Moneyville, CA 94103, USA</p>
-                                <p class="text-gray-700">For press inquiries: press@smartgrocer.com</p>
-                            </div>
+                            <!-- About content will be populated here -->
                         </div>
                     </div>
                 </div>
@@ -976,11 +570,11 @@
                                 <div class="space-y-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700">Name</label>
-                                        <input type="text" value="John Doe" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                                        <input type="text" id="user-name" value="John Doe" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700">Email</label>
-                                        <input type="email" value="john.doe@example.com" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                                        <input type="email" id="user-email" value="john.doe@example.com" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700">Currency</label>
@@ -1015,46 +609,11 @@
                                         <input type="checkbox" id="weekly-reports" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
                                         <label for="weekly-reports" class="ml-2 block text-sm text-gray-900">Weekly reports</label>
                                     </div>
-                                    <div class="flex items-center">
-                                        <input type="checkbox" id="security-alerts" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded" checked>
-                                        <label for="security-alerts" class="ml-2 block text-sm text-gray-900">Security alerts</label>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <input type="checkbox" id="product-updates" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
-                                        <label for="product-updates" class="ml-2 block text-sm text-gray-900">Product updates</label>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Privacy & Security</h4>
-                                <div class="space-y-4">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <p class="text-sm font-medium text-gray-900">Two-Factor Authentication</p>
-                                            <p class="text-sm text-gray-500">Add an extra layer of security to your account</p>
-                                        </div>
-                                        <button class="bg-primary text-white text-sm font-bold py-2 px-4 rounded-lg hover:bg-accent">Enable</button>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <p class="text-sm font-medium text-gray-900">Data Export</p>
-                                            <p class="text-sm text-gray-500">Download all your data in CSV format</p>
-                                        </div>
-                                        <button class="bg-gray-200 text-gray-700 text-sm font-bold py-2 px-4 rounded-lg hover:bg-gray-300">Export Data</button>
-                                    </div>
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <p class="text-sm font-medium text-gray-900">Account Deletion</p>
-                                            <p class="text-sm text-gray-500">Permanently delete your account and all data</p>
-                                        </div>
-                                        <button class="bg-red-600 text-white text-sm font-bold py-2 px-4 rounded-lg hover:bg-red-700">Delete Account</button>
-                                    </div>
                                 </div>
                             </div>
                             
                             <div class="flex justify-end">
-                                <button class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Save Settings</button>
+                                <button id="save-settings-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Save Settings</button>
                             </div>
                         </div>
                     </div>
@@ -1110,22 +669,11 @@
                             <span class="text-gray-400">support@smartgrocer.com</span>
                         </li>
                     </ul>
-                    <div class="flex space-x-4 mt-4">
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
                 </div>
             </div>
             
             <div class="border-t border-gray-700 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
                 <p class="text-gray-400 text-sm">© 2025 SmartGrocer. All rights reserved.</p>
-                <div class="flex space-x-6 mt-4 md:mt-0">
-                    <a href="#privacy" class="footer-link text-gray-400 hover:text-white text-sm">Privacy Policy</a>
-                    <a href="#terms" class="footer-link text-gray-400 hover:text-white text-sm">Terms of Service</a>
-                    <a href="#cookies" class="footer-link text-gray-400 hover:text-white text-sm">Cookie Policy</a>
-                </div>
             </div>
         </div>
     </footer>
@@ -1151,7 +699,7 @@
                         </select>
                     </div>
                     <div>
-                        <label for="account-balance" class="block text-sm font-medium text-gray-700">Current Balance ($)</label>
+                        <label for="account-balance" class="block text-sm font-medium text-gray-700">Current Balance</label>
                         <input type="number" id="account-balance" step="0.01" required placeholder="e.g., 1500.00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                     </div>
                 </div>
@@ -1183,7 +731,7 @@
                         </select>
                     </div>
                     <div>
-                        <label for="budget-limit" class="block text-sm font-medium text-gray-700">Monthly Limit ($)</label>
+                        <label for="budget-limit" class="block text-sm font-medium text-gray-700">Monthly Limit</label>
                         <input type="number" id="budget-limit" step="1" min="0" required placeholder="e.g., 500" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-green-500 focus:border-green-500">
                     </div>
                 </div>
@@ -1195,129 +743,89 @@
         </div>
     </div>
 
-    <!-- Privacy Policy Modal -->
-    <div id="privacy-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
-        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-4xl max-h-screen overflow-y-auto my-8">
-            <h3 class="text-2xl font-bold mb-6 text-gray-800">Privacy Policy</h3>
-            <div class="prose max-w-none">
-                <p class="text-gray-700 mb-4">Last updated: May 15, 2025</p>
-                
-                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">1. Information We Collect</h4>
-                <p class="text-gray-700 mb-4">
-                    We collect information you provide directly to us, including when you create an account, update your profile, add financial information, 
-                    or communicate with us. This may include personal information such as your name, email address, financial transaction data, and account balances.
-                </p>
-                
-                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">2. How We Use Your Information</h4>
-                <p class="text-gray-700 mb-4">
-                    We use the information we collect to provide, maintain, and improve our services; to develop new features; to communicate with you about products, 
-                    services, and promotions; and to protect SmartGrocer and our users.
-                </p>
-                
-                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">3. Information Sharing</h4>
-                <p class="text-gray-700 mb-4">
-                    We do not sell your personal information to third parties. We may share your information with service providers who perform services on our behalf, 
-                    with law enforcement or other third parties when required by law, or in connection with a business transfer.
-                </p>
-                
-                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">4. Data Security</h4>
-                <p class="text-gray-700 mb-4">
-                    We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, 
-                    disclosure, or destruction.
-                </p>
-                
-                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">5. Your Choices</h4>
-                <p class="text-gray-700 mb-4">
-                    You may update, correct, or delete your account information at any time by logging into your account. You can also contact us to request access to 
-                    or deletion of your personal information.
-                </p>
-                
-                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">6. Changes to This Policy</h4>
-                <p class="text-gray-700 mb-4">
-                    We may change this Privacy Policy from time to time. If we make changes, we will notify you by revising the date at the top of the policy and, 
-                    in some cases, we may provide you with additional notice.
-                </p>
-                
-                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">7. Contact Us</h4>
-                <p class="text-gray-700">
-                    If you have any questions about this Privacy Policy, please contact us at privacy@smartgrocer.com.
-                </p>
-            </div>
-            <div class="mt-8 flex justify-end">
-                <button type="button" id="close-privacy-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Terms and Conditions Modal -->
-    <div id="terms-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
-        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-4xl max-h-screen overflow-y-auto my-8">
-            <h3 class="text-2xl font-bold mb-6 text-gray-800">Terms and Conditions</h3>
-            <div class="prose max-w-none">
-                <p class="text-gray-700 mb-4">Last updated: May 15, 2025</p>
-                
-                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">1. Agreement to Terms</h4>
-                <p class="text-gray-700 mb-4">
-                    By accessing or using SmartGrocer's services, you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use our services.
-                </p>
-                
-                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">2. Eligibility</h4>
-                <p class="text-gray-700 mb-4">
-                    You must be at least 18 years old to use our services. By using SmartGrocer, you represent and warrant that you meet this eligibility requirement.
-                </p>
-                
-                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">3. Account Registration</h4>
-                <p class="text-gray-700 mb-4">
-                    You may need to register for an account to access certain features. You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.
-                </p>
-                
-                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">4. User Content</h4>
-                <p class="text-gray-700 mb-4">
-                    You retain all rights to any content you submit to SmartGrocer. By submitting content, you grant us a license to use, store, and display that content for the purpose of providing our services to you.
-                </p>
-                
-                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">5. Prohibited Conduct</h4>
-                <p class="text-gray-700 mb-4">
-                    You agree not to engage in any of the following prohibited activities: (a) using our services for any illegal purpose; (b) attempting to interfere with or compromise our system integrity or security; (c) copying, distributing, or disclosing any part of our services in any medium; (d) using any automated system to access our services.
-                </p>
-                
-                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">6. Termination</h4>
-                <p class="text-gray-700 mb-4">
-                    We may terminate or suspend your account at any time without notice for conduct that we believe violates these Terms and Conditions or is harmful to other users, us, or third parties, or for any other reason.
-                </p>
-                
-                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">7. Disclaimer of Warranties</h4>
-                <p class="text-gray-700 mb-4">
-                    Our services are provided "as is" without any warranty of any kind, either express or implied. We do not guarantee that the services will be uninterrupted, secure, or error-free.
-                </p>
-                
-                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">8. Limitation of Liability</h4>
-                <p class="text-gray-700 mb-4">
-                    To the fullest extent permitted by law, SmartGrocer shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly.
-                </p>
-                
-                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">9. Governing Law</h4>
-                <p class="text-gray-700 mb-4">
-                    These Terms and Conditions shall be governed by the laws of the State of California, without regard to its conflict of law provisions.
-                </p>
-                
-                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">10. Changes to Terms</h4>
-                <p class="text-gray-700 mb-4">
-                    We may modify these Terms and Conditions at any time. If we make changes, we will provide notice through our services or by other means.
-                </p>
-                
-                <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">11. Contact Information</h4>
-                <p class="text-gray-700">
-                    If you have any questions about these Terms and Conditions, please contact us at legal@smartgrocer.com.
-                </p>
-            </div>
-            <div class="mt-8 flex justify-end">
-                <button type="button" id="close-terms-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Close</button>
-            </div>
+    <!-- Transaction Modal -->
+    <div id="transaction-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
+            <h3 id="transaction-modal-title" class="text-2xl font-bold mb-6 text-gray-800">Add New Transaction</h3>
+            <form id="transaction-form">
+                <div class="space-y-4">
+                    <div>
+                        <label for="transaction-date" class="block text-sm font-medium text-gray-700">Date</label>
+                        <input type="date" id="transaction-date" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                    </div>
+                    <div>
+                        <label for="transaction-description" class="block text-sm font-medium text-gray-700">Description</label>
+                        <input type="text" id="transaction-description" required placeholder="e.g., Grocery Shopping" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                    </div>
+                    <div>
+                        <label for="transaction-category" class="block text-sm font-medium text-gray-700">Category</label>
+                        <select id="transaction-category" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
+                            <option value="Groceries">Groceries</option>
+                            <option value="Dining">Dining</option>
+                            <option value="Transportation">Transportation</option>
+                            <option value="Utilities">Utilities</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Shopping">Shopping</option>
+                            <option value="Healthcare">Healthcare</option>
+                            <option value="Income">Income</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="transaction-amount" class="block text-sm font-medium text-gray-700">Amount</label>
+                        <input type="number" id="transaction-amount" step="0.01" required placeholder="e.g., 150.00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                    </div>
+                    <div>
+                        <label for="transaction-account" class="block text-sm font-medium text-gray-700">Account</label>
+                        <select id="transaction-account" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
+                            <option value="Checking Account">Checking Account</option>
+                            <option value="Savings Account">Savings Account</option>
+                            <option value="Credit Card">Credit Card</option>
+                            <option value="Cash">Cash</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-end space-x-4">
+                    <button type="button" id="cancel-transaction-btn" class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button>
+                    <button type="submit" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Save Transaction</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script>
+        // Application State
+        const state = {
+            transactions: [],
+            accounts: [],
+            budgets: [],
+            currency: 'USD',
+            currencySymbols: {
+                'USD': '$',
+                'EUR': '€',
+                'GBP': '£',
+                'JPY': '¥',
+                'PKR': '₨',
+                'INR': '₹',
+                'CAD': 'C$',
+                'AUD': 'A$',
+                'CNY': '¥',
+                'BRL': 'R$'
+            },
+            exchangeRates: {
+                'USD': 1,
+                'EUR': 0.93,
+                'GBP': 0.80,
+                'JPY': 153.50,
+                'PKR': 278.50,
+                'INR': 83.40,
+                'CAD': 1.37,
+                'AUD': 1.52,
+                'CNY': 7.24,
+                'BRL': 5.15
+            }
+        };
+
         // --- SIDEBAR FUNCTIONALITY ---
         document.addEventListener('DOMContentLoaded', function() {
             // Hide loading overlay
@@ -1378,6 +886,17 @@
                         sidebarOverlay.classList.add('hidden');
                         document.body.classList.remove('overflow-hidden');
                     }
+
+                    // Load data for the page if needed
+                    if (targetId === 'transactions') {
+                        renderTransactions();
+                    } else if (targetId === 'accounts') {
+                        renderAccounts();
+                    } else if (targetId === 'budgets') {
+                        renderBudgets();
+                    } else if (targetId === 'dashboard') {
+                        updateDashboard();
+                    }
                 });
             });
 
@@ -1392,32 +911,489 @@
                 }
             });
 
+            // Initialize sample data
+            initializeSampleData();
+
             // Initialize charts
             initSpendingChart();
             initIncomeExpenseChart();
             initNetWorthChart();
 
-            // Modal functionality
-            setupModals();
+            // Setup all event listeners
+            setupEventListeners();
 
-            // Setup footer links
-            setupFooterLinks();
+            // Update dashboard with current data
+            updateDashboard();
         });
 
+        // Initialize sample data
+        function initializeSampleData() {
+            // Sample transactions
+            state.transactions = [
+                { id: 1, date: '2025-05-15', description: 'Grocery Shopping', category: 'Groceries', amount: -85.25, account: 'Credit Card' },
+                { id: 2, date: '2025-05-10', description: 'Salary Deposit', category: 'Income', amount: 2500.00, account: 'Checking Account' },
+                { id: 3, date: '2025-05-05', description: 'Electric Bill', category: 'Utilities', amount: -120.75, account: 'Checking Account' },
+                { id: 4, date: '2025-05-03', description: 'Dinner Out', category: 'Dining', amount: -67.50, account: 'Credit Card' },
+                { id: 5, date: '2025-05-01', description: 'Gasoline', category: 'Transportation', amount: -45.00, account: 'Credit Card' }
+            ];
+
+            // Sample accounts
+            state.accounts = [
+                { id: 1, name: 'Checking Account', type: 'Checking', balance: 5250.75 },
+                { id: 2, name: 'Savings Account', type: 'Savings', balance: 18500.00 },
+                { id: 3, name: 'Credit Card', type: 'Credit Card', balance: -2350.25 }
+            ];
+
+            // Sample budgets
+            state.budgets = [
+                { id: 1, category: 'Groceries', limit: 500, spent: 320 },
+                { id: 2, category: 'Dining', limit: 300, spent: 220 },
+                { id: 3, category: 'Entertainment', limit: 150, spent: 90 }
+            ];
+        }
+
+        // Setup all event listeners
+        function setupEventListeners() {
+            // Account modal
+            document.getElementById('create-account-btn').addEventListener('click', () => {
+                document.getElementById('account-modal').classList.remove('hidden');
+            });
+            
+            document.getElementById('cancel-account-btn').addEventListener('click', () => {
+                document.getElementById('account-modal').classList.add('hidden');
+            });
+            
+            document.getElementById('account-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                addAccount();
+            });
+            
+            // Budget modal
+            document.getElementById('create-budget-btn').addEventListener('click', () => {
+                document.getElementById('budget-modal').classList.remove('hidden');
+            });
+            
+            document.getElementById('cancel-budget-btn').addEventListener('click', () => {
+                document.getElementById('budget-modal').classList.add('hidden');
+            });
+            
+            document.getElementById('budget-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                addBudget();
+            });
+            
+            // Transaction modal
+            document.getElementById('add-transaction-btn').addEventListener('click', () => {
+                document.getElementById('transaction-modal').classList.remove('hidden');
+            });
+            
+            document.getElementById('cancel-transaction-btn').addEventListener('click', () => {
+                document.getElementById('transaction-modal').classList.add('hidden');
+            });
+            
+            document.getElementById('transaction-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                addTransaction();
+            });
+            
+            // Quick expense form
+            document.getElementById('quick-expense-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                addQuickExpense();
+            });
+            
+            // Settings save button
+            document.getElementById('save-settings-btn').addEventListener('click', saveSettings);
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === document.getElementById('account-modal')) {
+                    document.getElementById('account-modal').classList.add('hidden');
+                }
+                if (e.target === document.getElementById('budget-modal')) {
+                    document.getElementById('budget-modal').classList.add('hidden');
+                }
+                if (e.target === document.getElementById('transaction-modal')) {
+                    document.getElementById('transaction-modal').classList.add('hidden');
+                }
+            });
+        }
+
+        // Format currency based on selected currency
+        function formatCurrency(amount) {
+            const symbol = state.currencySymbols[state.currency] || '$';
+            const convertedAmount = amount * state.exchangeRates[state.currency];
+            return `${symbol}${convertedAmount.toFixed(2)}`;
+        }
+
+        // Show notification
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.remove('hidden', 'error');
+            
+            if (isError) {
+                notification.classList.add('error');
+            }
+            
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    notification.classList.add('hidden');
+                }, 300);
+            }, 3000);
+        }
+
+        // Add a new account
+        function addAccount() {
+            const name = document.getElementById('account-name').value;
+            const type = document.getElementById('account-type').value;
+            const balance = parseFloat(document.getElementById('account-balance').value);
+            
+            const newAccount = {
+                id: state.accounts.length + 1,
+                name,
+                type,
+                balance
+            };
+            
+            state.accounts.push(newAccount);
+            renderAccounts();
+            document.getElementById('account-modal').classList.add('hidden');
+            document.getElementById('account-form').reset();
+            
+            showNotification('Account added successfully!');
+            updateDashboard();
+        }
+
+        // Delete an account
+        function deleteAccount(id) {
+            state.accounts = state.accounts.filter(account => account.id !== id);
+            renderAccounts();
+            showNotification('Account deleted successfully!');
+            updateDashboard();
+        }
+
+        // Render accounts
+        function renderAccounts() {
+            const accountsContainer = document.getElementById('accounts-container');
+            accountsContainer.innerHTML = '';
+            
+            state.accounts.forEach(account => {
+                const accountCard = document.createElement('div');
+                accountCard.className = 'card p-6';
+                accountCard.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="text-lg font-semibold text-gray-800">${account.name}</h4>
+                            <p class="account-card-type">${account.type}</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="text-blue-600 hover:text-blue-800">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="text-red-600 hover:text-red-800" onclick="deleteAccount(${account.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="account-card-balance ${account.balance < 0 ? 'text-red-600' : ''}">${formatCurrency(account.balance)}</p>
+                `;
+                
+                accountsContainer.appendChild(accountCard);
+            });
+        }
+
+        // Add a new budget
+        function addBudget() {
+            const category = document.getElementById('budget-category').value;
+            const limit = parseFloat(document.getElementById('budget-limit').value);
+            
+            const newBudget = {
+                id: state.budgets.length + 1,
+                category,
+                limit,
+                spent: 0
+            };
+            
+            state.budgets.push(newBudget);
+            renderBudgets();
+            document.getElementById('budget-modal').classList.add('hidden');
+            document.getElementById('budget-form').reset();
+            
+            showNotification('Budget created successfully!');
+        }
+
+        // Delete a budget
+        function deleteBudget(id) {
+            state.budgets = state.budgets.filter(budget => budget.id !== id);
+            renderBudgets();
+            showNotification('Budget deleted successfully!');
+        }
+
+        // Render budgets
+        function renderBudgets() {
+            const budgetsContainer = document.getElementById('budgets-container');
+            budgetsContainer.innerHTML = '';
+            
+            state.budgets.forEach(budget => {
+                const percentage = (budget.spent / budget.limit) * 100;
+                let progressColor = 'bg-green-500';
+                
+                if (percentage > 90) {
+                    progressColor = 'bg-red-500';
+                } else if (percentage > 75) {
+                    progressColor = 'bg-yellow-500';
+                }
+                
+                const budgetCard = document.createElement('div');
+                budgetCard.className = 'card p-6 relative';
+                budgetCard.innerHTML = `
+                    <div class="budget-actions">
+                        <button class="budget-action-btn">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="budget-action-btn" onclick="deleteBudget(${budget.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-800">${budget.category}</h4>
+                    <div class="mt-4">
+                        <div class="flex justify-between text-sm text-gray-600">
+                            <span>Spent: ${formatCurrency(budget.spent)}</span>
+                            <span>Limit: ${formatCurrency(budget.limit)}</span>
+                        </div>
+                        <div class="progress-bar mt-2">
+                            <div class="progress-fill ${progressColor}" style="width: ${percentage}%"></div>
+                        </div>
+                        <p class="mt-2 text-sm text-gray-600">${formatCurrency(budget.limit - budget.spent)} remaining</p>
+                    </div>
+                `;
+                
+                budgetsContainer.appendChild(budgetCard);
+            });
+        }
+
+        // Add a new transaction
+        function addTransaction() {
+            const date = document.getElementById('transaction-date').value;
+            const description = document.getElementById('transaction-description').value;
+            const category = document.getElementById('transaction-category').value;
+            const amount = parseFloat(document.getElementById('transaction-amount').value);
+            const account = document.getElementById('transaction-account').value;
+            
+            const newTransaction = {
+                id: state.transactions.length + 1,
+                date,
+                description,
+                category,
+                amount,
+                account
+            };
+            
+            state.transactions.push(newTransaction);
+            renderTransactions();
+            document.getElementById('transaction-modal').classList.add('hidden');
+            document.getElementById('transaction-form').reset();
+            
+            // Update the account balance
+            const accountToUpdate = state.accounts.find(acc => acc.name === account);
+            if (accountToUpdate) {
+                accountToUpdate.balance += amount;
+                renderAccounts();
+            }
+            
+            // Update budget if it's an expense
+            if (amount < 0) {
+                const budgetToUpdate = state.budgets.find(b => b.category === category);
+                if (budgetToUpdate) {
+                    budgetToUpdate.spent += Math.abs(amount);
+                    renderBudgets();
+                }
+            }
+            
+            showNotification('Transaction added successfully!');
+            updateDashboard();
+        }
+
+        // Add quick expense
+        function addQuickExpense() {
+            const description = document.getElementById('quick-description').value;
+            const amount = -Math.abs(parseFloat(document.getElementById('quick-amount').value));
+            const category = document.getElementById('quick-category').value;
+            
+            const newTransaction = {
+                id: state.transactions.length + 1,
+                date: new Date().toISOString().split('T')[0],
+                description,
+                category,
+                amount,
+                account: 'Credit Card'
+            };
+            
+            state.transactions.push(newTransaction);
+            renderTransactions();
+            document.getElementById('quick-expense-form').reset();
+            
+            // Update the account balance
+            const accountToUpdate = state.accounts.find(acc => acc.name === 'Credit Card');
+            if (accountToUpdate) {
+                accountToUpdate.balance += amount;
+                renderAccounts();
+            }
+            
+            // Update budget
+            const budgetToUpdate = state.budgets.find(b => b.category === category);
+            if (budgetToUpdate) {
+                budgetToUpdate.spent += Math.abs(amount);
+                renderBudgets();
+            }
+            
+            showNotification('Expense added successfully!');
+            updateDashboard();
+        }
+
+        // Delete a transaction
+        function deleteTransaction(id) {
+            const transaction = state.transactions.find(t => t.id === id);
+            
+            // Update the account balance
+            const accountToUpdate = state.accounts.find(acc => acc.name === transaction.account);
+            if (accountToUpdate) {
+                accountToUpdate.balance -= transaction.amount;
+                renderAccounts();
+            }
+            
+            // Update budget if it was an expense
+            if (transaction.amount < 0) {
+                const budgetToUpdate = state.budgets.find(b => b.category === transaction.category);
+                if (budgetToUpdate) {
+                    budgetToUpdate.spent -= Math.abs(transaction.amount);
+                    renderBudgets();
+                }
+            }
+            
+            state.transactions = state.transactions.filter(transaction => transaction.id !== id);
+            renderTransactions();
+            showNotification('Transaction deleted successfully!');
+            updateDashboard();
+        }
+
+        // Render transactions
+        function renderTransactions() {
+            const transactionsBody = document.getElementById('transactions-table-body');
+            transactionsBody.innerHTML = '';
+            
+            state.transactions.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(transaction => {
+                const row = document.createElement('tr');
+                row.className = 'border-b';
+                row.innerHTML = `
+                    <td class="p-4">${transaction.date}</td>
+                    <td class="p-4">${transaction.description}</td>
+                    <td class="p-4">${transaction.category}</td>
+                    <td class="p-4 text-right ${transaction.amount < 0 ? 'text-red-600' : 'text-green-600'}">${formatCurrency(transaction.amount)}</td>
+                    <td class="p-4">${transaction.account}</td>
+                    <td class="p-4 text-center">
+                        <button class="text-blue-600 hover:text-blue-800 mr-2">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="text-red-600 hover:text-red-800" onclick="deleteTransaction(${transaction.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                
+                transactionsBody.appendChild(row);
+            });
+        }
+
+        // Update dashboard with current data
+        function updateDashboard() {
+            // Calculate total income (positive amounts)
+            const totalIncome = state.transactions
+                .filter(t => t.amount > 0)
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            // Calculate total expenses (negative amounts)
+            const totalExpenses = state.transactions
+                .filter(t => t.amount < 0)
+                .reduce((sum, t) => sum + Math.abs(t.amount), 0);
+            
+            // Calculate net worth (sum of all account balances)
+            const netWorth = state.accounts.reduce((sum, a) => sum + a.balance, 0);
+            
+            // Calculate total debt (negative account balances)
+            const totalDebt = state.accounts
+                .filter(a => a.balance < 0)
+                .reduce((sum, a) => sum + Math.abs(a.balance), 0);
+            
+            // Update dashboard stats
+            document.getElementById('total-income-stat').textContent = formatCurrency(totalIncome);
+            document.getElementById('total-expenses-stat').textContent = formatCurrency(totalExpenses);
+            document.getElementById('net-worth-stat').textContent = formatCurrency(netWorth);
+            document.getElementById('total-debt-stat').textContent = formatCurrency(totalDebt);
+            
+            // Update recent transactions
+            const recentTransactionsContainer = document.getElementById('recent-transactions-container');
+            recentTransactionsContainer.innerHTML = '';
+            
+            const recentTransactions = [...state.transactions]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
+            
+            recentTransactions.forEach(transaction => {
+                const transactionItem = document.createElement('div');
+                transactionItem.className = 'recent-transaction-item';
+                transactionItem.innerHTML = `
+                    <div class="recent-transaction-details">
+                        <span class="recent-transaction-description">${transaction.description}</span>
+                        <span class="recent-transaction-category">${transaction.category}</span>
+                    </div>
+                    <span class="recent-transaction-amount ${transaction.amount < 0 ? 'text-red-600' : 'text-green-600'}">${formatCurrency(transaction.amount)}</span>
+                `;
+                
+                recentTransactionsContainer.appendChild(transactionItem);
+            });
+            
+            // Update charts
+            updateCharts();
+        }
+
+        // Save settings
+        function saveSettings() {
+            const name = document.getElementById('user-name').value;
+            const email = document.getElementById('user-email').value;
+            const currency = document.getElementById('currency-select').value;
+            
+            // Update currency
+            state.currency = currency;
+            
+            // Update welcome message
+            document.getElementById('welcome-user-text').textContent = `Welcome, ${name}!`;
+            
+            // Update all displayed values with new currency
+            updateDashboard();
+            renderAccounts();
+            renderBudgets();
+            renderTransactions();
+            
+            showNotification('Settings saved successfully!');
+        }
+
+        // Initialize charts
         function initSpendingChart() {
             const ctx = document.getElementById('spending-doughnut-chart').getContext('2d');
-            new Chart(ctx, {
+            window.spendingChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Groceries', 'Dining', 'Transportation', 'Utilities', 'Entertainment'],
+                    labels: [],
                     datasets: [{
-                        data: [500, 300, 150, 200, 150],
+                        data: [],
                         backgroundColor: [
-                            '#228B22', // ForestGreen
-                            '#3CB371', // MediumSeaGreen
-                            '#90EE90', // LightGreen
-                            '#32CD32', // LimeGreen
-                            '#98FB98'  // PaleGreen
+                            '#228B22', '#3CB371', '#90EE90', '#32CD32', '#98FB98',
+                            '#20B2AA', '#00FA9A', '#00FF7F', '#7CFC00', '#ADFF2F'
                         ],
                         borderWidth: 1
                     }]
@@ -1436,7 +1412,7 @@
 
         function initIncomeExpenseChart() {
             const ctx = document.getElementById('income-expense-chart').getContext('2d');
-            new Chart(ctx, {
+            window.incomeExpenseChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
@@ -1467,7 +1443,7 @@
 
         function initNetWorthChart() {
             const ctx = document.getElementById('net-worth-chart').getContext('2d');
-            new Chart(ctx, {
+            window.netWorthChart = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
@@ -1492,75 +1468,20 @@
             });
         }
 
-        function setupModals() {
-            // Account modal
-            const createAccountBtn = document.getElementById('create-account-btn');
-            const accountModal = document.getElementById('account-modal');
-            const cancelAccountBtn = document.getElementById('cancel-account-btn');
-            
-            createAccountBtn.addEventListener('click', () => {
-                accountModal.classList.remove('hidden');
-            });
-            
-            cancelAccountBtn.addEventListener('click', () => {
-                accountModal.classList.add('hidden');
-            });
-            
-            // Budget modal
-            const createBudgetBtn = document.getElementById('create-budget-btn');
-            const budgetModal = document.getElementById('budget-modal');
-            const cancelBudgetBtn = document.getElementById('cancel-budget-btn');
-            
-            createBudgetBtn.addEventListener('click', () => {
-                budgetModal.classList.remove('hidden');
-            });
-            
-            cancelBudgetBtn.addEventListener('click', () => {
-                budgetModal.classList.add('hidden');
-            });
-            
-            // Close modals when clicking outside
-            window.addEventListener('click', (e) => {
-                if (e.target === accountModal) {
-                    accountModal.classList.add('hidden');
-                }
-                if (e.target === budgetModal) {
-                    budgetModal.classList.add('hidden');
-                }
-                if (e.target === document.getElementById('privacy-modal')) {
-                    document.getElementById('privacy-modal').classList.add('hidden');
-                }
-                if (e.target === document.getElementById('terms-modal')) {
-                    document.getElementById('terms-modal').classList.add('hidden');
-                }
-            });
-
-            // Close buttons for policy modals
-            document.getElementById('close-privacy-btn').addEventListener('click', () => {
-                document.getElementById('privacy-modal').classList.add('hidden');
-            });
-
-            document.getElementById('close-terms-btn').addEventListener('click', () => {
-                document.getElementById('terms-modal').classList.add('hidden');
-            });
-        }
-
-        function setupFooterLinks() {
-            // Privacy policy link
-            document.querySelectorAll('a[href="#privacy"]').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    document.getElementById('privacy-modal').classList.remove('hidden');
+        // Update charts with current data
+        function updateCharts() {
+            // Update spending chart
+            const spendingByCategory = {};
+            state.transactions
+                .filter(t => t.amount < 0) // Only expenses
+                .forEach(t => {
+                    const amount = Math.abs(t.amount) * state.exchangeRates[state.currency];
+                    spendingByCategory[t.category] = (spendingByCategory[t.category] || 0) + amount;
                 });
-            });
-
-            // Terms and conditions link
-            document.querySelectorAll('a[href="#terms"]').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    document.getElementById('terms-modal').classList.remove('hidden');
-                });
-            });
+            
+            window.spendingChart.data.labels = Object.keys(spendingByCategory);
+            window.spendingChart.data.datasets[0].data = Object.values(spendingByCategory);
+            window.spendingChart.update();
         }
     </script>
 </body>
