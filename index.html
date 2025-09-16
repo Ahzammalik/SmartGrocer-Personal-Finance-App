@@ -202,6 +202,29 @@
         .transaction-table tr:hover {
             background-color: #f9fafb;
         }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -274,6 +297,7 @@
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6 md:p-8">
                 <!-- Dashboard Page -->
                 <div id="dashboard" class="page active">
+                    <!-- Dashboard content remains the same as before -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                         <!-- Financial Summary Cards -->
                         <div class="card p-6 financial-summary income-summary">
@@ -706,6 +730,57 @@
         </div>
     </div>
 
+    <!-- Add Income Modal -->
+    <div id="add-income-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-800">Add New Income</h3>
+                <button id="close-income-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="income-form">
+                <div class="space-y-4">
+                    <div>
+                        <label for="income-date" class="block text-sm font-medium text-gray-700">Date</label>
+                        <input type="date" id="income-date" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                    </div>
+                    <div>
+                        <label for="income-description" class="block text-sm font-medium text-gray-700">Description</label>
+                        <input type="text" id="income-description" required placeholder="e.g., Salary Payment" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                    </div>
+                    <div>
+                        <label for="income-category" class="block text-sm font-medium text-gray-700">Category</label>
+                        <select id="income-category" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
+                            <option value="Salary">Salary</option>
+                            <option value="Freelance">Freelance</option>
+                            <option value="Investment">Investment</option>
+                            <option value="Business">Business</option>
+                            <option value="Rental">Rental</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="income-amount" class="block text-sm font-medium text-gray-700">Amount ($)</label>
+                        <input type="number" id="income-amount" step="0.01" required placeholder="e.g., 1500.00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                    </div>
+                    <div>
+                        <label for="income-account" class="block text-sm font-medium text-gray-700">Account</label>
+                        <select id="income-account" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
+                            <option value="Checking Account">Checking Account</option>
+                            <option value="Savings Account">Savings Account</option>
+                            <option value="Cash">Cash</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-end space-x-4">
+                    <button type="button" id="cancel-income-btn" class="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button>
+                    <button type="submit" class="bg-income text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600">Add Income</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Initialize charts and handle tab switching
         document.addEventListener('DOMContentLoaded', function() {
@@ -764,6 +839,54 @@
                     });
                     this.classList.add('active');
                 });
+            });
+
+            // Setup income modal functionality
+            const addIncomeBtn = document.getElementById('add-income-btn');
+            const incomeModal = document.getElementById('add-income-modal');
+            const closeIncomeModal = document.getElementById('close-income-modal');
+            const cancelIncomeBtn = document.getElementById('cancel-income-btn');
+            const incomeForm = document.getElementById('income-form');
+
+            addIncomeBtn.addEventListener('click', function() {
+                incomeModal.style.display = 'flex';
+            });
+
+            closeIncomeModal.addEventListener('click', function() {
+                incomeModal.style.display = 'none';
+            });
+
+            cancelIncomeBtn.addEventListener('click', function() {
+                incomeModal.style.display = 'none';
+            });
+
+            incomeForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Here you would handle the form submission
+                const date = document.getElementById('income-date').value;
+                const description = document.getElementById('income-description').value;
+                const category = document.getElementById('income-category').value;
+                const amount = document.getElementById('income-amount').value;
+                const account = document.getElementById('income-account').value;
+                
+                // Add your logic to process the income data
+                console.log('New income:', { date, description, category, amount, account });
+                
+                // Show success notification
+                showNotification('Income added successfully!');
+                
+                // Close the modal
+                incomeModal.style.display = 'none';
+                
+                // Reset the form
+                incomeForm.reset();
+            });
+
+            // Close modal when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target === incomeModal) {
+                    incomeModal.style.display = 'none';
+                }
             });
         });
 
