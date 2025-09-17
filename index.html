@@ -8,7 +8,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Your existing CSS styles */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f8fafc;
@@ -226,6 +225,11 @@
             max-height: 70vh;
             overflow-y: auto;
         }
+        
+        .currency-symbol {
+            font-size: 0.8em;
+            margin-right: 2px;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -316,7 +320,9 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm text-gray-500">Total Income</p>
-                                    <p id="total-income-stat" class="text-3xl font-bold text-income">$5,420.00</p>
+                                    <p id="total-income-stat" class="text-3xl font-bold text-income">
+                                        <span class="currency-symbol">₨</span>125,420.00
+                                    </p>
                                 </div>
                                 <div class="p-3 rounded-full bg-green-100 text-income">
                                     <i class="fas fa-money-bill-wave text-xl"></i>
@@ -329,7 +335,9 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm text-gray-500">Total Expenses</p>
-                                    <p id="total-expenses-stat" class="text-3xl font-bold text-expense">$3,845.50</p>
+                                    <p id="total-expenses-stat" class="text-3xl font-bold text-expense">
+                                        <span class="currency-symbol">₨</span>85,845.50
+                                    </p>
                                 </div>
                                 <div class="p-3 rounded-full bg-red-100 text-expense">
                                     <i class="fas fa-credit-card text-xl"></i>
@@ -342,7 +350,9 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm text-gray-500">Net Balance</p>
-                                    <p id="net-balance-stat" class="text-3xl font-bold text-blue-500">$1,574.50</p>
+                                    <p id="net-balance-stat" class="text-3xl font-bold text-blue-500">
+                                        <span class="currency-symbol">₨</span>39,574.50
+                                    </p>
                                 </div>
                                 <div class="p-3 rounded-full bg-blue-100 text-blue-500">
                                     <i class="fas fa-piggy-bank text-xl"></i>
@@ -364,7 +374,7 @@
                                 <div>
                                     <div class="flex justify-between mb-1">
                                         <span class="text-sm font-medium text-gray-700">Operating Income</span>
-                                        <span class="text-sm font-medium text-income">$4,250.00</span>
+                                        <span class="text-sm font-medium text-income">₨98,250.00</span>
                                     </div>
                                     <div class="progress-bar">
                                         <div class="progress-fill bg-income" style="width: 78%"></div>
@@ -373,7 +383,7 @@
                                 <div>
                                     <div class="flex justify-between mb-1">
                                         <span class="text-sm font-medium text-gray-700">Other Income</span>
-                                        <span class="text-sm font-medium text-income">$1,170.00</span>
+                                        <span class="text-sm font-medium text-income">₨27,170.00</span>
                                     </div>
                                     <div class="progress-bar">
                                         <div class="progress-fill bg-green-300" style="width: 22%"></div>
@@ -382,7 +392,7 @@
                                 <div class="pt-4 border-t border-gray-200">
                                     <div class="flex justify-between mb-1">
                                         <span class="text-sm font-medium text-gray-700">Fixed Expenses</span>
-                                        <span class="text-sm font-medium text-expense">$2,120.75</span>
+                                        <span class="text-sm font-medium text-expense">₨47,120.75</span>
                                     </div>
                                     <div class="progress-bar">
                                         <div class="progress-fill bg-expense" style="width: 55%"></div>
@@ -391,7 +401,7 @@
                                 <div>
                                     <div class="flex justify-between mb-1">
                                         <span class="text-sm font-medium text-gray-700">Variable Expenses</span>
-                                        <span class="text-sm font-medium text-expense">$1,724.75</span>
+                                        <span class="text-sm font-medium text-expense">₨38,724.75</span>
                                     </div>
                                     <div class="progress-bar">
                                         <div class="progress-fill bg-red-300" style="width: 45%"></div>
@@ -419,31 +429,31 @@
                                             <td>05/15/2025</td>
                                             <td>Salary Deposit</td>
                                             <td>Salary</td>
-                                            <td class="text-right text-income">+$2,500.00</td>
+                                            <td class="text-right text-income">+₨55,500.00</td>
                                         </tr>
                                         <tr>
                                             <td>05/15/2025</td>
                                             <td>Grocery Shopping</td>
                                             <td>Groceries</td>
-                                            <td class="text-right text-expense">-$85.25</td>
+                                            <td class="text-right text-expense">-₨8,525.00</td>
                                         </tr>
                                         <tr>
                                             <td>05/10/2025</td>
                                             <td>Freelance Project</td>
                                             <td>Freelance</td>
-                                            <td class="text-right text-income">+$1,200.00</td>
+                                            <td class="text-right text-income">+₨26,800.00</td>
                                         </tr>
                                         <tr>
                                             <td>05/05/2025</td>
                                             <td>Electric Bill</td>
                                             <td>Utilities</td>
-                                            <td class="text-right text-expense">-$120.75</td>
+                                            <td class="text-right text-expense">-₨12,075.00</td>
                                         </tr>
                                         <tr>
                                             <td>05/03/2025</td>
                                             <td>Investment Dividends</td>
                                             <td>Investment</td>
-                                            <td class="text-right text-income">+$420.00</td>
+                                            <td class="text-right text-income">+₨9,420.00</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -456,25 +466,25 @@
                                 <div>
                                     <div class="flex justify-between mb-1">
                                         <span class="text-sm font-medium text-gray-700">Groceries</span>
-                                        <span class="text-sm font-medium text-gray-700">$320/$500</span>
+                                        <span class="text-sm font-medium text-gray-700">₨7,320/₨12,500</span>
                                     </div>
                                     <div class="progress-bar">
-                                        <div class="progress-fill bg-income" style="width: 64%"></div>
+                                        <div class="progress-fill bg-income" style="width: 58%"></div>
                                     </div>
                                 </div>
                                 <div>
                                     <div class="flex justify-between mb-1">
                                         <span class="text-sm font-medium text-gray-700">Dining</span>
-                                        <span class="text-sm font-medium text-gray-700">$220/$300</span>
+                                        <span class="text-sm font-medium text-gray-700">₨5,220/₨7,300</span>
                                     </div>
                                     <div class="progress-bar">
-                                        <div class="progress-fill bg-yellow-500" style="width: 73%"></div>
+                                        <div class="progress-fill bg-yellow-500" style="width: 71%"></div>
                                     </div>
                                 </div>
                                 <div>
                                     <div class="flex justify-between mb-1">
                                         <span class="text-sm font-medium text-gray-700">Entertainment</span>
-                                        <span class="text-sm font-medium text-gray-700">$90/$150</span>
+                                        <span class="text-sm font-medium text-gray-700">₨2,090/₨3,500</span>
                                     </div>
                                     <div class="progress-bar">
                                         <div class="progress-fill bg-green-500" style="width: 60%"></div>
@@ -483,10 +493,10 @@
                                 <div>
                                     <div class="flex justify-between mb-1">
                                         <span class="text-sm font-medium text-gray-700">Transportation</span>
-                                        <span class="text-sm font-medium text-gray-700">$180/$250</span>
+                                        <span class="text-sm font-medium text-gray-700">₨4,180/₨6,250</span>
                                     </div>
                                     <div class="progress-bar">
-                                        <div class="progress-fill bg-red-500" style="width: 72%"></div>
+                                        <div class="progress-fill bg-red-500" style="width: 67%"></div>
                                     </div>
                                 </div>
                             </div>
@@ -537,7 +547,7 @@
                                         <td>Monthly Salary</td>
                                         <td><span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">Salary</span></td>
                                         <td>Direct Deposit</td>
-                                        <td class="text-right text-income font-medium">+$2,500.00</td>
+                                        <td class="text-right text-income font-medium">+₨55,500.00</td>
                                         <td class="text-center">
                                             <button class="text-blue-600 hover:text-blue-800 mr-2">
                                                 <i class="fas fa-edit"></i>
@@ -552,7 +562,7 @@
                                         <td>Web Development Project</td>
                                         <td><span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">Freelance</span></td>
                                         <td>Bank Transfer</td>
-                                        <td class="text-right text-income font-medium">+$1,200.00</td>
+                                        <td class="text-right text-income font-medium">+₨26,800.00</td>
                                         <td class="text-center">
                                             <button class="text-blue-600 hover:text-blue-800 mr-2">
                                                 <i class="fas fa-edit"></i>
@@ -611,7 +621,7 @@
                                         <td>Grocery Shopping</td>
                                         <td><span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">Groceries</span></td>
                                         <td>Credit Card</td>
-                                        <td class="text-right text-expense font-medium">-$85.25</td>
+                                        <td class="text-right text-expense font-medium">-₨8,525.00</td>
                                         <td class="text-center">
                                             <button class="text-blue-600 hover:text-blue-800 mr-2">
                                                 <i class="fas fa-edit"></i>
@@ -626,7 +636,7 @@
                                         <td>Electric Bill</td>
                                         <td><span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">Utilities</span></td>
                                         <td>Bank Transfer</td>
-                                        <td class="text-right text-expense font-medium">-$120.75</td>
+                                        <td class="text-right text-expense font-medium">-₨12,075.00</td>
                                         <td class="text-center">
                                             <button class="text-blue-600 hover:text-blue-800 mr-2">
                                                 <i class="fas fa-edit"></i>
@@ -659,13 +669,13 @@
                                     <div class="flex space-x-2">
                                         <button class="text-blue-600 hover:text-blue-800">
                                             <i class="fas fa-edit"></i>
-                                        </button>
+                                            </button>
                                         <button class="text-red-600 hover:text-red-800" onclick="deleteAccount(this)">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </div>
                                 </div>
-                                <p class="text-3xl font-bold mt-4 text-gray-800">$5,250.75</p>
+                                <p class="text-3xl font-bold mt-4 text-gray-800">₨117,250.75</p>
                             </div>
                             <div class="card p-6">
                                 <div class="flex justify-between items-start">
@@ -682,7 +692,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <p class="text-3xl font-bold mt-4 text-gray-800">$18,500.00</p>
+                                <p class="text-3xl font-bold mt-4 text-gray-800">₨412,500.00</p>
                             </div>
                             <div class="card p-6">
                                 <div class="flex justify-between items-start">
@@ -699,7 +709,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <p class="text-3xl font-bold mt-4 text-red-600">-$2,350.25</p>
+                                <p class="text-3xl font-bold mt-4 text-red-600">-₨52,350.25</p>
                             </div>
                         </div>
                     </div>
@@ -726,13 +736,13 @@
                                 <h4 class="text-lg font-semibold text-gray-800">Groceries</h4>
                                 <div class="mt-4">
                                     <div class="flex justify-between text-sm text-gray-600">
-                                        <span>Spent: $320</span>
-                                        <span>Limit: $500</span>
+                                        <span>Spent: ₨7,320</span>
+                                        <span>Limit: ₨12,500</span>
                                     </div>
                                     <div class="progress-bar mt-2">
-                                        <div class="progress-fill bg-green-500" style="width: 64%"></div>
+                                        <div class="progress-fill bg-green-500" style="width: 58%"></div>
                                     </div>
-                                    <p class="mt-2 text-sm text-gray-600">$180 remaining</p>
+                                    <p class="mt-2 text-sm text-gray-600">₨5,180 remaining</p>
                                 </div>
                             </div>
                             <div class="card p-6 relative">
@@ -747,13 +757,13 @@
                                 <h4 class="text-lg font-semibold text-gray-800">Dining</h4>
                                 <div class="mt-4">
                                     <div class="flex justify-between text-sm text-gray-600">
-                                        <span>Spent: $220</span>
-                                        <span>Limit: $300</span>
+                                        <span>Spent: ₨5,220</span>
+                                        <span>Limit: ₨7,300</span>
                                     </div>
                                     <div class="progress-bar mt-2">
-                                        <div class="progress-fill bg-yellow-500" style="width: 73%"></div>
+                                        <div class="progress-fill bg-yellow-500" style="width: 71%"></div>
                                     </div>
-                                    <p class="mt-2 text-sm text-gray-600">$80 remaining</p>
+                                    <p class="mt-2 text-sm text-gray-600">₨2,080 remaining</p>
                                 </div>
                             </div>
                             <div class="card p-6 relative">
@@ -768,318 +778,14 @@
                                 <h4 class="text-lg font-semibold text-gray-800">Entertainment</h4>
                                 <div class="mt-4">
                                     <div class="flex justify-between text-sm text-gray-600">
-                                        <span>Spent: $90</span>
-                                        <span>Limit: $150</span>
+                                        <span>Spent: ₨2,090</span>
+                                        <span>Limit: ₨3,500</span>
                                     </div>
                                     <div class="progress-bar mt-2">
                                         <div class="progress-fill bg-green-500" style="width: 60%"></div>
                                     </div>
-                                    <p class="mt-2 text-sm text-gray-600">$60 remaining</p>
+                                    <p class="mt-2 text-sm text-gray-600">₨1,410 remaining</p>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Reports Page -->
-                <div id="reports" class="page">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-6">Financial Reports</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="card p-6">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Monthly Income vs Expenses</h4>
-                                <div class="h-64"><canvas id="reports-income-expense-chart"></canvas></div>
-                            </div>
-                            <div class="card p-6">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Net Worth Trend</h4>
-                                <div class="h-64"><canvas id="reports-net-worth-chart"></canvas></div>
-                            </div>
-                        </div>
-                        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="card p-6">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Expense Categories</h4>
-                                <div class="h-64"><canvas id="expense-categories-chart"></canvas></div>
-                            </div>
-                            <div class="card p-6">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Income Sources</h4>
-                                <div class="h-64"><canvas id="income-sources-chart"></canvas></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- AI Insights Page -->
-                <div id="insights" class="page">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-6">AI Insights</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                            <div class="card p-6 bg-blue-50">
-                                <h4 class="text-lg font-semibold text-blue-800 mb-4">Financial Health Score</h4>
-                                <div class="text-center">
-                                    <div class="inline-flex items-center justify-center relative">
-                                        <svg class="w-32 h-32" viewBox="0 0 36 36">
-                                            <path d="M18 2.0845
-                                                a 15.9155 15.9155 0 0 1 0 31.831
-                                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                                                fill="none"
-                                                stroke="#eee"
-                                                stroke-width="3"
-                                            />
-                                            <path d="M18 2.0845
-                                                a 15.9155 15.9155 0 0 1 0 31.831
-                                                a 15.9155 15.9155 0 0 1 0 -31.831"
-                                                fill="none"
-                                                stroke="#3B82F6"
-                                                stroke-width="3"
-                                                stroke-dasharray="85, 100"
-                                            />
-                                        </svg>
-                                        <span class="absolute text-2xl font-bold text-blue-800">85%</span>
-                                    </div>
-                                    <p class="mt-4 text-sm text-gray-600">Your financial health is good! You're managing your expenses well and saving consistently.</p>
-                                </div>
-                            </div>
-                            <div class="card p-6 bg-green-50">
-                                <h4 class="text-lg font-semibold text-green-800 mb-4">Savings Opportunity</h4>
-                                <div class="space-y-4">
-                                    <p class="text-sm text-gray-700">Based on your spending patterns, we've identified potential savings opportunities:</p>
-                                    <ul class="list-disc pl-5 text-sm text-gray-700 space-y-2">
-                                        <li>Reduce dining out by 20% to save ~$120/month</li>
-                                        <li>Switch to a lower-cost cell phone plan to save ~$25/month</li>
-                                        <li>Cancel unused subscriptions to save ~$35/month</li>
-                                    </ul>
-                                    <p class="text-sm font-semibold text-green-800">Total potential savings: ~$180/month</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card p-6 bg-yellow-50">
-                            <h4 class="text-lg font-semibold text-yellow-800 mb-4">Spending Alerts</h4>
-                            <div class="space-y-4">
-                                <div class="flex items-start">
-                                    <div class="flex-shrink-0 h-6 w-6 rounded-full bg-yellow-100 flex items-center justify-center">
-                                        <i class="fas fa-exclamation text-yellow-600 text-xs"></i>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-sm font-medium text-yellow-800">Your grocery spending is 15% higher than last month</p>
-                                        <p class="mt-1 text-sm text-yellow-700">Consider meal planning to reduce food waste and costs</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-start">
-                                    <div class="flex-shrink-0 h-6 w-6 rounded-full bg-yellow-100 flex items-center justify-center">
-                                        <i class="fas fa-exclamation text-yellow-600 text-xs"></i>
-                                    </div>
-                                    <div class="ml-3">
-                                        <p class="text-sm font-medium text-yellow-800">Entertainment budget is nearly depleted</p>
-                                        <p class="mt-1 text-sm text-yellow-700">You've spent 85% of your monthly entertainment budget with 10 days remaining</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Blog Page -->
-                <div id="blog" class="page">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-6">Financial Tips & Insights</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            <!-- Blog Post 1 -->
-                            <div class="blog-card card p-6">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-piggy-bank text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">10 Ways to Save Money on Groceries</h4>
-                                <p class="text-gray-600 mb-4">Learn practical strategies to reduce your grocery bill without sacrificing quality.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>May 15, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>5 min read</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Blog Post 2 -->
-                            <div class="blog-card card p-6">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-chart-line text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">How to Create a Budget That Actually Works</h4>
-                                <p class="text-gray-600 mb-4">Discover the secrets to creating a sustainable budget that helps you reach your financial goals.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>May 10, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>8 min read</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Blog Post 3 -->
-                            <div class="blog-card card p-6">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-credit-card text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Understanding Credit Scores and How to Improve Yours</h4>
-                                <p class="text-gray-600 mb-4">A comprehensive guide to credit scores and actionable steps to improve your rating.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>May 5, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>10 min read</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Blog Post 4 -->
-                            <div class="blog-card card p-6">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-home text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">First-Time Home Buyer's Guide to Mortgages</h4>
-                                <p class="text-gray-600 mb-4">Everything you need to know about mortgages when buying your first home.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>April 28, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>12 min read</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Blog Post 5 -->
-                            <div class="blog-card card p-6">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-university text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Investing 101: A Beginner's Guide to Building Wealth</h4>
-                                <p class="text-gray-600 mb-4">Learn the basics of investing and how to start building wealth for your future.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>April 22, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>15 min read</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Blog Post 6 -->
-                            <div class="blog-card card p-6">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-shield-alt text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Insurance Basics: Protecting Your Financial Future</h4>
-                                <p class="text-gray-600 mb-4">Understanding different types of insurance and how they protect your finances.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>April 15, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>9 min read</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Blog Post 7 -->
-                            <div class="blog-card card p-6">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-graduation-cap text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Saving for College: 529 Plans and Other Options</h4>
-                                <p class="text-gray-600 mb-4">A guide to saving for education expenses and understanding 529 plans.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>April 8, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>11 min read</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Blog Post 8 -->
-                            <div class="blog-card card p-6">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-retirement text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Retirement Planning at Every Age</h4>
-                                <p class="text-gray-600 mb-4">Tailored advice for retirement planning whether you're in your 20s, 30s, 40s, or beyond.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>April 1, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>14 min read</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Blog Post 9 -->
-                            <div class="blog-card card p-6">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-money-check-alt text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Digital Banking: Pros, Cons, and Safety Tips</h4>
-                                <p class="text-gray-600 mb-4">Exploring the world of digital banking and how to keep your money safe online.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>March 25, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>7 min read</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Blog Post 10 -->
-                            <div class="blog-card card p-6">
-                                <div class="h-40 bg-green-100 rounded-lg mb-4 flex items-center justify-center">
-                                    <i class="fas fa-hand-holding-usd text-4xl text-primary"></i>
-                                </div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-2">Side Hustles: 15 Ways to Earn Extra Income</h4>
-                                <p class="text-gray-600 mb-4">Discover legitimate side hustle ideas to boost your income and accelerate your financial goals.</p>
-                                <div class="flex items-center text-sm text-gray-500">
-                                    <span>March 18, 2025</span>
-                                    <span class="mx-2">•</span>
-                                    <span>13 min read</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- About Page -->
-                <div id="about" class="page">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-6">About SmartGrocer</h3>
-                        
-                        <div class="prose max-w-none">
-                            <div class="mb-8">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Our Mission</h4>
-                                <p class="text-gray-700 mb-4">
-                                    SmartGrocer was founded with a simple mission: to make personal finance management accessible, intuitive, and effective for everyone. 
-                                    We believe that financial wellness is a fundamental component of overall well-being, and our goal is to empower individuals and families 
-                                    to take control of their financial futures.
-                                </p>
-                            </div>
-                            
-                            <div class="mb-8">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Our Story</h4>
-                                <p class="text-gray-700 mb-4">
-                                    Founded in 2020 by a team of financial experts and technology enthusiasts, SmartGrocer emerged from a shared frustration with the 
-                                    complexity of existing financial management tools. We noticed that many people struggled to track their expenses, stick to budgets, 
-                                    and understand their financial health because available tools were either too complicated or too simplistic.
-                                </p>
-                                <p class="text-gray-700 mb-4">
-                                    Our team set out to create a solution that combines powerful financial tracking capabilities with an intuitive, user-friendly interface. 
-                                    Today, SmartGrocer serves millions of users worldwide, helping them save money, reduce financial stress, and achieve their financial goals.
-                                </p>
-                            </div>
-                            
-                            <div class="mb-8">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Our Values</h4>
-                                <ul class="list-disc pl-5 text-gray-700 space-y-2">
-                                    <li><strong>Transparency:</strong> We believe in being open and honest about our product, our business practices, and how we handle your data.</li>
-                                    <li><strong>Security:</strong> Your financial data is sensitive, and we prioritize its protection with bank-level security measures.</li>
-                                    <li><strong>Innovation:</strong> We continuously strive to improve our platform with new features and technologies that make financial management easier.</li>
-                                    <li><strong>Education:</strong> We're committed to providing not just tools, but also the knowledge needed to make informed financial decisions.</li>
-                                    <li><strong>Accessibility:</strong> We design for everyone, ensuring our platform is usable by people of all financial literacy levels.</li>
-                                </ul>
-                            </div>
-                            
-                            <div class="mb-8">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Our Team</h4>
-                                <p class="text-gray-700 mb-4">
-                                    The SmartGrocer team comprises financial advisors, software engineers, data scientists, and user experience designers who are passionate 
-                                    about creating the best possible financial management experience. We're based in multiple countries but united by our common goal of 
-                                    improving financial literacy and wellness worldwide.
-                                </p>
-                            </div>
-                            
-                            <div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Contact Us</h4>
-                                <p class="text-gray-700 mb-2"><strong>Email:</strong> support@smartgrocer.com</p>
-                                <p class="text-gray-700 mb-2"><strong>Phone:</strong> +1 (555) 123-4567</p>
-                                <p class="text-gray-700 mb-2"><strong>Address:</strong> 123 Finance Street, Moneyville, CA 94103, USA</p>
-                                <p class="text-gray-700">For press inquiries: press@smartgrocer.com</p>
                             </div>
                         </div>
                     </div>
@@ -1104,16 +810,16 @@
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700">Currency</label>
                                         <select id="user-currency" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
-                                            <option>USD ($)</option>
-                                            <option>EUR (€)</option>
-                                            <option>GBP (£)</option>
-                                            <option>JPY (¥)</option>
-                                            <option>PKR (₨)</option>
-                                            <option>INR (₹)</option>
-                                            <option>CAD (C$)</option>
-                                            <option>AUD (A$)</option>
-                                            <option>CNY (¥)</option>
-                                            <option>BRL (R$)</option>
+                                            <option value="PKR" selected>PKR (₨)</option>
+                                            <option value="USD">USD ($)</option>
+                                            <option value="EUR">EUR (€)</option>
+                                            <option value="GBP">GBP (£)</option>
+                                            <option value="JPY">JPY (¥)</option>
+                                            <option value="INR">INR (₹)</option>
+                                            <option value="CAD">CAD (C$)</option>
+                                            <option value="AUD">AUD (A$)</option>
+                                            <option value="CNY">CNY (¥)</option>
+                                            <option value="BRL">BRL (R$)</option>
                                         </select>
                                     </div>
                                 </div>
@@ -1140,280 +846,6 @@
                             <div class="flex justify-end">
                                 <button id="save-settings-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Save Settings</button>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Privacy Policy Page -->
-                <div id="privacy" class="page">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-6">Privacy Policy</h3>
-                        <div class="prose max-w-none policy-content">
-                            <p class="text-gray-700 mb-4">Last updated: May 15, 2025</p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">1. Information We Collect</h4>
-                            <p class="text-gray-700 mb-4">
-                                We collect information you provide directly to us, including when you create an account, update your profile, add financial information, 
-                                or communicate with us. This may include personal information such as your name, email address, financial transaction data, and account balances.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">2. How We Use Your Information</h4>
-                            <p class="text-gray-700 mb-4">
-                                We use the information we collect to provide, maintain, and improve our services; to develop new features; to communicate with you about products, 
-                                services, and promotions; and to protect SmartGrocer and our users.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">3. Information Sharing</h4>
-                            <p class="text-gray-700 mb-4">
-                                We do not sell your personal information to third parties. We may share your information with service providers who perform services on our behalf, 
-                                with law enforcement or other third parties when required by law, or in connection with a business transfer.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">4. Data Security</h4>
-                            <p class="text-gray-700 mb-4">
-                                We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, 
-                                disclosure, or destruction.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">5. Your Choices</h4>
-                            <p class="text-gray-700 mb-4">
-                                You may update, correct, or delete your account information at any time by logging into your account. You can also contact us to request access to 
-                                or deletion of your personal information.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">6. Changes to This Policy</h4>
-                            <p class="text-gray-700 mb-4">
-                                We may change this Privacy Policy from time to time. If we make changes, we will notify you by revising the date at the top of the policy and, 
-                                in some cases, we may provide you with additional notice.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">7. Contact Us</h4>
-                            <p class="text-gray-700">
-                                If you have any questions about this Privacy Policy, please contact us at privacy@smartgrocer.com.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Terms and Conditions Page -->
-                <div id="terms" class="page">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-6">Terms and Conditions</h3>
-                        <div class="prose max-w-none policy-content">
-                            <p class="text-gray-700 mb-4">Last updated: May 15, 2025</p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">1. Agreement to Terms</h4>
-                            <p class="text-gray-700 mb-4">
-                                By accessing or using SmartGrocer's services, you agree to be bound by these Terms and Conditions. If you do not agree to these terms, please do not use our services.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">2. Eligibility</h4>
-                            <p class="text-gray-700 mb-4">
-                                You must be at least 18 years old to use our services. By using SmartGrocer, you represent and warrant that you meet this eligibility requirement.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">3. Account Registration</h4>
-                            <p class="text-gray-700 mb-4">
-                                You may need to register for an account to access certain features. You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">4. User Content</h4>
-                            <p class="text-gray-700 mb-4">
-                                You retain all rights to any content you submit to SmartGrocer. By submitting content, you grant us a license to use, store, and display that content for the purpose of providing our services to you.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">5. Prohibited Conduct</h4>
-                            <p class="text-gray-700 mb-4">
-                                You agree not to engage in any of the following prohibited activities: (a) using our services for any illegal purpose; (b) attempting to interfere with or compromise our system integrity or security; (c) copying, distributing, or disclosing any part of our services in any medium; (d) using any automated system to access our services.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">6. Termination</h4>
-                            <p class="text-gray-700 mb-4">
-                                We may terminate or suspend your account at any time without notice for conduct that we believe violates these Terms and Conditions or is harmful to other users, us, or third parties, or for any other reason.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">7. Disclaimer of Warranties</h4>
-                            <p class="text-gray-700 mb-4">
-                                Our services are provided "as is" without any warranty of any kind, either express or implied. We do not guarantee that the services will be uninterrupted, secure, or error-free.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">8. Limitation of Liability</h4>
-                            <p class="text-gray-700 mb-4">
-                                To the fullest extent permitted by law, SmartGrocer shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">9. Governing Law</h4>
-                            <p class="text-gray-700 mb-4">
-                                These Terms and Conditions shall be governed by the laws of the State of California, without regard to its conflict of law provisions.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">10. Changes to Terms</h4>
-                            <p class="text-gray-700 mb-4">
-                                We may modify these Terms and Conditions at any time. If we make changes, we will provide notice through our services or by other means.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">11. Contact Information</h4>
-                            <p class="text-gray-700">
-                                If you have any questions about these Terms and Conditions, please contact us at legal@smartgrocer.com.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Contact Page -->
-                <div id="contact" class="page">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-6">Contact Us</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Get in Touch</h4>
-                                <p class="text-gray-700 mb-6">We'd love to hear from you! Send us a message and we'll respond as soon as possible.</p>
-                                
-                                <div class="space-y-4">
-                                    <div class="flex items-start">
-                                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-green-100 flex items-center justify-center">
-                                            <i class="fas fa-map-marker-alt text-green-600 text-xs"></i>
-                                        </div>
-                                        <div class="ml-3">
-                                            <p class="text-sm font-medium text-gray-900">Address</p>
-                                            <p class="text-sm text-gray-700">123 Finance Street, Moneyville, CA 94103, USA</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start">
-                                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-green-100 flex items-center justify-center">
-                                            <i class="fas fa-phone text-green-600 text-xs"></i>
-                                        </div>
-                                        <div class="ml-3">
-                                            <p class="text-sm font-medium text-gray-900">Phone</p>
-                                            <p class="text-sm text-gray-700">+1 (555) 123-4567</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start">
-                                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-green-100 flex items-center justify-center">
-                                            <i class="fas fa-envelope text-green-600 text-xs"></i>
-                                        </div>
-                                        <div class="ml-3">
-                                            <p class="text-sm font-medium text-gray-900">Email</p>
-                                            <p class="text-sm text-gray-700">support@smartgrocer.com</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex items-start">
-                                        <div class="flex-shrink-0 h-6 w-6 rounded-full bg-green-100 flex items-center justify-center">
-                                            <i class="fas fa-clock text-green-600 text-xs"></i>
-                                        </div>
-                                        <div class="ml-3">
-                                            <p class="text-sm font-medium text-gray-900">Business Hours</p>
-                                            <p class="text-sm text-gray-700">Monday-Friday: 9am-5pm PST</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <h4 class="text-lg font-semibold text-gray-800 mb-4">Send a Message</h4>
-                                <form id="contact-form" class="space-y-4">
-                                    <div>
-                                        <label for="contact-name" class="block text-sm font-medium text-gray-700">Name</label>
-                                        <input type="text" id="contact-name" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                                    </div>
-                                    <div>
-                                        <label for="contact-email" class="block text-sm font-medium text-gray-700">Email</label>
-                                        <input type="email" id="contact-email" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                                    </div>
-                                    <div>
-                                        <label for="contact-subject" class="block text-sm font-medium text-gray-700">Subject</label>
-                                        <input type="text" id="contact-subject" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                                    </div>
-                                    <div>
-                                        <label for="contact-message" class="block text-sm font-medium text-gray-700">Message</label>
-                                        <textarea id="contact-message" rows="4" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"></textarea>
-                                    </div>
-                                    <div>
-                                        <button type="submit" class="w-full bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-accent">Send Message</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Disclaimers Page -->
-                <div id="disclaimers" class="page">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-6">Disclaimers</h3>
-                        <div class="prose max-w-none policy-content">
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">Financial Information Disclaimer</h4>
-                            <p class="text-gray-700 mb-4">
-                                The information provided by SmartGrocer is for general informational purposes only. All information on the site is provided in good faith, however, 
-                                we make no representation or warranty of any kind, express or implied, regarding the accuracy, adequacy, validity, reliability, availability, or 
-                                completeness of any information on the site.
-                            </p>
-                            <p class="text-gray-700 mb-4">
-                                Under no circumstance shall we have any liability to you for any loss or damage of any kind incurred as a result of the use of the site or reliance 
-                                on any information provided on the site. Your use of the site and your reliance on any information on the site is solely at your own risk.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">Not Financial Advice</h4>
-                            <p class="text-gray-700 mb-4">
-                                The information contained on SmartGrocer and the resources available for download through this website is not intended as, and shall not be understood 
-                                or construed as, financial advice. The information contained on this website is not a substitute for financial advice from a professional who is aware 
-                                of the facts and circumstances of your individual situation.
-                            </p>
-                            <p class="text-gray-700 mb-4">
-                                We have done our best to ensure that the information provided on this website and the resources available for download are accurate and provide valuable 
-                                information. Regardless of anything to the contrary, nothing available on or through this website should be understood as a recommendation that you should 
-                                not consult with a financial professional to address your particular information. The Company expressly recommends that you seek advice from a professional.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">No Professional-Client Relationship</h4>
-                            <p class="text-gray-700 mb-4">
-                                Your use of this website - including implementation of any suggestions set out in this website and/or use of any resources available on this website - does 
-                                not create a professional-client relationship between you and the Company or any of its professionals.
-                            </p>
-                            <p class="text-gray-700 mb-4">
-                                The Company cannot accept you as a client unless and until we determine that there is a fit and until various requirements, such as fee arrangements, are 
-                                resolved. Thus, you recognize and agree that we have not created any professional-client relationship by the use of this website.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">User's Personal Responsibility</h4>
-                            <p class="text-gray-700 mb-4">
-                                By using this website, you accept personal responsibility for the results of your actions. You agree to take full responsibility for any harm or damage you 
-                                suffer as a result of the use, or non-use, of the information available on this website or the resources available for download from this website. You agree 
-                                to use judgment and conduct due diligence before taking any actions or implementing any plans or policy suggested or recommended on this website.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">No Guarantees</h4>
-                            <p class="text-gray-700 mb-4">
-                                You agree that the Company has not made any guarantees about the results of taking any action, whether recommended on this website or not. The Company provides 
-                                educational and informational resources that are intended to help users of this website succeed in their financial goals and otherwise. You nevertheless recognize 
-                                that your ultimate success or failure will be the result of your own efforts, your particular situation, and innumerable other circumstances beyond the control 
-                                and/or knowledge of the Company.
-                            </p>
-                            <p class="text-gray-700 mb-4">
-                                You also recognize that prior results do not guarantee a similar outcome. Thus, the results obtained by others - whether clients of the Company or otherwise - 
-                                applying the principles set out in this website are no guarantee that you or any other person or entity will be able to obtain similar results.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">Errors and Omissions</h4>
-                            <p class="text-gray-700 mb-4">
-                                This website is a public resource of general information that is intended, but not promised or guaranteed, to be correct, complete, and up-to-date. We have taken 
-                                reasonable steps to ensure that the information contained in this website is accurate, but we cannot represent that this website is free of errors. You accept that 
-                                the information contained on this website may be erroneous and agree to conduct due diligence to verify any information obtained from this website and/or resources 
-                                available on it prior to taking any action. You expressly agree not to rely upon any information contained in this website.
-                            </p>
-                            
-                            <h4 class="text-lg font-semibold text-gray-800 mt-6 mb-3">Affiliate Disclaimer</h4>
-                            <p class="text-gray-700 mb-4">
-                                From time to time, the Company may participate in affiliate marketing and may allow affiliate links to be included on some of our pages. This means that we may earn 
-                                a commission if/when you click on or make purchases via affiliate links.
-                            </p>
-                            <p class="text-gray-700 mb-4">
-                                As a policy, the Company will only affiliate with products, services, coaches, consultants, and other experts that we believe will provide value to our customers and 
-                                followers.
-                            </p>
-                            <p class="text-gray-700">
-                                The Company will inform you when one of the links constitutes an affiliate link.
-                            </p>
                         </div>
                     </div>
                 </div>
@@ -1522,8 +954,8 @@
                         </select>
                     </div>
                     <div>
-                        <label for="income-amount" class="block text-sm font-medium text-gray-700">Amount ($)</label>
-                        <input type="number" id="income-amount" step="0.01" required placeholder="e.g., 1500.00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                        <label for="income-amount" class="block text-sm font-medium text-gray-700">Amount (₨)</label>
+                        <input type="number" id="income-amount" step="0.01" required placeholder="e.g., 55000.00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                     </div>
                     <div>
                         <label for="income-account" class="block text-sm font-medium text-gray-700">Account</label>
@@ -1573,8 +1005,8 @@
                         </select>
                     </div>
                     <div>
-                        <label for="expense-amount" class="block text-sm font-medium text-gray-700">Amount ($)</label>
-                        <input type="number" id="expense-amount" step="0.01" required placeholder="e.g., 85.25" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                        <label for="expense-amount" class="block text-sm font-medium text-gray-700">Amount (₨)</label>
+                        <input type="number" id="expense-amount" step="0.01" required placeholder="e.g., 8500.00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                     </div>
                     <div>
                         <label for="expense-account" class="block text-sm font-medium text-gray-700">Account</label>
@@ -1607,7 +1039,7 @@
                 <div class="space-y-4">
                     <div>
                         <label for="account-name" class="block text-sm font-medium text-gray-700">Account Name</label>
-                        <input type="text" id="account-name" required placeholder="e.g., Chase Checking" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                        <input type="text" id="account-name" required placeholder="e.g., HBL Savings" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                     </div>
                     <div>
                         <label for="account-type" class="block text-sm font-medium text-gray-700">Account Type</label>
@@ -1621,16 +1053,16 @@
                         </select>
                     </div>
                     <div>
-                        <label for="account-balance" class="block text-sm font-medium text-gray-700">Initial Balance ($)</label>
-                        <input type="number" id="account-balance" step="0.01" required placeholder="e.g., 2500.00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                        <label for="account-balance" class="block text-sm font-medium text-gray-700">Initial Balance (₨)</label>
+                        <input type="number" id="account-balance" step="0.01" required placeholder="e.g., 50000.00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                     </div>
                     <div>
                         <label for="account-currency" class="block text-sm font-medium text-gray-700">Currency</label>
                         <select id="account-currency" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-white">
+                            <option value="PKR" selected>PKR (₨)</option>
                             <option value="USD">USD ($)</option>
                             <option value="EUR">EUR (€)</option>
                             <option value="GBP">GBP (£)</option>
-                            <option value="JPY">JPY (¥)</option>
                         </select>
                     </div>
                 </div>
@@ -1667,8 +1099,8 @@
                         </select>
                     </div>
                     <div>
-                        <label for="budget-limit" class="block text-sm font-medium text-gray-700">Budget Limit ($)</label>
-                        <input type="number" id="budget-limit" step="0.01" required placeholder="e.g., 500.00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                        <label for="budget-limit" class="block text-sm font-medium text-gray-700">Budget Limit (₨)</label>
+                        <input type="number" id="budget-limit" step="0.01" required placeholder="e.g., 15000.00" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                     </div>
                     <div>
                         <label for="budget-period" class="block text-sm font-medium text-gray-700">Budget Period</label>
@@ -1819,7 +1251,7 @@
                         <td>${description}</td>
                         <td><span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">${category}</span></td>
                         <td>${account}</td>
-                        <td class="text-right text-income font-medium">+$${parseFloat(amount).toFixed(2)}</td>
+                        <td class="text-right text-income font-medium">+₨${parseFloat(amount).toFixed(2)}</td>
                         <td class="text-center">
                             <button class="text-blue-600 hover:text-blue-800 mr-2">
                                 <i class="fas fa-edit"></i>
@@ -1884,7 +1316,7 @@
                         <td>${description}</td>
                         <td><span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">${category}</span></td>
                         <td>${account}</td>
-                        <td class="text-right text-expense font-medium">-$${parseFloat(amount).toFixed(2)}</td>
+                        <td class="text-right text-expense font-medium">-₨${parseFloat(amount).toFixed(2)}</td>
                         <td class="text-center">
                             <button class="text-blue-600 hover:text-blue-800 mr-2">
                                 <i class="fas fa-edit"></i>
@@ -1959,7 +1391,7 @@
                                 </button>
                             </div>
                         </div>
-                        <p class="text-3xl font-bold mt-4 ${parseFloat(balance) < 0 ? 'text-red-600' : 'text-gray-800'}">${parseFloat(balance) < 0 ? '-' : ''}$${Math.abs(parseFloat(balance)).toFixed(2)}</p>
+                        <p class="text-3xl font-bold mt-4 ${parseFloat(balance) < 0 ? 'text-red-600' : 'text-gray-800'}">${parseFloat(balance) < 0 ? '-' : ''}₨${Math.abs(parseFloat(balance)).toFixed(2)}</p>
                     `;
                     accountsContainer.appendChild(newAccount);
                     
@@ -2022,13 +1454,13 @@
                         <h4 class="text-lg font-semibold text-gray-800">${category}</h4>
                         <div class="mt-4">
                             <div class="flex justify-between text-sm text-gray-600">
-                                <span>Spent: $0</span>
-                                <span>Limit: $${parseFloat(limit).toFixed(2)}</span>
+                                <span>Spent: ₨0</span>
+                                <span>Limit: ₨${parseFloat(limit).toFixed(2)}</span>
                             </div>
                             <div class="progress-bar mt-2">
                                 <div class="progress-fill bg-green-500" style="width: 0%"></div>
                             </div>
-                            <p class="mt-2 text-sm text-gray-600">$${parseFloat(limit).toFixed(2)} remaining</p>
+                            <p class="mt-2 text-sm text-gray-600">₨${parseFloat(limit).toFixed(2)} remaining</p>
                         </div>
                     `;
                     budgetsContainer.appendChild(newBudget);
@@ -2063,16 +1495,6 @@
                     document.getElementById('welcome-user-text').textContent = `Welcome, ${name}!`;
                     
                     showNotification('Settings saved successfully!');
-                });
-            }
-
-            // Setup contact form
-            const contactForm = document.getElementById('contact-form');
-            if (contactForm) {
-                contactForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    showNotification('Your message has been sent! We will get back to you soon.');
-                    contactForm.reset();
                 });
             }
 
@@ -2166,14 +1588,14 @@
                         datasets: [
                             {
                                 label: 'Income',
-                                data: [4200, 4300, 4400, 4800, 5420],
+                                data: [98000, 101000, 105000, 115000, 125420],
                                 backgroundColor: '#10B981',
                                 borderColor: '#10B981',
                                 borderWidth: 1
                             },
                             {
                                 label: 'Expenses',
-                                data: [3100, 3200, 3000, 3500, 3845],
+                                data: [72000, 75000, 69000, 81000, 85845],
                                 backgroundColor: '#EF4444',
                                 borderColor: '#EF4444',
                                 borderWidth: 1
@@ -2217,14 +1639,14 @@
                         datasets: [
                             {
                                 label: 'Income',
-                                data: [4200, 4300, 4400, 4800, 5420],
+                                data: [98000, 101000, 105000, 115000, 125420],
                                 backgroundColor: '#10B981',
                                 borderColor: '#10B981',
                                 borderWidth: 1
                             },
                             {
                                 label: 'Expenses',
-                                data: [3100, 3200, 3000, 3500, 3845],
+                                data: [72000, 75000, 69000, 81000, 85845],
                                 backgroundColor: '#EF4444',
                                 borderColor: '#EF4444',
                                 borderWidth: 1
@@ -2252,7 +1674,7 @@
                         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
                         datasets: [{
                             label: 'Net Worth',
-                            data: [25000, 26500, 29000, 31000, 32500],
+                            data: [250000, 265000, 290000, 310000, 325000],
                             borderColor: '#3B82F6',
                             backgroundColor: 'rgba(59, 130, 246, 0.1)',
                             fill: true,
@@ -2274,7 +1696,7 @@
                     data: {
                         labels: ['Groceries', 'Dining', 'Utilities', 'Entertainment', 'Transportation'],
                         datasets: [{
-                            data: [500, 300, 200, 150, 250],
+                            data: [25000, 15000, 10000, 7500, 12500],
                             backgroundColor: [
                                 '#10B981',
                                 '#3B82F6',
@@ -2299,7 +1721,7 @@
                     data: {
                         labels: ['Salary', 'Freelance', 'Investments', 'Other'],
                         datasets: [{
-                            data: [3500, 1200, 420, 300],
+                            data: [87500, 30000, 10500, 7500],
                             backgroundColor: [
                                 '#10B981',
                                 '#3B82F6',
