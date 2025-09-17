@@ -9,17 +9,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1a202c; }
-        .card { background-color: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1); }
+        .card { background-color: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); }
         .bg-primary { background-color: #228B22; } .text-primary { color: #228B22; }
         .bg-income { background-color: #10B981; } .text-income { color: #10B981; }
         .bg-expense { background-color: #EF4444; } .text-expense { color: #EF4444; }
         .page { display: none; animation: fadeIn 0.5s ease-in-out; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #f0f4f8; } ::-webkit-scrollbar-thumb { background: #3CB371; border-radius: 10px; }
         .nav-link.active { background-color: #e6f7e6; color: #228B22; font-weight: bold; }
         .progress-bar { height: 8px; border-radius: 4px; overflow: hidden; background-color: #e5e7eb; }
         .progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
-        #sidebar { transition: transform 0.3s ease-in-out; }
+        #sidebar { transition: transform 0.3s ease-in-out; } #sidebar-overlay { transition: opacity 0.3s ease-in-out; }
         .notification { position: fixed; top: 100px; right: 20px; padding: 15px 20px; border-radius: 8px; background-color: #3CB371; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 1050; transform: translateX(120%); transition: transform 0.3s ease; }
         .notification.show { transform: translateX(0); }
         .financial-summary { border-left: 4px solid; } .income-summary { border-left-color: #10B981; } .expense-summary { border-left-color: #EF4444; } .balance-summary { border-left-color: #3B82F6; }
@@ -28,11 +30,9 @@
         .transaction-table td { padding: 12px 16px; border-bottom: 1px solid #f3f4f6; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1040; justify-content: center; align-items: center; }
         .modal-content { background-color: white; border-radius: 12px; width: 90%; max-width: 500px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .currency-symbol { font-size: 0.8em; margin-right: 4px; }
+        .currency-symbol { font-size: 0.8em; margin-right: 2px; }
         #signin-overlay { display: none; }
-        #main-app-container { visibility: hidden; opacity: 0; transition: opacity 0.5s ease-in-out; }
-        .category-chip { display: inline-flex; align-items: center; background-color: #e5e7eb; padding: 4px 12px; border-radius: 16px; font-size: 0.875rem; margin: 4px; }
-        .category-chip button { margin-left: 8px; color: #9ca3af; background: none; border: none; cursor: pointer; font-size: 1rem; }
+        #main-app-container { visibility: hidden; }
     </style>
 </head>
 <body class="antialiased">
@@ -43,26 +43,31 @@
             <p class="text-gray-600 mb-8">Please enter your name to get started.</p>
             <form id="signin-form">
                 <input type="text" id="signin-name" placeholder="Your Name" class="w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 text-lg text-center" required>
-                <button type="submit" class="mt-4 w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors text-lg">Start Managing Finances</button>
+                <button type="submit" class="mt-4 w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors text-lg">
+                    Start Managing Finances
+                </button>
             </form>
         </div>
     </div>
     
-    <div id="main-app-container">
+    <div id="main-app-container" class="flex h-screen bg-gray-100 w-full">
         <aside id="sidebar" class="w-64 flex-shrink-0 bg-white shadow-lg fixed inset-y-0 left-0 z-40 transform -translate-x-full lg:relative lg:translate-x-0">
              <div class="h-full flex flex-col">
-                <div class="h-20 flex items-center justify-center border-b"><h1 class="text-2xl font-bold text-primary">SmartGrocer</h1></div>
+                <div class="h-20 flex items-center justify-center border-b">
+                    <h1 class="text-2xl font-bold text-primary">SmartGrocer</h1>
+                </div>
                 <nav class="flex-1 px-4 py-6 space-y-2">
-                    <a href="#dashboard" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg active"><i class="fas fa-home w-6 h-6 mr-3"></i>Dashboard</a>
-                    <a href="#income" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg"><i class="fas fa-money-bill-wave w-6 h-6 mr-3"></i>Income</a>
-                    <a href="#expenses" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg"><i class="fas fa-credit-card w-6 h-6 mr-3"></i>Expenses</a>
-                    <a href="#accounts" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg"><i class="fas fa-wallet w-6 h-6 mr-3"></i>Accounts</a>
-                    <a href="#budgets" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg"><i class="fas fa-chart-pie w-6 h-6 mr-3"></i>Budgets</a>
-                    <a href="#reports" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg"><i class="fas fa-chart-line w-6 h-6 mr-3"></i>Reports</a>
-                    <a href="#settings" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg"><i class="fas fa-cog w-6 h-6 mr-3"></i>Settings</a>
+                    <a href="#dashboard" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary active"><i class="fas fa-home w-6 h-6 mr-3"></i>Dashboard</a>
+                    <a href="#income" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-money-bill-wave w-6 h-6 mr-3"></i>Income</a>
+                    <a href="#expenses" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-credit-card w-6 h-6 mr-3"></i>Expenses</a>
+                    <a href="#accounts" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-wallet w-6 h-6 mr-3"></i>Accounts</a>
+                    <a href="#budgets" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-chart-pie w-6 h-6 mr-3"></i>Budgets</a>
+                    <a href="#reports" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-chart-line w-6 h-6 mr-3"></i>Reports</a>
+                    <a href="#settings" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-cog w-6 h-6 mr-3"></i>Settings</a>
                 </nav>
             </div>
         </aside>
+
         <div class="flex-1 flex flex-col overflow-hidden relative">
             <header class="h-20 flex justify-between items-center px-6 bg-white shadow-md">
                  <button id="mobile-menu-button" class="lg:hidden text-gray-600 focus:outline-none"><i class="fas fa-bars text-xl"></i></button>
@@ -70,13 +75,91 @@
                 <span id="welcome-user-text" class="text-gray-600">Welcome, User!</span>
             </header>
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6 md:p-8">
-                <div id="dashboard" class="page active"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6"><div class="card p-6 financial-summary income-summary"><p class="text-sm text-gray-500">Total Income</p><p id="total-income-stat" class="text-3xl font-bold text-income"></p></div><div class="card p-6 financial-summary expense-summary"><p class="text-sm text-gray-500">Total Expenses</p><p id="total-expenses-stat" class="text-3xl font-bold text-expense"></p></div><div class="card p-6 financial-summary balance-summary"><p class="text-sm text-gray-500">Net Balance</p><p id="net-balance-stat" class="text-3xl font-bold text-blue-500"></p></div></div></div>
-                <div id="income" class="page"><div class="card p-6"><div class="flex justify-between items-center mb-6"><h3 class="text-xl font-bold">Income Management</h3><button id="add-income-btn" class="bg-income text-white font-bold py-2 px-4 rounded-lg"><i class="fas fa-plus mr-2"></i>Add Income</button></div><div class="overflow-x-auto"><table class="transaction-table"><thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Method</th><th class="text-right">Amount</th><th class="text-center">Actions</th></tr></thead><tbody id="income-table-body"></tbody></table></div></div></div>
-                <div id="expenses" class="page"><div class="card p-6"><div class="flex justify-between items-center mb-6"><h3 class="text-xl font-bold">Expense Management</h3><button id="add-expense-btn" class="bg-expense text-white font-bold py-2 px-4 rounded-lg"><i class="fas fa-plus mr-2"></i>Add Expense</button></div><div class="overflow-x-auto"><table class="transaction-table"><thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Method</th><th class="text-right">Amount</th><th class="text-center">Actions</th></tr></thead><tbody id="expense-table-body"></tbody></table></div></div></div>
-                <div id="accounts" class="page"><div class="card p-6"><div class="flex justify-between items-center mb-6"><h3 class="text-xl font-bold">Your Accounts</h3><button id="add-account-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg">Add Account</button></div><div id="accounts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div></div></div>
-                <div id="budgets" class="page"><div class="card p-6"><div class="flex justify-between items-center mb-6"><h3 class="text-xl font-bold">Your Budgets</h3><button id="add-budget-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg">Create Budget</button></div><div id="budgets-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div></div></div>
-                <div id="reports" class="page"><div class="grid grid-cols-1 lg:grid-cols-2 gap-6"><div class="card p-6"><h3 class="text-xl font-bold mb-4">Income vs Expenses</h3><div class="h-80"><canvas id="reports-income-expense-chart"></canvas></div></div><div class="card p-6"><h3 class="text-xl font-bold mb-4">Expense Breakdown</h3><div class="h-80"><canvas id="expense-categories-chart"></canvas></div></div></div></div>
-                <div id="settings" class="page"><div id="settings-container"></div></div>
+                <div id="dashboard" class="page active">
+                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                        <div class="card p-6 financial-summary income-summary">
+                            <p class="text-sm text-gray-500">Total Income</p>
+                            <p id="total-income-stat" class="text-3xl font-bold text-income"></p>
+                        </div>
+                        <div class="card p-6 financial-summary expense-summary">
+                           <p class="text-sm text-gray-500">Total Expenses</p>
+                           <p id="total-expenses-stat" class="text-3xl font-bold text-expense"></p>
+                        </div>
+                        <div class="card p-6 financial-summary balance-summary">
+                            <p class="text-sm text-gray-500">Net Balance</p>
+                            <p id="net-balance-stat" class="text-3xl font-bold text-blue-500"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="income" class="page">
+                    <div class="card p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold">Income Management</h3>
+                            <button id="add-income-btn" class="bg-income text-white font-bold py-2 px-4 rounded-lg"><i class="fas fa-plus mr-2"></i>Add Income</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="transaction-table">
+                                <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Method</th><th class="text-right">Amount</th><th class="text-center">Actions</th></tr></thead>
+                                <tbody id="income-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="expenses" class="page">
+                     <div class="card p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold">Expense Management</h3>
+                            <button id="add-expense-btn" class="bg-expense text-white font-bold py-2 px-4 rounded-lg"><i class="fas fa-plus mr-2"></i>Add Expense</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="transaction-table">
+                                <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Method</th><th class="text-right">Amount</th><th class="text-center">Actions</th></tr></thead>
+                                <tbody id="expense-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="accounts" class="page">
+                    <div class="card p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold">Your Accounts</h3>
+                            <button id="add-account-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg">Add Account</button>
+                        </div>
+                        <div id="accounts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                    </div>
+                </div>
+
+                <div id="budgets" class="page">
+                    <div class="card p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold">Your Budgets</h3>
+                            <button id="add-budget-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg">Create Budget</button>
+                        </div>
+                        <div id="budgets-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                    </div>
+                </div>
+
+                <div id="reports" class="page">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="card p-6"><h3 class="text-xl font-bold mb-4">Income vs Expenses (Monthly)</h3><div class="h-80"><canvas id="reports-income-expense-chart"></canvas></div></div>
+                        <div class="card p-6"><h3 class="text-xl font-bold mb-4">Expense Breakdown by Category</h3><div class="h-80"><canvas id="expense-categories-chart"></canvas></div></div>
+                        <div class="card p-6"><h3 class="text-xl font-bold mb-4">Net Worth Over Time</h3><div class="h-80"><canvas id="reports-net-worth-chart"></canvas></div></div>
+                        <div class="card p-6"><h3 class="text-xl font-bold mb-4">Income Sources</h3><div class="h-80"><canvas id="income-sources-chart"></canvas></div></div>
+                    </div>
+                </div>
+
+                <div id="settings" class="page">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Settings</h3>
+                        <p class="mb-4">Here you can reset all your saved data. This action cannot be undone.</p>
+                        <button id="reset-data-btn" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>Reset All Data
+                        </button>
+                    </div>
+                </div>
             </main>
         </div>
     </div>
@@ -88,18 +171,9 @@
 // ===================================================================================
 // APP INITIALIZATION & STATE MANAGEMENT
 // ===================================================================================
-const APP_DATA_KEY = 'smartGrocerUserData';
+const APP_DATA_KEY = 'smartGrocerData';
 let appState = {};
 let activeCharts = {};
-
-const CURRENCIES = {
-    'PKR': { symbol: '₨', name: 'Pakistani Rupee' },
-    'USD': { symbol: '$', name: 'US Dollar' },
-    'EUR': { symbol: '€', name: 'Euro' },
-    'GBP': { symbol: '£', name: 'British Pound' },
-    'INR': { symbol: '₹', name: 'Indian Rupee' },
-    'JPY': { symbol: '¥', name: 'Japanese Yen' },
-};
 
 document.addEventListener('DOMContentLoaded', () => {
     const userData = localStorage.getItem(APP_DATA_KEY);
@@ -125,24 +199,23 @@ document.addEventListener('DOMContentLoaded', () => {
 function initializeNewUser(userName) {
     appState = {
         user: { name: userName },
-        settings: {
-            currency: { code: 'PKR', symbol: '₨' },
-            incomeCategories: ['Salary', 'Freelance', 'Investment', 'Business'],
-            expenseCategories: ['Groceries', 'Utilities', 'Dining', 'Transportation', 'Entertainment', 'Shopping', 'Health', 'Other']
-        },
         transactions: { income: [], expenses: [] },
-        accounts: [{ id: Date.now(), name: "Main Account", type: "Chequing", balance: 50000 }],
-        budgets: [{ id: Date.now(), category: "Groceries", limit: 15000 }]
+        accounts: [
+            { id: Date.now(), name: "Main Chequing", type: "Chequing", balance: 5000 },
+            { id: Date.now() + 1, name: "Visa Card", type: "Credit Card", balance: -500 }
+        ],
+        budgets: [
+            { id: Date.now(), category: "Groceries", limit: 50000 }
+        ]
     };
     saveState();
 }
 
 function initializeApp() {
-    const appContainer = document.getElementById('main-app-container');
     document.getElementById('signin-overlay').style.display = 'none';
-    appContainer.style.visibility = 'visible';
-    appContainer.style.opacity = '1';
+    document.getElementById('main-app-container').style.visibility = 'visible';
     document.getElementById('welcome-user-text').textContent = `Welcome, ${appState.user.name}!`;
+    
     renderAll();
 }
 
@@ -152,21 +225,17 @@ function saveState() {
 
 function renderAll() {
     renderTransactions('income');
-    renderTransactions('expenses');
+    renderTransactions('expense');
     renderAccounts();
     renderBudgets();
-    renderSettings();
     updateDashboardSummary();
 }
 
 // ===================================================================================
-// EVENT LISTENERS & NAVIGATION
+// EVENT LISTENERS
 // ===================================================================================
 function setupEventListeners() {
-    document.getElementById('mobile-menu-button').addEventListener('click', () => {
-        document.getElementById('sidebar').classList.toggle('-translate-x-full');
-    });
-    
+    // Navigation
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
@@ -180,25 +249,30 @@ function setupEventListeners() {
         });
     });
 
+    // Modal Triggers
     document.getElementById('add-income-btn').addEventListener('click', () => showTransactionModal('income'));
     document.getElementById('add-expense-btn').addEventListener('click', () => showTransactionModal('expense'));
     document.getElementById('add-account-btn').addEventListener('click', showAccountModal);
     document.getElementById('add-budget-btn').addEventListener('click', showBudgetModal);
+    
+    // Settings
+    document.getElementById('reset-data-btn').addEventListener('click', () => {
+        if (confirm('Are you sure you want to delete ALL your data? This cannot be undone.')) {
+            localStorage.removeItem(APP_DATA_KEY);
+            window.location.reload();
+        }
+    });
 }
 
 // ===================================================================================
-// UI RENDERING FUNCTIONS
+// UI RENDERING & DOM MANIPULATION
 // ===================================================================================
-function formatCurrency(value) {
-    if (typeof value !== 'number') value = 0;
-    const { symbol } = appState.settings.currency;
-    return `<span class="currency-symbol">${symbol}</span>${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-}
-
 function updateDashboardSummary() {
     const totalIncome = appState.transactions.income.reduce((sum, t) => sum + t.amount, 0);
     const totalExpenses = appState.transactions.expenses.reduce((sum, t) => sum + t.amount, 0);
     const netBalance = totalIncome - totalExpenses;
+    const formatCurrency = (val) => `<span class="currency-symbol">₨</span>${val.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
     document.getElementById('total-income-stat').innerHTML = formatCurrency(totalIncome);
     document.getElementById('total-expenses-stat').innerHTML = formatCurrency(totalExpenses);
     document.getElementById('net-balance-stat').innerHTML = formatCurrency(netBalance);
@@ -207,187 +281,337 @@ function updateDashboardSummary() {
 function renderTransactions(type) {
     const container = document.getElementById(`${type}-table-body`);
     container.innerHTML = '';
-    const transactions = appState.transactions[type];
-    if (!transactions || transactions.length === 0) {
+    const transactions = appState.transactions[type === 'income' ? 'income' : 'expenses'];
+    if (transactions.length === 0) {
         container.innerHTML = `<tr><td colspan="6" class="text-center text-gray-500 py-4">No ${type} recorded yet.</td></tr>`;
         return;
     }
     transactions.forEach(t => {
         const sign = type === 'income' ? '+' : '-';
         const colorClass = type === 'income' ? 'text-income' : 'text-expense';
-        container.innerHTML += `
-            <tr>
-                <td>${t.date}</td><td>${t.description}</td><td>${t.category}</td><td>${t.method}</td>
-                <td class="text-right font-medium ${colorClass}">${sign}${formatCurrency(t.amount)}</td>
-                <td class="text-center"><button onclick="deleteTransaction('${type}', ${t.id})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button></td>
-            </tr>`;
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${t.date}</td>
+            <td>${t.description}</td>
+            <td>${t.category}</td>
+            <td>${t.method}</td>
+            <td class="text-right font-medium ${colorClass}">${sign}₨${t.amount.toFixed(2)}</td>
+            <td class="text-center"><button onclick="deleteTransaction('${type}', ${t.id})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button></td>
+        `;
+        container.appendChild(row);
     });
 }
 
 function renderAccounts() {
     const container = document.getElementById('accounts-container');
     container.innerHTML = '';
+     if (appState.accounts.length === 0) {
+        container.innerHTML = `<p class="text-center text-gray-500 col-span-full">No accounts added yet.</p>`;
+        return;
+    }
     appState.accounts.forEach(acc => {
         const balanceColor = acc.balance >= 0 ? 'text-gray-800' : 'text-red-600';
-        container.innerHTML += `
-            <div class="card p-6">
-                <div class="flex justify-between items-start">
-                    <div><h4 class="text-lg font-semibold">${acc.name}</h4><p class="text-sm text-gray-500">${acc.type}</p></div>
-                    <button onclick="deleteAccount(${acc.id})" class="text-red-500"><i class="fas fa-trash"></i></button>
+        const sign = acc.balance < 0 ? '-' : '';
+        const card = document.createElement('div');
+        card.className = 'card p-6';
+        card.innerHTML = `
+            <div class="flex justify-between items-start">
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-800">${acc.name}</h4>
+                    <p class="text-sm text-gray-500">${acc.type}</p>
                 </div>
-                <p class="text-3xl font-bold mt-4 ${balanceColor}">${formatCurrency(acc.balance)}</p>
-            </div>`;
+                <button onclick="deleteAccount(${acc.id})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+            </div>
+            <p class="text-3xl font-bold mt-4 ${balanceColor}">${sign}₨${Math.abs(acc.balance).toLocaleString()}</p>
+        `;
+        container.appendChild(card);
     });
 }
 
 function renderBudgets() {
     const container = document.getElementById('budgets-container');
     container.innerHTML = '';
+     if (appState.budgets.length === 0) {
+        container.innerHTML = `<p class="text-center text-gray-500 col-span-full">No budgets created yet.</p>`;
+        return;
+    }
     appState.budgets.forEach(b => {
-        const spent = appState.transactions.expenses.filter(e => e.category === b.category).reduce((sum, e) => sum + e.amount, 0);
+        const spent = appState.transactions.expenses
+            .filter(e => e.category === b.category)
+            .reduce((sum, e) => sum + e.amount, 0);
         const remaining = b.limit - spent;
-        const percentage = b.limit > 0 ? Math.min((spent / b.limit) * 100, 100) : 0;
+        const percentage = Math.min((spent / b.limit) * 100, 100);
+        
         let progressColor = 'bg-green-500';
         if (percentage > 75) progressColor = 'bg-yellow-500';
         if (percentage >= 100) progressColor = 'bg-red-500';
 
-        container.innerHTML += `
-            <div class="card p-6 relative">
-                <button onclick="deleteBudget(${b.id})" class="absolute top-4 right-4 text-red-500"><i class="fas fa-trash"></i></button>
-                <h4 class="text-lg font-semibold">${b.category}</h4>
-                <div class="mt-4">
-                    <div class="flex justify-between text-sm"><p>Spent: ${formatCurrency(spent)}</p><p>Limit: ${formatCurrency(b.limit)}</p></div>
-                    <div class="progress-bar mt-2"><div class="progress-fill ${progressColor}" style="width: ${percentage}%"></div></div>
-                    <p class="mt-2 text-sm">Remaining: ${formatCurrency(remaining)}</p>
+        const card = document.createElement('div');
+        card.className = 'card p-6 relative';
+        card.innerHTML = `
+            <button onclick="deleteBudget(${b.id})" class="absolute top-4 right-4 text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+            <h4 class="text-lg font-semibold text-gray-800">${b.category}</h4>
+            <div class="mt-4">
+                <div class="flex justify-between text-sm text-gray-600">
+                    <span>Spent: ₨${spent.toLocaleString()}</span>
+                    <span>Limit: ₨${b.limit.toLocaleString()}</span>
                 </div>
-            </div>`;
-    });
-}
-
-function renderSettings() {
-    const container = document.getElementById('settings-container');
-    const currencyOptions = Object.entries(CURRENCIES).map(([code, {symbol, name}]) => 
-        `<option value="${code}" ${code === appState.settings.currency.code ? 'selected' : ''}>${name} (${symbol})</option>`
-    ).join('');
-
-    container.innerHTML = `
-        <div class="card p-6 mb-6">
-            <h3 class="text-xl font-bold mb-4">General Settings</h3>
-            <label for="currency-select" class="block text-sm font-medium text-gray-700">Currency</label>
-            <select id="currency-select" class="mt-1 block w-full md:w-1/2 border-gray-300 rounded-md shadow-sm">${currencyOptions}</select>
-        </div>
-        <div class="card p-6 mb-6">
-            <h3 class="text-xl font-bold mb-4">Manage Expense Categories</h3>
-            <div id="expense-categories-list" class="flex flex-wrap mb-4 -ml-4 -mt-4"></div>
-            <form id="add-expense-category-form" class="flex gap-2"><input id="new-expense-category" type="text" placeholder="New Category Name" class="flex-grow border p-2 rounded" required><button type="submit" class="bg-primary text-white py-2 px-4 rounded">Add</button></form>
-        </div>
-        <div class="card p-6 mb-6">
-            <h3 class="text-xl font-bold mb-4">Manage Income Categories</h3>
-            <div id="income-categories-list" class="flex flex-wrap mb-4 -ml-4 -mt-4"></div>
-            <form id="add-income-category-form" class="flex gap-2"><input id="new-income-category" type="text" placeholder="New Category Name" class="flex-grow border p-2 rounded" required><button type="submit" class="bg-primary text-white py-2 px-4 rounded">Add</button></form>
-        </div>
-         <div class="card p-6"><h3 class="text-xl font-bold mb-4">Danger Zone</h3><button id="reset-data-btn" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg"><i class="fas fa-exclamation-triangle mr-2"></i>Reset All Data</button></div>
-    `;
-
-    renderCategoryChips('expense');
-    renderCategoryChips('income');
-    
-    document.getElementById('currency-select').addEventListener('change', handleCurrencyChange);
-    document.getElementById('add-expense-category-form').addEventListener('submit', (e) => handleAddCategory(e, 'expense'));
-    document.getElementById('add-income-category-form').addEventListener('submit', (e) => handleAddCategory(e, 'income'));
-    document.getElementById('reset-data-btn').addEventListener('click', () => { if (confirm('Are you sure? This will delete all your data permanently.')) { localStorage.removeItem(APP_DATA_KEY); window.location.reload(); }});
-}
-
-function renderCategoryChips(type) {
-    const list = document.getElementById(`${type}-categories-list`);
-    list.innerHTML = '';
-    appState.settings[`${type}Categories`].forEach(cat => {
-        list.innerHTML += `<div class="category-chip"><span>${cat}</span><button onclick="deleteCategory('${type}', '${cat}')">&times;</button></div>`;
+                <div class="progress-bar mt-2">
+                    <div class="progress-fill ${progressColor}" style="width: ${percentage}%"></div>
+                </div>
+                <p class="mt-2 text-sm text-gray-600">₨${remaining.toLocaleString()} remaining</p>
+            </div>
+        `;
+        container.appendChild(card);
     });
 }
 
 // ===================================================================================
-// MODAL & DATA HANDLING
+// MODAL MANAGEMENT
 // ===================================================================================
-function showModal(content) {
-    document.getElementById('modal-container').innerHTML = `<div class="modal" style="display:flex"><div class="modal-content">${content}</div></div>`;
-}
-function closeModal() { document.getElementById('modal-container').innerHTML = ''; }
-
 function showTransactionModal(type) {
-    const categoryList = appState.settings[`${type}Categories`];
-    const datalistOptions = categoryList.map(cat => `<option value="${cat}">`).join('');
-    showModal(`
-        <h3 class="text-xl font-bold mb-4">Add ${type.charAt(0).toUpperCase() + type.slice(1)}</h3>
-        <form id="modal-form" class="space-y-4">
-            <input type="date" name="date" required class="w-full border p-2 rounded" value="${new Date().toISOString().split('T')[0]}">
-            <input type="text" name="description" required placeholder="Description" class="w-full border p-2 rounded">
-            <input type="text" name="category" list="${type}-categories" required placeholder="Category" class="w-full border p-2 rounded">
-            <datalist id="${type}-categories">${datalistOptions}</datalist>
-            <input type="text" name="method" required placeholder="Method (e.g., Bank)" class="w-full border p-2 rounded">
-            <input type="number" name="amount" step="0.01" min="0" required placeholder="Amount" class="w-full border p-2 rounded">
-            <div class="mt-6 flex justify-end gap-4"><button type="button" onclick="closeModal()" class="bg-gray-300 py-2 px-4 rounded">Cancel</button><button type="submit" class="bg-primary text-white py-2 px-4 rounded">Add</button></div>
-        </form>`);
-    document.getElementById('modal-form').addEventListener('submit', (e) => handleTransactionSubmit(e, type));
+    const modalHTML = `
+        <div class="modal" id="transaction-modal" style="display:flex">
+            <div class="modal-content">
+                <h3 class="text-xl font-bold mb-4">Add New ${type.charAt(0).toUpperCase() + type.slice(1)}</h3>
+                <form id="transaction-form">
+                    <div class="space-y-4">
+                        <input type="date" name="date" required class="w-full border p-2 rounded">
+                        <input type="text" name="description" required placeholder="Description" class="w-full border p-2 rounded">
+                        <input type="text" name="category" required placeholder="Category (e.g., Salary, Groceries)" class="w-full border p-2 rounded">
+                        <input type="text" name="method" required placeholder="Method (e.g., Bank Transfer)" class="w-full border p-2 rounded">
+                        <input type="number" name="amount" step="0.01" min="0" required placeholder="Amount" class="w-full border p-2 rounded">
+                    </div>
+                    <div class="mt-6 flex justify-end gap-4">
+                        <button type="button" onclick="closeModal()" class="bg-gray-300 py-2 px-4 rounded">Cancel</button>
+                        <button type="submit" class="bg-primary text-white py-2 px-4 rounded">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>`;
+    document.getElementById('modal-container').innerHTML = modalHTML;
+    document.getElementById('transaction-form').addEventListener('submit', (e) => handleTransactionSubmit(e, type));
 }
 
 function showAccountModal() {
-    showModal(`
-        <h3 class="text-xl font-bold mb-4">Add Account</h3><form id="modal-form" class="space-y-4">
-            <input type="text" name="name" required placeholder="Account Name" class="w-full border p-2 rounded"><input type="text" name="type" required placeholder="Type (e.g., Savings)" class="w-full border p-2 rounded"><input type="number" name="balance" step="0.01" required placeholder="Initial Balance" class="w-full border p-2 rounded">
-            <div class="mt-6 flex justify-end gap-4"><button type="button" onclick="closeModal()" class="bg-gray-300 py-2 px-4 rounded">Cancel</button><button type="submit" class="bg-primary text-white py-2 px-4 rounded">Add</button></div></form>`);
-    document.getElementById('modal-form').addEventListener('submit', handleAccountSubmit);
+     const modalHTML = `
+        <div class="modal" id="account-modal" style="display:flex">
+            <div class="modal-content">
+                <h3 class="text-xl font-bold mb-4">Add New Account</h3>
+                <form id="account-form">
+                    <div class="space-y-4">
+                        <input type="text" name="name" required placeholder="Account Name (e.g., HBL Savings)" class="w-full border p-2 rounded">
+                        <input type="text" name="type" required placeholder="Account Type (e.g., Savings)" class="w-full border p-2 rounded">
+                        <input type="number" name="balance" step="0.01" required placeholder="Initial Balance" class="w-full border p-2 rounded">
+                    </div>
+                    <div class="mt-6 flex justify-end gap-4">
+                        <button type="button" onclick="closeModal()" class="bg-gray-300 py-2 px-4 rounded">Cancel</button>
+                        <button type="submit" class="bg-primary text-white py-2 px-4 rounded">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>`;
+    document.getElementById('modal-container').innerHTML = modalHTML;
+    document.getElementById('account-form').addEventListener('submit', handleAccountSubmit);
 }
 
 function showBudgetModal() {
-    const expenseCategoriesDatalist = appState.settings.expenseCategories.map(cat => `<option value="${cat}">`).join('');
-    showModal(`
-        <h3 class="text-xl font-bold mb-4">Create Budget</h3><form id="modal-form" class="space-y-4">
-            <input type="text" name="category" list="expense-categories-for-budget" required placeholder="Category (e.g., Groceries)" class="w-full border p-2 rounded">
-            <datalist id="expense-categories-for-budget">${expenseCategoriesDatalist}</datalist>
-            <input type="number" name="limit" step="0.01" min="0" required placeholder="Budget Limit" class="w-full border p-2 rounded">
-            <div class="mt-6 flex justify-end gap-4"><button type="button" onclick="closeModal()" class="bg-gray-300 py-2 px-4 rounded">Cancel</button><button type="submit" class="bg-primary text-white py-2 px-4 rounded">Create</button></div></form>`);
-    document.getElementById('modal-form').addEventListener('submit', handleBudgetSubmit);
+     const modalHTML = `
+        <div class="modal" id="budget-modal" style="display:flex">
+            <div class="modal-content">
+                <h3 class="text-xl font-bold mb-4">Create New Budget</h3>
+                <form id="budget-form">
+                    <div class="space-y-4">
+                        <input type="text" name="category" required placeholder="Category (e.g., Groceries)" class="w-full border p-2 rounded">
+                        <input type="number" name="limit" step="0.01" min="0" required placeholder="Budget Limit" class="w-full border p-2 rounded">
+                    </div>
+                    <div class="mt-6 flex justify-end gap-4">
+                        <button type="button" onclick="closeModal()" class="bg-gray-300 py-2 px-4 rounded">Cancel</button>
+                        <button type="submit" class="bg-primary text-white py-2 px-4 rounded">Create</button>
+                    </div>
+                </form>
+            </div>
+        </div>`;
+    document.getElementById('modal-container').innerHTML = modalHTML;
+    document.getElementById('budget-form').addEventListener('submit', handleBudgetSubmit);
 }
 
+function closeModal() {
+    document.getElementById('modal-container').innerHTML = '';
+}
+
+// ===================================================================================
+// DATA HANDLING (CREATE / DELETE)
+// ===================================================================================
 function handleTransactionSubmit(e, type) {
     e.preventDefault();
-    const form = e.target.elements;
-    const categoryValue = form.category.value.trim();
-    const categoryList = appState.settings[`${type}Categories`];
-    if (categoryValue && !categoryList.find(c => c.toLowerCase() === categoryValue.toLowerCase())) {
-        categoryList.push(categoryValue);
-    }
-    appState.transactions[type].push({ id: Date.now(), date: form.date.value, description: form.description.value, category: categoryValue, method: form.method.value, amount: parseFloat(form.amount.value) });
-    saveState(); renderAll(); closeModal(); showNotification('Transaction added!');
+    const form = e.target;
+    const newTransaction = {
+        id: Date.now(),
+        date: form.date.value,
+        description: form.description.value,
+        category: form.category.value,
+        method: form.method.value,
+        amount: parseFloat(form.amount.value)
+    };
+    appState.transactions[type === 'income' ? 'income' : 'expenses'].push(newTransaction);
+    saveState();
+    renderTransactions(type);
+    updateDashboardSummary();
+    renderBudgets(); // Update budgets in case an expense was added
+    closeModal();
+    showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} added successfully!`);
 }
-function handleAccountSubmit(e) { e.preventDefault(); const f = e.target.elements; appState.accounts.push({ id: Date.now(), name: f.name.value, type: f.type.value, balance: parseFloat(f.balance.value) }); saveState(); renderAll(); closeModal(); }
-function handleBudgetSubmit(e) { e.preventDefault(); const f = e.target.elements; appState.budgets.push({ id: Date.now(), category: f.category.value, limit: parseFloat(f.limit.value) }); saveState(); renderAll(); closeModal(); }
 
-function deleteTransaction(type, id) { appState.transactions[type] = appState.transactions[type].filter(t => t.id !== id); saveState(); renderAll(); }
-function deleteAccount(id) { appState.accounts = appState.accounts.filter(a => a.id !== id); saveState(); renderAll(); }
-function deleteBudget(id) { appState.budgets = appState.budgets.filter(b => b.id !== id); saveState(); renderAll(); }
+function handleAccountSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
+    const newAccount = {
+        id: Date.now(),
+        name: form.name.value,
+        type: form.type.value,
+        balance: parseFloat(form.balance.value)
+    };
+    appState.accounts.push(newAccount);
+    saveState();
+    renderAccounts();
+    closeModal();
+    showNotification('Account added successfully!');
+}
 
-function handleCurrencyChange(e) { const newCode = e.target.value; appState.settings.currency = { code: newCode, symbol: CURRENCIES[newCode].symbol }; saveState(); renderAll(); showNotification('Currency updated!'); }
-function handleAddCategory(e, type) { e.preventDefault(); const input = document.getElementById(`new-${type}-category`); const newCategory = input.value.trim(); const list = appState.settings[`${type}Categories`]; if (newCategory && !list.find(c=>c.toLowerCase() === newCategory.toLowerCase())) { list.push(newCategory); saveState(); renderCategoryChips(type); input.value = ''; } }
-function deleteCategory(type, categoryToDelete) { const key = `${type}Categories`; appState.settings[key] = appState.settings[key].filter(cat => cat !== categoryToDelete); saveState(); renderCategoryChips(type); }
+function handleBudgetSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
+    // Check if budget for this category already exists
+    if(appState.budgets.some(b => b.category.toLowerCase() === form.category.value.toLowerCase())) {
+        alert('A budget for this category already exists.');
+        return;
+    }
+    const newBudget = {
+        id: Date.now(),
+        category: form.category.value,
+        limit: parseFloat(form.limit.value)
+    };
+    appState.budgets.push(newBudget);
+    saveState();
+    renderBudgets();
+    closeModal();
+    showNotification('Budget created successfully!');
+}
+
+function deleteTransaction(type, id) {
+    const key = type === 'income' ? 'income' : 'expenses';
+    appState.transactions[key] = appState.transactions[key].filter(t => t.id !== id);
+    saveState();
+    renderTransactions(type);
+    updateDashboardSummary();
+    renderBudgets();
+    showNotification('Transaction deleted.');
+}
+
+function deleteAccount(id) {
+    appState.accounts = appState.accounts.filter(acc => acc.id !== id);
+    saveState();
+    renderAccounts();
+    showNotification('Account deleted.');
+}
+
+function deleteBudget(id) {
+    appState.budgets = appState.budgets.filter(b => b.id !== id);
+    saveState();
+    renderBudgets();
+    showNotification('Budget deleted.');
+}
+
 
 // ===================================================================================
 // REPORTS & CHARTS
 // ===================================================================================
-function destroyCharts() { Object.values(activeCharts).forEach(chart => chart.destroy()); activeCharts = {}; }
-
-function generateReports() {
-    destroyCharts();
-    const expenseByCategory = appState.transactions.expenses.reduce((acc, t) => { if (!acc[t.category]) acc[t.category] = 0; acc[t.category] += t.amount; return acc; }, {});
-    const monthlyData = [...appState.transactions.income, ...appState.transactions.expenses].reduce((acc, t) => { const month = new Date(t.date).toLocaleString('default', { month: 'short', year: 'numeric' }); if (!acc[month]) acc[month] = { income: 0, expenses: 0 }; if (appState.transactions.income.some(inc => inc.id === t.id)) acc[month].income += t.amount; else acc[month].expenses += t.amount; return acc; }, {});
-    const sortedMonths = Object.keys(monthlyData).sort((a,b) => new Date(a) - new Date(b));
-
-    activeCharts.incomeExpense = new Chart(document.getElementById('reports-income-expense-chart'), { type: 'bar', data: { labels: sortedMonths, datasets: [{ label: 'Income', data: sortedMonths.map(m => monthlyData[m].income), backgroundColor: '#10B981' }, { label: 'Expenses', data: sortedMonths.map(m => monthlyData[m].expenses), backgroundColor: '#EF4444' }] } });
-    activeCharts.expenseCat = new Chart(document.getElementById('expense-categories-chart'), { type: 'doughnut', data: { labels: Object.keys(expenseByCategory), datasets: [{ data: Object.values(expenseByCategory) }] } });
+function destroyCharts() {
+    Object.values(activeCharts).forEach(chart => chart.destroy());
+    activeCharts = {};
 }
 
-function showNotification(message) { const el = document.getElementById('notification'); el.textContent = message; el.classList.add('show'); setTimeout(() => { el.classList.remove('show'); }, 3000); }
+function generateReports() {
+    destroyCharts(); // Clear previous charts
+    
+    // Process data for charts
+    const monthlyData = appState.transactions.income.concat(appState.transactions.expenses)
+        .reduce((acc, t) => {
+            const month = new Date(t.date).toLocaleString('default', { month: 'short', year: 'numeric' });
+            if (!acc[month]) acc[month] = { income: 0, expenses: 0 };
+            if (appState.transactions.income.includes(t)) acc[month].income += t.amount;
+            else acc[month].expenses += t.amount;
+            return acc;
+        }, {});
+    
+    const sortedMonths = Object.keys(monthlyData).sort((a,b) => new Date(a) - new Date(b));
+
+    const expenseByCategory = appState.transactions.expenses.reduce((acc, t) => {
+        if (!acc[t.category]) acc[t.category] = 0;
+        acc[t.category] += t.amount;
+        return acc;
+    }, {});
+    
+    const incomeByCategory = appState.transactions.income.reduce((acc, t) => {
+        if (!acc[t.category]) acc[t.category] = 0;
+        acc[t.category] += t.amount;
+        return acc;
+    }, {});
+    
+    let netWorth = 0;
+    const netWorthData = sortedMonths.map(month => {
+        netWorth += monthlyData[month].income - monthlyData[month].expenses;
+        return netWorth;
+    });
+
+    // Chart 1: Income vs Expense Bar Chart
+    activeCharts.incomeExpense = new Chart(document.getElementById('reports-income-expense-chart'), {
+        type: 'bar',
+        data: {
+            labels: sortedMonths,
+            datasets: [
+                { label: 'Income', data: sortedMonths.map(m => monthlyData[m].income), backgroundColor: '#10B981' },
+                { label: 'Expenses', data: sortedMonths.map(m => monthlyData[m].expenses), backgroundColor: '#EF4444' }
+            ]
+        }
+    });
+
+    // Chart 2: Expense Category Doughnut Chart
+    activeCharts.expenseCat = new Chart(document.getElementById('expense-categories-chart'), {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(expenseByCategory),
+            datasets: [{ data: Object.values(expenseByCategory) }]
+        }
+    });
+    
+    // Chart 3: Net Worth Line Chart
+    activeCharts.netWorth = new Chart(document.getElementById('reports-net-worth-chart'), {
+        type: 'line',
+        data: {
+            labels: sortedMonths,
+            datasets: [{ label: 'Net Worth', data: netWorthData, fill: true, borderColor: '#3B82F6' }]
+        }
+    });
+    
+     // Chart 4: Income Sources Pie Chart
+    activeCharts.incomeSrc = new Chart(document.getElementById('income-sources-chart'), {
+        type: 'pie',
+        data: {
+            labels: Object.keys(incomeByCategory),
+            datasets: [{ data: Object.values(incomeByCategory) }]
+        }
+    });
+}
+
+function showNotification(message) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.classList.add('show');
+    setTimeout(() => { notification.classList.remove('show'); }, 3000);
+}
+
 </script>
 </body>
 </html>
