@@ -53,112 +53,311 @@
     <div id="main-app-container" class="flex h-screen bg-gray-100 w-full">
         <aside id="sidebar" class="w-64 flex-shrink-0 bg-white shadow-lg fixed inset-y-0 left-0 z-40 transform -translate-x-full lg:relative lg:translate-x-0">
              <div class="h-full flex flex-col">
-                <div class="h-20 flex items-center justify-center border-b">
-                    <h1 class="text-2xl font-bold text-primary">SmartGrocer</h1>
-                </div>
-                <nav class="flex-1 px-4 py-6 space-y-2">
-                    <a href="#dashboard" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary active"><i class="fas fa-home w-6 h-6 mr-3"></i>Dashboard</a>
-                    <a href="#income" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-money-bill-wave w-6 h-6 mr-3"></i>Income</a>
-                    <a href="#expenses" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-credit-card w-6 h-6 mr-3"></i>Expenses</a>
-                    <a href="#accounts" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-wallet w-6 h-6 mr-3"></i>Accounts</a>
-                    <a href="#budgets" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-chart-pie w-6 h-6 mr-3"></i>Budgets</a>
-                    <a href="#reports" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-chart-line w-6 h-6 mr-3"></i>Reports</a>
-                    <a href="#settings" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-cog w-6 h-6 mr-3"></i>Settings</a>
-                </nav>
-            </div>
+                 <div class="h-20 flex items-center justify-center border-b">
+                     <h1 class="text-2xl font-bold text-primary">SmartGrocer</h1>
+                 </div>
+                 <nav class="flex-1 px-4 py-6 space-y-2">
+                     <a href="#dashboard" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary active"><i class="fas fa-home w-6 h-6 mr-3"></i>Dashboard</a>
+                     <a href="#income" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-money-bill-wave w-6 h-6 mr-3"></i>Income</a>
+                     <a href="#expenses" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-credit-card w-6 h-6 mr-3"></i>Expenses</a>
+                     <a href="#accounts" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-wallet w-6 h-6 mr-3"></i>Accounts</a>
+                     <a href="#budgets" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-chart-pie w-6 h-6 mr-3"></i>Budgets</a>
+                     <a href="#reports" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-chart-line w-6 h-6 mr-3"></i>Reports</a>
+                     <a href="#blog" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-blog w-6 h-6 mr-3"></i>Blog</a>
+                     <a href="#contact" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-envelope w-6 h-6 mr-3"></i>Contact Us</a>
+                     <a href="#settings" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-cog w-6 h-6 mr-3"></i>Settings</a>
+                 </nav>
+                 <div class="px-4 py-4 border-t">
+                    <a href="#privacy" class="nav-link text-sm text-gray-500 hover:text-primary block">Privacy Policy</a>
+                    <a href="#terms" class="nav-link text-sm text-gray-500 hover:text-primary block mt-1">Terms & Conditions</a>
+                    <a href="#disclaimers" class="nav-link text-sm text-gray-500 hover:text-primary block mt-1">Disclaimers</a>
+                 </div>
+             </div>
         </aside>
 
         <div class="flex-1 flex flex-col overflow-hidden relative">
             <header class="h-20 flex justify-between items-center px-6 bg-white shadow-md">
                  <button id="mobile-menu-button" class="lg:hidden text-gray-600 focus:outline-none"><i class="fas fa-bars text-xl"></i></button>
-                <h2 id="page-title" class="text-2xl font-semibold text-gray-800">Dashboard</h2>
-                <span id="welcome-user-text" class="text-gray-600">Welcome, User!</span>
+                 <h2 id="page-title" class="text-2xl font-semibold text-gray-800">Dashboard</h2>
+                 <span id="welcome-user-text" class="text-gray-600">Welcome, User!</span>
             </header>
             <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6 md:p-8">
                 <div id="dashboard" class="page active">
                      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-                        <div class="card p-6 financial-summary income-summary">
-                            <p class="text-sm text-gray-500">Total Income</p>
-                            <p id="total-income-stat" class="text-3xl font-bold text-income"></p>
-                        </div>
-                        <div class="card p-6 financial-summary expense-summary">
-                           <p class="text-sm text-gray-500">Total Expenses</p>
-                           <p id="total-expenses-stat" class="text-3xl font-bold text-expense"></p>
-                        </div>
-                        <div class="card p-6 financial-summary balance-summary">
-                            <p class="text-sm text-gray-500">Net Balance</p>
-                            <p id="net-balance-stat" class="text-3xl font-bold text-blue-500"></p>
-                        </div>
-                    </div>
+                         <div class="card p-6 financial-summary income-summary">
+                             <p class="text-sm text-gray-500">Total Income</p>
+                             <p id="total-income-stat" class="text-3xl font-bold text-income"></p>
+                         </div>
+                         <div class="card p-6 financial-summary expense-summary">
+                            <p class="text-sm text-gray-500">Total Expenses</p>
+                            <p id="total-expenses-stat" class="text-3xl font-bold text-expense"></p>
+                         </div>
+                         <div class="card p-6 financial-summary balance-summary">
+                             <p class="text-sm text-gray-500">Net Balance</p>
+                             <p id="net-balance-stat" class="text-3xl font-bold text-blue-500"></p>
+                         </div>
+                     </div>
                 </div>
 
                 <div id="income" class="page">
-                    <div class="card p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-xl font-bold">Income Management</h3>
-                            <button id="add-income-btn" class="bg-income text-white font-bold py-2 px-4 rounded-lg"><i class="fas fa-plus mr-2"></i>Add Income</button>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="transaction-table">
-                                <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Method</th><th class="text-right">Amount</th><th class="text-center">Actions</th></tr></thead>
-                                <tbody id="income-table-body"></tbody>
-                            </table>
-                        </div>
-                    </div>
+                     <div class="card p-6">
+                         <div class="flex justify-between items-center mb-6">
+                             <h3 class="text-xl font-bold">Income Management</h3>
+                             <button id="add-income-btn" class="bg-income text-white font-bold py-2 px-4 rounded-lg"><i class="fas fa-plus mr-2"></i>Add Income</button>
+                         </div>
+                         <div class="overflow-x-auto">
+                             <table class="transaction-table">
+                                 <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Method</th><th class="text-right">Amount</th><th class="text-center">Actions</th></tr></thead>
+                                 <tbody id="income-table-body"></tbody>
+                             </table>
+                         </div>
+                     </div>
                 </div>
 
                 <div id="expenses" class="page">
                      <div class="card p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-xl font-bold">Expense Management</h3>
-                            <button id="add-expense-btn" class="bg-expense text-white font-bold py-2 px-4 rounded-lg"><i class="fas fa-plus mr-2"></i>Add Expense</button>
-                        </div>
-                        <div class="overflow-x-auto">
-                            <table class="transaction-table">
-                                <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Method</th><th class="text-right">Amount</th><th class="text-center">Actions</th></tr></thead>
-                                <tbody id="expense-table-body"></tbody>
-                            </table>
-                        </div>
-                    </div>
+                         <div class="flex justify-between items-center mb-6">
+                             <h3 class="text-xl font-bold">Expense Management</h3>
+                             <button id="add-expense-btn" class="bg-expense text-white font-bold py-2 px-4 rounded-lg"><i class="fas fa-plus mr-2"></i>Add Expense</button>
+                         </div>
+                         <div class="overflow-x-auto">
+                             <table class="transaction-table">
+                                 <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Method</th><th class="text-right">Amount</th><th class="text-center">Actions</th></tr></thead>
+                                 <tbody id="expense-table-body"></tbody>
+                             </table>
+                         </div>
+                     </div>
                 </div>
 
                 <div id="accounts" class="page">
-                    <div class="card p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-xl font-bold">Your Accounts</h3>
-                            <button id="add-account-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg">Add Account</button>
-                        </div>
-                        <div id="accounts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-                    </div>
+                     <div class="card p-6">
+                         <div class="flex justify-between items-center mb-6">
+                             <h3 class="text-xl font-bold">Your Accounts</h3>
+                             <button id="add-account-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg">Add Account</button>
+                         </div>
+                         <div id="accounts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                     </div>
                 </div>
 
                 <div id="budgets" class="page">
-                    <div class="card p-6">
-                        <div class="flex justify-between items-center mb-6">
-                            <h3 class="text-xl font-bold">Your Budgets</h3>
-                            <button id="add-budget-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg">Create Budget</button>
-                        </div>
-                        <div id="budgets-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-                    </div>
+                     <div class="card p-6">
+                         <div class="flex justify-between items-center mb-6">
+                             <h3 class="text-xl font-bold">Your Budgets</h3>
+                             <button id="add-budget-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg">Create Budget</button>
+                         </div>
+                         <div id="budgets-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                     </div>
                 </div>
 
                 <div id="reports" class="page">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div class="card p-6"><h3 class="text-xl font-bold mb-4">Income vs Expenses (Monthly)</h3><div class="h-80"><canvas id="reports-income-expense-chart"></canvas></div></div>
-                        <div class="card p-6"><h3 class="text-xl font-bold mb-4">Expense Breakdown by Category</h3><div class="h-80"><canvas id="expense-categories-chart"></canvas></div></div>
-                        <div class="card p-6"><h3 class="text-xl font-bold mb-4">Net Worth Over Time</h3><div class="h-80"><canvas id="reports-net-worth-chart"></canvas></div></div>
-                        <div class="card p-6"><h3 class="text-xl font-bold mb-4">Income Sources</h3><div class="h-80"><canvas id="income-sources-chart"></canvas></div></div>
+                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                         <div class="card p-6"><h3 class="text-xl font-bold mb-4">Income vs Expenses (Monthly)</h3><div class="h-80"><canvas id="reports-income-expense-chart"></canvas></div></div>
+                         <div class="card p-6"><h3 class="text-xl font-bold mb-4">Expense Breakdown by Category</h3><div class="h-80"><canvas id="expense-categories-chart"></canvas></div></div>
+                         <div class="card p-6"><h3 class="text-xl font-bold mb-4">Net Worth Over Time</h3><div class="h-80"><canvas id="reports-net-worth-chart"></canvas></div></div>
+                         <div class="card p-6"><h3 class="text-xl font-bold mb-4">Income Sources</h3><div class="h-80"><canvas id="income-sources-chart"></canvas></div></div>
+                     </div>
+                </div>
+
+                <div id="blog" class="page">
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                        <div class="card overflow-hidden">
+                            <img src="https://picsum.photos/seed/finance1/600/400" alt="Finance Tips" class="w-full h-48 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">10 Simple Tips for Better Budgeting</h3>
+                                <p class="text-gray-600 mb-4">Learn how to manage your money effectively with these easy-to-follow budgeting tips for beginners.</p>
+                                <a href="#" class="font-semibold text-primary hover:underline">Read More &rarr;</a>
+                            </div>
+                        </div>
+                        <div class="card overflow-hidden">
+                            <img src="https://picsum.photos/seed/invest2/600/400" alt="Investing Guide" class="w-full h-48 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">A Beginner's Guide to Investing</h3>
+                                <p class="text-gray-600 mb-4">Diving into the world of investing can be daunting. Our guide breaks it down for you.</p>
+                                <a href="#" class="font-semibold text-primary hover:underline">Read More &rarr;</a>
+                            </div>
+                        </div>
+                        <div class="card overflow-hidden">
+                            <img src="https://picsum.photos/seed/debt3/600/400" alt="Debt Management" class="w-full h-48 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">Strategies to Pay Off Debt Faster</h3>
+                                <p class="text-gray-600 mb-4">Explore proven methods like the snowball and avalanche techniques to become debt-free.</p>
+                                <a href="#" class="font-semibold text-primary hover:underline">Read More &rarr;</a>
+                            </div>
+                        </div>
+                        <div class="card overflow-hidden">
+                            <img src="https://picsum.photos/seed/savings4/600/400" alt="Saving Money" class="w-full h-48 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">How to Build an Emergency Fund</h3>
+                                <p class="text-gray-600 mb-4">Financial security starts with a safety net. Here’s how to build your emergency fund from scratch.</p>
+                                <a href="#" class="font-semibold text-primary hover:underline">Read More &rarr;</a>
+                            </div>
+                        </div>
+                        <div class="card overflow-hidden">
+                            <img src="https://picsum.photos/seed/credit5/600/400" alt="Credit Score" class="w-full h-48 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">Understanding Your Credit Score</h3>
+                                <p class="text-gray-600 mb-4">A good credit score is key to your financial health. Learn what affects it and how to improve it.</p>
+                                <a href="#" class="font-semibold text-primary hover:underline">Read More &rarr;</a>
+                            </div>
+                        </div>
+                        <div class="card overflow-hidden">
+                            <img src="https://picsum.photos/seed/goals6/600/400" alt="Financial Goals" class="w-full h-48 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">Setting and Achieving Financial Goals</h3>
+                                <p class="text-gray-600 mb-4">Turn your financial dreams into reality by setting SMART goals and tracking your progress.</p>
+                                <a href="#" class="font-semibold text-primary hover:underline">Read More &rarr;</a>
+                            </div>
+                        </div>
+                         <div class="card overflow-hidden">
+                            <img src="https://picsum.photos/seed/retire7/600/400" alt="Retirement Planning" class="w-full h-48 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">Retirement Planning in Your 20s and 30s</h3>
+                                <p class="text-gray-600 mb-4">It's never too early to start planning for retirement. Discover the power of compound interest.</p>
+                                <a href="#" class="font-semibold text-primary hover:underline">Read More &rarr;</a>
+                            </div>
+                        </div>
+                         <div class="card overflow-hidden">
+                            <img src="https://picsum.photos/seed/sidehustle8/600/400" alt="Side Hustles" class="w-full h-48 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">Top 5 Side Hustles to Boost Your Income</h3>
+                                <p class="text-gray-600 mb-4">Looking for extra cash? These side hustles can help you increase your income streams.</p>
+                                <a href="#" class="font-semibold text-primary hover:underline">Read More &rarr;</a>
+                            </div>
+                        </div>
+                         <div class="card overflow-hidden">
+                            <img src="https://picsum.photos/seed/automation9/600/400" alt="Automating Finances" class="w-full h-48 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">Automate Your Finances for Peace of Mind</h3>
+                                <p class="text-gray-600 mb-4">Set your savings and investments on autopilot and watch your wealth grow effortlessly.</p>
+                                <a href="#" class="font-semibold text-primary hover:underline">Read More &rarr;</a>
+                            </div>
+                        </div>
+                        <div class="card overflow-hidden">
+                            <img src="https://picsum.photos/seed/mindset10/600/400" alt="Financial Mindset" class="w-full h-48 object-cover">
+                            <div class="p-6">
+                                <h3 class="text-xl font-bold mb-2">The Psychology of Money: Mind Over Matter</h3>
+                                <p class="text-gray-600 mb-4">Your mindset plays a huge role in your financial success. Learn to cultivate a healthy money mindset.</p>
+                                <a href="#" class="font-semibold text-primary hover:underline">Read More &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="contact" class="page">
+                    <div class="card p-8 max-w-4xl mx-auto">
+                        <h3 class="text-2xl font-bold text-center text-gray-800 mb-8">Get In Touch With Adprofitx</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-6">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 bg-primary text-white h-12 w-12 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-map-marker-alt text-xl"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="text-lg font-semibold">Our Office</h4>
+                                        <p class="text-gray-600">123 Business Avenue, Suite 456, Karachi, Pakistan</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 bg-primary text-white h-12 w-12 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-envelope text-xl"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="text-lg font-semibold">Email Us</h4>
+                                        <p class="text-gray-600">support@adprofitx.com</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 bg-primary text-white h-12 w-12 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-phone text-xl"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="text-lg font-semibold">Call Us</h4>
+                                        <p class="text-gray-600">+92 300 1234567</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <form class="space-y-4">
+                                <input type="text" placeholder="Your Name" class="w-full border p-3 rounded-lg" required>
+                                <input type="email" placeholder="Your Email" class="w-full border p-3 rounded-lg" required>
+                                <textarea placeholder="Your Message" rows="5" class="w-full border p-3 rounded-lg" required></textarea>
+                                <button type="submit" class="w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                                    Send Message
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="privacy" class="page">
+                    <div class="card p-8 max-w-4xl mx-auto">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6">Privacy Policy</h3>
+                        <div class="prose max-w-none text-gray-600">
+                            <p><strong>Last Updated: September 17, 2025</strong></p>
+                            <p>Adprofitx ("us", "we", or "our") operates the SmartGrocer application (the "Service"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.</p>
+                            
+                            <h4 class="font-bold mt-4">1. Information Collection and Use</h4>
+                            <p>We collect several different types of information for various purposes to provide and improve our Service to you. Since this is a demo application, all data you enter is stored locally in your browser's localStorage and is not transmitted to any server.</p>
+                            
+                            <h4 class="font-bold mt-4">2. Types of Data Collected</h4>
+                            <p><strong>Personal Data:</strong> While using our Service, we may ask you to provide us with certain personally identifiable information that can be used to contact or identify you ("Personal Data"). This includes your name and any financial data you enter (income, expenses, accounts, budgets).</p>
+                            
+                            <h4 class="font-bold mt-4">3. Use of Data</h4>
+                            <p>Adprofitx uses the collected data for the following purposes: To provide and maintain the Service; To allow you to participate in interactive features of our Service when you choose to do so; To provide analysis or valuable information so that we can improve the Service.</p>
+                            
+                            <h4 class="font-bold mt-4">4. Data Security</h4>
+                            <p>The security of your data is important to us. Your data is stored locally on your device and is not accessible by us. However, remember that no method of electronic storage is 100% secure. Anyone with access to your computer and browser can potentially access this data.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="terms" class="page">
+                    <div class="card p-8 max-w-4xl mx-auto">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6">Terms and Conditions</h3>
+                        <div class="prose max-w-none text-gray-600">
+                             <p><strong>Last Updated: September 17, 2025</strong></p>
+                             <p>Please read these Terms and Conditions ("Terms", "Terms and Conditions") carefully before using the SmartGrocer application (the "Service") operated by Adprofitx ("us", "we", or "our").</p>
+                            
+                             <h4 class="font-bold mt-4">1. Acceptance of Terms</h4>
+                             <p>By accessing or using the Service you agree to be bound by these Terms. If you disagree with any part of the terms then you may not access the Service. This is a demo application provided for illustrative purposes.</p>
+                            
+                             <h4 class="font-bold mt-4">2. Use of Service</h4>
+                             <p>The Service is intended for personal, non-commercial use. You are responsible for any data you input into the Service. You agree not to use the Service for any unlawful purpose.</p>
+                            
+                             <h4 class="font-bold mt-4">3. Limitation of Liability</h4>
+                             <p>In no event shall Adprofitx, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from your access to or use of or inability to access or use the Service.</p>
+
+                             <h4 class="font-bold mt-4">4. Changes</h4>
+                             <p>We reserve the right, at our sole discretion, to modify or replace these Terms at any time. We will try to provide at least 30 days' notice prior to any new terms taking effect.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="disclaimers" class="page">
+                    <div class="card p-8 max-w-4xl mx-auto">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-6">Disclaimers</h3>
+                        <div class="prose max-w-none text-gray-600">
+                             <p><strong>Last Updated: September 17, 2025</strong></p>
+                            
+                             <h4 class="font-bold mt-4">General Disclaimer</h4>
+                             <p>The information provided by SmartGrocer is for general informational purposes only. All information on the site is provided in good faith, however, we make no representation or warranty of any kind, express or implied, regarding the accuracy, adequacy, validity, reliability, availability, or completeness of any information on the site.</p>
+                            
+                             <h4 class="font-bold mt-4">Financial Disclaimer</h4>
+                             <p>This application is a tool for financial management and is not intended to provide financial advice. The Service does not substitute for professional financial advice from a qualified advisor. You should not rely on the information provided by this Service as an alternative to financial advice from a professional.</p>
+                            
+                             <h4 class="font-bold mt-4">External Links Disclaimer</h4>
+                             <p>The Service may contain links to external websites that are not provided or maintained by or in any way affiliated with Adprofitx. Please note that Adprofitx does not guarantee the accuracy, relevance, timeliness, or completeness of any information on these external websites.</p>
+                        </div>
                     </div>
                 </div>
 
                 <div id="settings" class="page">
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-6">Settings</h3>
-                        <p class="mb-4">Here you can reset all your saved data. This action cannot be undone.</p>
-                        <button id="reset-data-btn" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700">
-                            <i class="fas fa-exclamation-triangle mr-2"></i>Reset All Data
-                        </button>
-                    </div>
+                     <div class="card p-6">
+                         <h3 class="text-xl font-bold text-gray-800 mb-6">Settings</h3>
+                         <p class="mb-4">Here you can reset all your saved data. This action cannot be undone.</p>
+                         <button id="reset-data-btn" class="bg-red-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-700">
+                             <i class="fas fa-exclamation-triangle mr-2"></i>Reset All Data
+                         </button>
+                     </div>
                 </div>
             </main>
         </div>
@@ -242,8 +441,12 @@ function setupEventListeners() {
             const targetId = this.getAttribute('href').substring(1);
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(targetId).classList.add('active');
+            
+            // Handle active state for main and footer nav links
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
+            // Re-select all links with the same href to apply active class (for main nav and footer)
+            document.querySelectorAll(`.nav-link[href="#${targetId}"]`).forEach(activeLink => activeLink.classList.add('active'));
+
             document.getElementById('page-title').textContent = this.textContent.trim();
             if (targetId === 'reports') generateReports(); else destroyCharts();
         });
@@ -306,8 +509,8 @@ function renderAccounts() {
     const container = document.getElementById('accounts-container');
     container.innerHTML = '';
      if (appState.accounts.length === 0) {
-        container.innerHTML = `<p class="text-center text-gray-500 col-span-full">No accounts added yet.</p>`;
-        return;
+         container.innerHTML = `<p class="text-center text-gray-500 col-span-full">No accounts added yet.</p>`;
+         return;
     }
     appState.accounts.forEach(acc => {
         const balanceColor = acc.balance >= 0 ? 'text-gray-800' : 'text-red-600';
@@ -332,8 +535,8 @@ function renderBudgets() {
     const container = document.getElementById('budgets-container');
     container.innerHTML = '';
      if (appState.budgets.length === 0) {
-        container.innerHTML = `<p class="text-center text-gray-500 col-span-full">No budgets created yet.</p>`;
-        return;
+         container.innerHTML = `<p class="text-center text-gray-500 col-span-full">No budgets created yet.</p>`;
+         return;
     }
     appState.budgets.forEach(b => {
         const spent = appState.transactions.expenses
