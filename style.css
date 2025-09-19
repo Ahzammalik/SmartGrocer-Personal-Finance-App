@@ -13,20 +13,20 @@ body {
 #main-app-container {
     height: 100vh;
     width: 100vw;
+    display: flex;
+    flex-direction: column;
 }
 header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    height: 64px; /* Explicit height for the top bar */
+    flex-shrink: 0; /* Prevent header from shrinking */
     z-index: 1000;
-    height: 80px; /* Explicit height */
 }
 main {
-    padding-top: 80px; /* Push content below the fixed header */
-    height: 100%; /* Take full container height */
-    overflow-y: auto; /* Allow only the main content to scroll */
+    flex-grow: 1; /* Allow main to take all available space */
+    overflow-y: auto; /* THIS IS THE KEY FIX: Allow only the main content to scroll */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
 }
+
 
 /* Card Styling (Material Design inspired) */
 .card {
@@ -66,17 +66,17 @@ main {
 /* Floating Action Button (FAB) */
 #fab-add-transaction {
     position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    width: 64px;
-    height: 64px;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 60px;
+    height: 60px;
     background: linear-gradient(45deg, #228B22, #3CB371);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    font-size: 28px;
+    font-size: 24px;
     box-shadow: 0 8px 16px rgba(34, 139, 34, 0.4);
     border: none;
     cursor: pointer;
@@ -155,4 +155,3 @@ main {
 #main-app-container { visibility: hidden; }
 .bg-primary { background-color: #228B22; }
 .text-primary { color: #228B22; }
-
