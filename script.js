@@ -1,156 +1,341 @@
-// Add this function to calculate and update dashboard totals
-function updateDashboardTotals() {
-    let totalIncome = 0;
-    let totalExpenses = 0;
-    
-    // Calculate total income from income table
-    const incomeRows = document.querySelectorAll('#income-table-body tr');
-    incomeRows.forEach(row => {
-        const amountCell = row.querySelector('td:nth-child(5)');
-        if (amountCell) {
-            const amountText = amountCell.textContent;
-            const amount = parseFloat(amountText.replace('+₨', '').replace(/,/g, ''));
-            if (!isNaN(amount)) {
-                totalIncome += amount;
-            }
+// ===================================================================================
+// APP INITIALIZATION & STATE MANAGEMENT
+// ===================================================================================
+const APP_DATA_KEY = 'smartGrocerData';
+let appState = {};
+let activeCharts = {};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const userData = localStorage.getItem(APP_DATA_KEY);
+    if (userData) {
+        appState = JSON.parse(userData);
+        initializeApp();
+    } else {
+        document.getElementById('signin-overlay').style.display = 'flex';
+    }
+
+    document.getElementById('signin-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const userName = document.getElementById('signin-name').value.trim();
+        if (userName) {
+            initializeNewUser(userName);
+            initializeApp();
         }
     });
-    
-    // Calculate total expenses from expense table
-    const expenseRows = document.querySelectorAll('#expense-table-body tr');
-    expenseRows.forEach(row => {
-        const amountCell = row.querySelector('td:nth-child(5)');
-        if (amountCell) {
-            const amountText = amountCell.textContent;
-            const amount = parseFloat(amountText.replace('-₨', '').replace(/,/g, ''));
-            if (!isNaN(amount)) {
-                totalExpenses += amount;
+
+    setupEventListeners();
+});
+
+function initializeNewUser(userName) {
+    appState = {
+        user: { name: userName },
+        transactions: { income: [], expenses: [] },
+        accounts: [],
+        budgets: []
+    };
+    saveState();
+}
+
+function initializeApp() {
+    document.getElementById('signin-overlay').style.display = 'none';
+    document.getElementById('main-app-container').style.visibility = 'visible';
+    const userName = appState.user.name;
+    document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
+    document.getElementById('settings-username').textContent = userName;
+
+    renderAll();
+}
+
+function saveState() {
+    localStorage.setItem(APP_DATA_KEY, JSON.stringify(appState));
+}
+
+function renderAll() {
+    renderTransactions('income');
+    renderTransactions('expense');
+    updateDashboardSummary();
+}
+
+// ===================================================================================
+// EVENT LISTENERS
+// ===================================================================================
+function setupEventListeners() {
+    // Sidebar Toggle
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    document.getElementById('mobile-menu-button').addEventListener('click', () => {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+    });
+    overlay.addEventListener('click', () => {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+    });
+
+    // Universal Navigation Handler
+    const handleNavigation = (targetId) => {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        const targetPage = document.getElementById(targetId);
+        if(targetPage) {
+            targetPage.classList.add('active');
+            let title = targetId.charAt(0).toUpperCase() + targetId.slice(1);
+            if(targetId === 'transactions') title = 'All Transactions';
+            document.getElementById('page-title').textContent = title;
+        }
+
+        // Handle active state for bottom nav
+        document.querySelectorAll('.bottom-nav-item').forEach(item => {
+            item.classList.toggle('active', item.dataset.target === targetId);
+        });
+
+        if (targetId === 'reports') generateReports(); else destroyCharts();
+        
+        // Close sidebar after navigation
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+    };
+
+    // Bottom Navigation
+    document.querySelectorAll('.bottom-nav-item').forEach(item => {
+        item.addEventListener('click', () => handleNavigation(item.dataset.target));
+    });
+
+    // Sidebar Navigation
+    document.querySelectorAll('#sidebar .nav-link').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = link.getAttribute('href').substring(1);
+            
+            // For sidebar items that have a corresponding bottom nav item, switch to it
+            const mainTargets = ['dashboard', 'reports', 'settings'];
+            const transactionTargets = ['income', 'expenses'];
+            if (mainTargets.includes(targetId)) {
+                 handleNavigation(targetId);
+            } else if (transactionTargets.includes(targetId)) {
+                handleNavigation('transactions');
+            } else {
+                 handleNavigation(targetId); // For pages only in sidebar
             }
+        });
+    });
+
+    // FAB and Modals
+    document.getElementById('fab-add-transaction').addEventListener('click', showAddTransactionChoiceModal);
+    
+    // Settings
+    document.getElementById('reset-data-btn').addEventListener('click', () => {
+        if (confirm('Are you sure you want to delete ALL your data? This cannot be undone.')) {
+            localStorage.removeItem(APP_DATA_KEY);
+            window.location.reload();
         }
     });
-    
-    // Calculate net balance
+}
+
+
+// ===================================================================================
+// UI RENDERING
+// ===================================================================================
+function updateDashboardSummary() {
+    const totalIncome = appState.transactions.income.reduce((sum, t) => sum + t.amount, 0);
+    const totalExpenses = appState.transactions.expenses.reduce((sum, t) => sum + t.amount, 0);
     const netBalance = totalIncome - totalExpenses;
-    
-    // Update the dashboard display
-    document.getElementById('total-income-stat').innerHTML = `<span class="currency-symbol">₨</span>${totalIncome.toFixed(2)}`;
-    document.getElementById('total-expenses-stat').innerHTML = `<span class="currency-symbol">₨</span>${totalExpenses.toFixed(2)}`;
-    document.getElementById('net-balance-stat').innerHTML = `<span class="currency-symbol">₨</span>${netBalance.toFixed(2)}`;
-    
-    // Update the cash flow overview section
-    document.querySelector('.progress-fill.bg-income').style.width = '78%'; // You might want to calculate this dynamically too
-    document.querySelector('.progress-fill.bg-green-300').style.width = '22%';
-    document.querySelector('.progress-fill.bg-expense').style.width = '55%';
-    document.querySelector('.progress-fill.bg-red-300').style.width = '45%';
+    const formatCurrency = (val) => `₨${val.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+    document.getElementById('total-income-stat').textContent = formatCurrency(totalIncome);
+    document.getElementById('total-expenses-stat').textContent = formatCurrency(totalExpenses);
+    document.getElementById('net-balance-stat').textContent = formatCurrency(netBalance);
 }
 
-// Modify the income form submission to call the update function
-if (incomeForm) {
-    incomeForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const date = document.getElementById('income-date').value;
-        const description = document.getElementById('income-description').value;
-        const category = document.getElementById('income-category').value;
-        const amount = document.getElementById('income-amount').value;
-        const account = document.getElementById('income-account').value;
-        
-        // Add new income to the table
-        const tableBody = document.getElementById('income-table-body');
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-            <td>${date}</td>
-            <td>${description}</td>
-            <td><span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">${category}</span></td>
-            <td>${account}</td>
-            <td class="text-right text-income font-medium">+₨${parseFloat(amount).toFixed(2)}</td>
-            <td class="text-center">
-                <button class="text-blue-600 hover:text-blue-800 mr-2">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="text-red-600 hover:text-red-800" onclick="deleteTransaction(this, 'income')">
-                    <i class="fas fa-trash"></i>
-                </button>
+function renderTransactions(type) {
+    const container = document.getElementById(`${type}-table-body`);
+    container.innerHTML = '';
+    const transactions = appState.transactions[type === 'income' ? 'income' : 'expenses'];
+    
+    if (transactions.length === 0) {
+        container.innerHTML = `<tr><td class="text-center text-gray-500 py-4">No ${type} recorded.</td></tr>`;
+        return;
+    }
+
+    transactions.slice().reverse().forEach(t => { // Show newest first
+        const sign = type === 'income' ? '+' : '-';
+        const colorClass = type === 'income' ? 'text-green-500' : 'text-red-500';
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td class="p-2 align-middle">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center ${type === 'income' ? 'bg-green-100' : 'bg-red-100'} ${colorClass}">
+                        <i class="fas ${type === 'income' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="font-semibold text-gray-800">${t.description}</p>
+                        <p class="text-sm text-gray-500">${t.date}</p>
+                    </div>
+                </div>
+            </td>
+            <td class="p-2 align-middle text-right font-semibold ${colorClass}">
+                ${sign}₨${t.amount.toFixed(2)}
+            </td>
+            <td class="p-2 align-middle text-right">
+                <button onclick="deleteTransaction('${type}', ${t.id})" class="text-gray-400 hover:text-red-500 w-8 h-8"><i class="fas fa-trash"></i></button>
             </td>
         `;
-        tableBody.appendChild(newRow);
-        
-        // Update dashboard totals
-        updateDashboardTotals();
-        
-        // Show success notification
-        showNotification('Income added successfully!');
-        
-        // Close the modal
-        incomeModal.style.display = 'none';
-        
-        // Reset the form
-        incomeForm.reset();
+        container.appendChild(row);
     });
 }
 
-// Modify the expense form submission to call the update function
-if (expenseForm) {
-    expenseForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const date = document.getElementById('expense-date').value;
-        const description = document.getElementById('expense-description').value;
-        const category = document.getElementById('expense-category').value;
-        const amount = document.getElementById('expense-amount').value;
-        const account = document.getElementById('expense-account').value;
-        
-        // Add new expense to the table
-        const tableBody = document.getElementById('expense-table-body');
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-            <td>${date}</td>
-            <td>${description}</td>
-            <td><span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">${category}</span></td>
-            <td>${account}</td>
-            <td class="text-right text-expense font-medium">-₨${parseFloat(amount).toFixed(2)}</td>
-            <td class="text-center">
-                <button class="text-blue-600 hover:text-blue-800 mr-2">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="text-red-600 hover:text-red-800" onclick="deleteTransaction(this, 'expense')">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </td>
-        `;
-        tableBody.appendChild(newRow);
-        
-        // Update dashboard totals
-        updateDashboardTotals();
-        
-        // Show success notification
-        showNotification('Expense added successfully!');
-        
-        // Close the modal
-        expenseModal.style.display = 'none';
-        
-        // Reset the form
-        expenseForm.reset();
-    });
+
+// ===================================================================================
+// MODAL MANAGEMENT
+// ===================================================================================
+function showAddTransactionChoiceModal() {
+     const modalHTML = `
+        <div class="modal show" id="choice-modal">
+            <div class="modal-content">
+                <h3 class="text-xl font-bold mb-6 text-center">What would you like to add?</h3>
+                <div class="grid grid-cols-2 gap-4">
+                     <button id="modal-add-income" class="bg-green-500 text-white font-bold py-4 px-4 rounded-lg text-lg"><i class="fas fa-plus mr-2"></i>Income</button>
+                     <button id="modal-add-expense" class="bg-red-500 text-white font-bold py-4 px-4 rounded-lg text-lg"><i class="fas fa-minus mr-2"></i>Expense</button>
+                </div>
+            </div>
+        </div>`;
+    document.getElementById('modal-container').innerHTML = modalHTML;
+    document.getElementById('choice-modal').addEventListener('click', (e) => { if(e.target.id === 'choice-modal') closeModal(); });
+    document.getElementById('modal-add-income').addEventListener('click', () => showTransactionModal('income'));
+    document.getElementById('modal-add-expense').addEventListener('click', () => showTransactionModal('expense'));
 }
 
-// Modify the deleteTransaction function to call the update function
-function deleteTransaction(button, type) {
-    const row = button.closest('tr');
-    if (confirm(`Are you sure you want to delete this ${type} entry?`)) {
-        row.remove();
-        
-        // Update dashboard totals
-        updateDashboardTotals();
-        
-        showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} entry deleted successfully!`);
+function showTransactionModal(type) {
+    const color = type === 'income' ? 'green' : 'red';
+    const modalHTML = `
+        <div class="modal show" id="transaction-modal">
+            <div class="modal-content">
+                <h3 class="text-xl font-bold mb-4 text-${color}-500">New ${type.charAt(0).toUpperCase() + type.slice(1)}</h3>
+                <form id="transaction-form">
+                    <div class="space-y-4">
+                        <input type="number" name="amount" step="0.01" min="0" required placeholder="Amount (₨)" class="w-full border-b-2 p-3 text-2xl font-bold focus:outline-none focus:border-${color}-500">
+                        <input type="text" name="description" required placeholder="Description" class="w-full border p-3 rounded-lg">
+                        <input type="text" name="category" required placeholder="Category (e.g., Salary, Groceries)" class="w-full border p-3 rounded-lg">
+                        <input type="date" name="date" required class="w-full border p-3 rounded-lg text-gray-500">
+                    </div>
+                    <div class="mt-6 grid grid-cols-2 gap-4">
+                        <button type="button" onclick="closeModal()" class="bg-gray-200 py-3 rounded-lg font-semibold">Cancel</button>
+                        <button type="submit" class="bg-${color}-500 text-white py-3 rounded-lg font-bold">Add</button>
+                    </div>
+                </form>
+            </div>
+        </div>`;
+    document.getElementById('modal-container').innerHTML = modalHTML;
+    document.getElementById('transaction-modal').addEventListener('click', (e) => { if(e.target.id === 'transaction-modal') closeModal(); });
+    document.getElementById('transaction-form').addEventListener('submit', (e) => handleTransactionSubmit(e, type));
+    // Set default date
+    document.querySelector('#transaction-form input[name="date"]').valueAsDate = new Date();
+}
+
+function closeModal() {
+    const modal = document.querySelector('.modal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => {
+            document.getElementById('modal-container').innerHTML = '';
+        }, 300); // Wait for animation to finish
     }
 }
 
-// Call the update function when the page loads to set initial values
-document.addEventListener('DOMContentLoaded', function() {
-    // ... existing code ...
+
+// ===================================================================================
+// DATA HANDLING
+// ===================================================================================
+function handleTransactionSubmit(e, type) {
+    e.preventDefault();
+    const form = e.target;
+    const newTransaction = {
+        id: Date.now(),
+        date: form.date.value,
+        description: form.description.value,
+        category: form.category.value,
+        amount: parseFloat(form.amount.value)
+    };
+    appState.transactions[type === 'income' ? 'income' : 'expenses'].push(newTransaction);
+    saveState();
+    renderTransactions(type);
+    updateDashboardSummary();
+    closeModal();
+    showNotification(`${type.charAt(0).toUpperCase() + type.slice(1)} added successfully!`);
+}
+
+function deleteTransaction(type, id) {
+    const key = type === 'income' ? 'income' : 'expenses';
+    appState.transactions[key] = appState.transactions[key].filter(t => t.id !== id);
+    saveState();
+    renderTransactions(type);
+    updateDashboardSummary();
+    showNotification('Transaction deleted.');
+}
+
+
+// ===================================================================================
+// REPORTS & CHARTS
+// ===================================================================================
+function destroyCharts() {
+    Object.values(activeCharts).forEach(chart => {
+        if (chart) chart.destroy();
+    });
+    activeCharts = {};
+}
+
+function generateReports() {
+    destroyCharts();
     
-    // Update dashboard totals on page load
-    setTimeout(() => {
-        updateDashboardTotals();
-    }, 1600); // Wait for the loading overlay to disappear
-});
+    // Check if pages are visible and canvases exist
+    const incomeExpenseCanvas = document.getElementById('reports-income-expense-chart');
+    const expenseCategoriesCanvas = document.getElementById('expense-categories-chart');
+
+    if (!incomeExpenseCanvas || !expenseCategoriesCanvas) return;
+    
+    const monthlyData = [...appState.transactions.income, ...appState.transactions.expenses]
+        .reduce((acc, t) => {
+            const month = new Date(t.date).toLocaleString('default', { month: 'short', year: 'numeric' });
+            if (!acc[month]) acc[month] = { income: 0, expenses: 0 };
+            const type = appState.transactions.income.some(inc => inc.id === t.id) ? 'income' : 'expenses';
+            acc[month][type] += t.amount;
+            return acc;
+        }, {});
+    
+    const sortedMonths = Object.keys(monthlyData).sort((a,b) => new Date(a) - new Date(b));
+
+    const expenseByCategory = appState.transactions.expenses.reduce((acc, t) => {
+        acc[t.category] = (acc[t.category] || 0) + t.amount;
+        return acc;
+    }, {});
+    
+    activeCharts.incomeExpense = new Chart(incomeExpenseCanvas, {
+        type: 'bar',
+        data: {
+            labels: sortedMonths,
+            datasets: [
+                { label: 'Income', data: sortedMonths.map(m => monthlyData[m].income), backgroundColor: '#10B981' },
+                { label: 'Expenses', data: sortedMonths.map(m => monthlyData[m].expenses), backgroundColor: '#EF4444' }
+            ]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
+
+    activeCharts.expenseCat = new Chart(expenseCategoriesCanvas, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(expenseByCategory),
+            datasets: [{ 
+                data: Object.values(expenseByCategory),
+                backgroundColor: ['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899'],
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
+}
+
+function showNotification(message) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.classList.add('show');
+    setTimeout(() => { notification.classList.remove('show'); }, 3000);
+}
