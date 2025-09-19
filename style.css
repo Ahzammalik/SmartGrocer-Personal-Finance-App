@@ -3,25 +3,26 @@ body {
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
     background-color: #f4f7f9;
     color: #1a202c;
-    /* Prevents double-tap to zoom on mobile */
+    /* Prevents pull-to-refresh and double-tap zoom on mobile */
+    overscroll-behavior-y: contain;
     touch-action: manipulation;
 }
 
-/* App-like Layout */
+/* App Layout Structure */
 #main-app-container {
     height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow: hidden; /* Prevents whole body from scrolling */
 }
 main {
     flex-grow: 1;
     overflow-y: auto;
-    /* Account for header and bottom nav */
-    padding-top: 5rem; /* 80px header */
-    padding-bottom: 5rem; /* 80px bottom-nav */
+    /* Account for fixed header */
+    padding-top: 5rem; /* 80px */
 }
 
-/* Header / Top App Bar */
+/* Top App Bar */
 header {
     position: fixed;
     top: 0;
@@ -31,24 +32,21 @@ header {
     height: 80px;
 }
 
-/* Card Styling */
+/* Card Styling (Material Design inspired) */
 .card {
     background-color: white;
     border-radius: 16px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+.financial-summary { border-left: 4px solid; }
+.income-summary { border-left-color: #10B981; }
+.expense-summary { border-left-color: #EF4444; }
+.balance-summary { border-left-color: #3B82F6; }
 
 /* Page Transitions */
 .page { display: none; animation: fadeIn 0.4s ease-in-out; }
 .page.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-/* Custom Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #f1f1f1; }
-::-webkit-scrollbar-thumb { background: #888; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #555; }
 
 /* Sidebar (Navigation Drawer) */
 #sidebar {
@@ -69,10 +67,35 @@ header {
 }
 .nav-link.active { background-color: #e6f7e6; color: #228B22; font-weight: bold; }
 
+/* Floating Action Button (FAB) */
+#fab-add-transaction {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(45deg, #228B22, #3CB371);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 28px;
+    box-shadow: 0 8px 16px rgba(34, 139, 34, 0.4);
+    border: none;
+    cursor: pointer;
+    z-index: 1020;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+#fab-add-transaction:active {
+    transform: scale(0.95);
+    box-shadow: 0 4px 8px rgba(34, 139, 34, 0.3);
+}
+
 /* Notification Styling */
 .notification {
     position: fixed;
-    bottom: 90px;
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%) translateY(200%);
     padding: 12px 24px;
@@ -117,61 +140,21 @@ header {
     transform: translateY(0);
 }
 
-/* Bottom Navigation Bar */
-#bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 80px;
-    background-color: white;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
-    z-index: 1000;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    padding: 0 10px;
-}
-.bottom-nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
-    color: #718096;
-    cursor: pointer;
-    transition: color 0.2s;
-    font-size: 12px;
-    font-weight: 500;
-}
-.bottom-nav-item i {
-    font-size: 22px;
-    margin-bottom: 4px;
-}
-.bottom-nav-item.active {
-    color: #228B22; /* Primary color */
-}
-#fab-add-transaction {
-    width: 64px;
-    height: 64px;
-    background: linear-gradient(45deg, #228B22, #3CB371);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 28px;
-    box-shadow: 0 4px 12px rgba(34, 139, 34, 0.4);
-    transform: translateY(-20px);
-    border: 4px solid white;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-#fab-add-transaction:active {
-    transform: translateY(-20px) scale(0.95);
-}
+/* Utility and Component Styles */
+.transaction-table { width: 100%; border-collapse: collapse; }
+.transaction-table th { background-color: #f8fafc; padding: 12px 16px; text-align: left; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb; }
+.transaction-table td { padding: 12px 16px; border-bottom: 1px solid #f3f4f6; }
 
-/* Utility Classes */
+.progress-bar { height: 8px; border-radius: 4px; overflow: hidden; background-color: #e5e7eb; }
+.progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+
+.contact-icon { flex-shrink: 0; background-color: #228B22; color: white; height: 3rem; width: 3rem; border-radius: 9999px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+.contact-input { width: 100%; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 0.5rem; }
+
+.legal-page h3 { font-size: 1.5rem; font-weight: 700; color: #1a202c; margin-bottom: 1.5rem; }
+.legal-page h4 { font-size: 1.125rem; font-weight: 600; margin-top: 1rem; }
+.legal-page p { margin-bottom: 1rem; line-height: 1.6; color: #4a5568; }
+
 #signin-overlay { display: none; }
 #main-app-container { visibility: hidden; }
 .bg-primary { background-color: #228B22; }
