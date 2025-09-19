@@ -71,6 +71,7 @@
         <main class="p-4 md:p-6">
             
             <div id="dashboard" class="page active">
+                <!-- Top Summary Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                     <div class="card p-6 financial-summary income-summary">
                         <p class="text-sm text-gray-500">Total Income</p>
@@ -83,6 +84,20 @@
                     <div class="card p-6 financial-summary balance-summary">
                         <p class="text-sm text-gray-500">Net Balance</p>
                         <p id="net-balance-stat" class="text-3xl font-bold text-blue-500">₨0.00</p>
+                    </div>
+                </div>
+                
+                <!-- NEW: Dashboard Reports Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold mb-4">Expense Breakdown</h3>
+                        <div class="h-64"><canvas id="dashboard-expense-chart"></canvas></div>
+                    </div>
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold mb-4">Recent Transactions</h3>
+                        <div id="recent-transactions-list" class="space-y-4">
+                            <!-- Transactions will be injected here by JS -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -132,6 +147,16 @@
             </div>
 
             <div id="reports" class="page">
+                <!-- NEW: Date Filters -->
+                <div class="card p-4 mb-6">
+                    <div class="flex flex-wrap items-center gap-4">
+                        <div class="flex-grow"><label for="start-date" class="block text-sm font-medium text-gray-700">Start Date</label><input type="date" id="start-date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></div>
+                        <div class="flex-grow"><label for="end-date" class="block text-sm font-medium text-gray-700">End Date</label><input type="date" id="end-date" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></div>
+                        <button id="filter-reports-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg mt-5">Filter</button>
+                        <button id="reset-reports-btn" class="bg-gray-300 font-bold py-2 px-4 rounded-lg mt-5">Reset</button>
+                    </div>
+                </div>
+                
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="card p-6"><h3 class="text-xl font-bold mb-4">Income vs Expenses</h3><div class="h-80"><canvas id="reports-income-expense-chart"></canvas></div></div>
                     <div class="card p-6"><h3 class="text-xl font-bold mb-4">Expense Breakdown</h3><div class="h-80"><canvas id="expense-categories-chart"></canvas></div></div>
@@ -186,3 +211,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
