@@ -57,6 +57,7 @@ function renderAll() {
     renderAccounts();
     renderBudgets();
     updateDashboardSummary();
+    renderDashboardReports(); 
 }
 
 // ===================================================================================
@@ -104,6 +105,18 @@ function setupEventListeners() {
             localStorage.removeItem(APP_DATA_KEY);
             window.location.reload();
         }
+    });
+
+    // Report Filter Listeners
+    document.getElementById('filter-reports-btn').addEventListener('click', () => {
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+        generateReports(startDate, endDate);
+    });
+    document.getElementById('reset-reports-btn').addEventListener('click', () => {
+        document.getElementById('start-date').value = '';
+        document.getElementById('end-date').value = '';
+        generateReports();
     });
 }
 
@@ -377,19 +390,90 @@ function destroyCharts() {
     activeCharts = {};
 }
 
-function generateReports() {
+function renderDashboardReports() {
+    // Destroy previous dashboard chart if it exists
+    if(activeCharts.dashboardExpense) activeCharts.dashboardExpense.destroy();
+    
+    // 1. Expense Breakdown Chart
+    const expenseByCategory = appState.transactions.expenses.reduce((acc, t) => {
+        acc[t.category] = (acc[t.category] || 0) + t.amount;
+        return acc;
+    }, {});
+
+    const expenseCanvas = document.getElementById('dashboard-expense-chart');
+    if (Object.keys(expenseByCategory).length > 0) {
+        activeCharts.dashboardExpense = new Chart(expenseCanvas, {
+            type: 'doughnut',
+            data: {
+                labels: Object.keys(expenseByCategory),
+                datasets: [{ data: Object.values(expenseByCategory), backgroundColor: ['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899'] }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+        });
+    } else {
+        const ctx = expenseCanvas.getContext('2d');
+        ctx.clearRect(0, 0, expenseCanvas.width, expenseCanvas.height);
+        ctx.textAlign = 'center';
+        ctx.fillText('No expense data to display.', expenseCanvas.width / 2, expenseCanvas.height / 2);
+    }
+
+    // 2. Recent Transactions List
+    const listContainer = document.getElementById('recent-transactions-list');
+    const allTransactions = [
+        ...appState.transactions.income.map(t => ({...t, type: 'income'})),
+        ...appState.transactions.expenses.map(t => ({...t, type: 'expense'}))
+    ];
+
+    allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+    const recent = allTransactions.slice(0, 5);
+
+    if (recent.length > 0) {
+        listContainer.innerHTML = recent.map(t => {
+            const isIncome = t.type === 'income';
+            const color = isIncome ? 'text-green-500' : 'text-red-500';
+            const sign = isIncome ? '+' : '-';
+            const icon = isIncome ? 'fa-arrow-up' : 'fa-arrow-down';
+            return `
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center mr-3"><i class="fas ${icon} ${color}"></i></div>
+                    <div>
+                        <p class="font-semibold">${t.description}</p>
+                        <p class="text-sm text-gray-500">${t.date}</p>
+                    </div>
+                </div>
+                <p class="font-bold ${color}">${sign}₨${t.amount.toFixed(2)}</p>
+            </div>
+            `;
+        }).join('');
+    } else {
+        listContainer.innerHTML = `<p class="text-center text-gray-500">No recent transactions.</p>`;
+    }
+}
+
+
+function generateReports(startDate, endDate) {
     destroyCharts();
-    const monthlyData = [...appState.transactions.income, ...appState.transactions.expenses]
+    
+    let filteredIncome = appState.transactions.income;
+    let filteredExpenses = appState.transactions.expenses;
+
+    if (startDate && endDate) {
+        filteredIncome = filteredIncome.filter(t => t.date >= startDate && t.date <= endDate);
+        filteredExpenses = filteredExpenses.filter(t => t.date >= startDate && t.date <= endDate);
+    }
+    
+    const monthlyData = [...filteredIncome, ...filteredExpenses]
         .reduce((acc, t) => {
             const month = new Date(t.date).toLocaleString('default', { month: 'short', year: 'numeric' });
             if (!acc[month]) acc[month] = { income: 0, expenses: 0 };
-            const type = appState.transactions.income.some(inc => inc.id === t.id) ? 'income' : 'expenses';
+            const type = filteredIncome.some(inc => inc.id === t.id) ? 'income' : 'expenses';
             acc[month][type] += t.amount;
             return acc;
         }, {});
     
     const sortedMonths = Object.keys(monthlyData).sort((a,b) => new Date(a) - new Date(b));
-    const expenseByCategory = appState.transactions.expenses.reduce((acc, t) => {
+    const expenseByCategory = filteredExpenses.reduce((acc, t) => {
         acc[t.category] = (acc[t.category] || 0) + t.amount;
         return acc;
     }, {});
@@ -439,7 +523,7 @@ function populateStaticContent() {
     ];
     blogContainer.innerHTML = blogPosts.map(post => `
         <div class="card overflow-hidden">
-            <img src="https://placehold.co/600x400/a7f3d0/14532d?text=${post.img}" alt="${post.title}" class="w-full h-48 object-cover">
+            <img src="https://picsum.photos/seed/${post.img}/600/400" alt="${post.title}" class="w-full h-48 object-cover">
             <div class="p-6">
                 <h3 class="text-xl font-bold mb-2">${post.title}</h3>
                 <p class="text-gray-600 mb-4">${post.desc}</p>
