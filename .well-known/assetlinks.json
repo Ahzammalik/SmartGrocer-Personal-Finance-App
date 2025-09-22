@@ -1,0 +1,11 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.adprofitxx.smartgrocer",
+      "sha256_cert_fingerprints":
+        ["5E:69:B8:7A:1E:2B:1B:C4:A3:66:F0:2B:A3:98:4A:A9:19:8C:CB:48:05:C1:3D:39:E3:FD:B5:03:DB:D5:48:3E"]
+    }
+  }
+]
