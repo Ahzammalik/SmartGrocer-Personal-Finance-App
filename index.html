@@ -63,6 +63,7 @@
 
         <main class="p-4 md:p-6">
             <div id="dashboard" class="page active">
+                <!-- Main Financial Summary Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     <div class="card p-4 financial-summary income-summary">
                         <p class="text-sm text-gray-500">Total Income</p>
@@ -72,12 +73,61 @@
                         <p class="text-sm text-gray-500">Total Expenses</p>
                         <p id="total-expenses-stat" class="text-2xl font-bold text-red-500">₨0.00</p>
                     </div>
-                    <div class="card p-4 financial-summary balance-summary col-span-1 md:col-span-3">
+                    <div class="card p-4 financial-summary balance-summary">
                         <p class="text-sm text-gray-500">Net Balance</p>
                         <p id="net-balance-stat" class="text-2xl font-bold text-blue-500">₨0.00</p>
                     </div>
                 </div>
+
+                <!-- Enhanced Metrics Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="card p-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-wallet text-blue-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Total Accounts</p>
+                                <p id="total-accounts-count" class="text-xl font-bold text-gray-800">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-chart-pie text-purple-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Active Budgets</p>
+                                <p id="active-budgets-count" class="text-xl font-bold text-gray-800">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-arrow-up text-green-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">This Month Income</p>
+                                <p id="month-income" class="text-xl font-bold text-gray-800">₨0.00</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-4">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                                <i class="fas fa-arrow-down text-red-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">This Month Expenses</p>
+                                <p id="month-expenses" class="text-xl font-bold text-gray-800">₨0.00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 
+                <!-- Charts and Recent Transactions -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="card p-6">
                         <h3 class="text-xl font-bold mb-4">Expense Breakdown</h3>
@@ -86,60 +136,13 @@
                     <div class="card p-6">
                         <h3 class="text-xl font-bold mb-4">Recent Transactions</h3>
                         <div id="recent-transactions-list" class="space-y-4 max-h-64 overflow-y-auto">
-                            </div>
+                            <!-- Recent transactions will be loaded here -->
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
-
-<!-- Add this after the financial summary cards -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-    <div class="card p-4">
-        <div class="flex items-center">
-            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3">
-                <i class="fas fa-wallet text-blue-600"></i>
-            </div>
-            <div>
-                <p class="text-sm text-gray-500">Total Accounts</p>
-                <p id="total-accounts-count" class="text-xl font-bold text-gray-800">0</p>
-            </div>
-        </div>
-    </div>
-    <div class="card p-4">
-        <div class="flex items-center">
-            <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center mr-3">
-                <i class="fas fa-chart-pie text-purple-600"></i>
-            </div>
-            <div>
-                <p class="text-sm text-gray-500">Active Budgets</p>
-                <p id="active-budgets-count" class="text-xl font-bold text-gray-800">0</p>
-            </div>
-        </div>
-    </div>
-    <div class="card p-4">
-        <div class="flex items-center">
-            <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mr-3">
-                <i class="fas fa-arrow-up text-green-600"></i>
-            </div>
-            <div>
-                <p class="text-sm text-gray-500">This Month Income</p>
-                <p id="month-income" class="text-xl font-bold text-gray-800">₨0.00</p>
-            </div>
-        </div>
-    </div>
-    <div class="card p-4">
-        <div class="flex items-center">
-            <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
-                <i class="fas fa-arrow-down text-red-600"></i>
-            </div>
-            <div>
-                <p class="text-sm text-gray-500">This Month Expenses</p>
-                <p id="month-expenses" class="text-xl font-bold text-gray-800">₨0.00</p>
-            </div>
-        </div>
-    </div>
-</div>
     
     <div id="notification" class="notification"></div>
     <div id="modal-container"></div>
