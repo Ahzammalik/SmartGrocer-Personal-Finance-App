@@ -1248,3 +1248,138 @@ function showNotification(message, type = 'info') {
 // Make functions globally available for HTML onclick handlers
 window.closeModal = closeModal;
 window.showAddTransactionModal = showAddTransactionModal;
+
+// Enhanced dashboard metrics
+function updateEnhancedDashboardMetrics() {
+    // Total accounts count
+    const totalAccountsElem = document.getElementById('total-accounts-count');
+    if (totalAccountsElem) {
+        totalAccountsElem.textContent = accounts.length;
+    }
+    
+    // Active budgets count
+    const activeBudgetsElem = document.getElementById('active-budgets-count');
+    if (activeBudgetsElem) {
+        activeBudgetsElem.textContent = budgets.length;
+    }
+    
+    // This month income and expenses
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+    
+    const monthIncome = transactions
+        .filter(t => t.type === 'income' && 
+                    new Date(t.date).getMonth() === currentMonth &&
+                    new Date(t.date).getFullYear() === currentYear)
+        .reduce((sum, t) => sum + t.amount, 0);
+    
+    const monthExpenses = transactions
+        .filter(t => t.type === 'expense' && 
+                    new Date(t.date).getMonth() === currentMonth &&
+                    new Date(t.date).getFullYear() === currentYear)
+        .reduce((sum, t) => sum + t.amount, 0);
+    
+    const monthIncomeElem = document.getElementById('month-income');
+    const monthExpensesElem = document.getElementById('month-expenses');
+    
+    if (monthIncomeElem) monthIncomeElem.textContent = `₨${monthIncome.toFixed(2)}`;
+    if (monthExpensesElem) monthExpensesElem.textContent = `₨${monthExpenses.toFixed(2)}`;
+}
+
+// Update the initializeDashboard function
+function initializeDashboard() {
+    updateDashboardStats();
+    updateEnhancedDashboardMetrics();
+    renderRecentTransactions();
+    renderDashboardCharts();
+}
+
+// Export data functionality
+function exportData() {
+    const data = {
+        transactions,
+        accounts,
+        budgets,
+        userName,
+        exportDate: new Date().toISOString()
+    };
+    
+    const dataStr = JSON.stringify(data, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(dataBlob);
+    link.download = `smartgrocer-backup-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+}
+
+// Import data functionality
+function importData(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            
+            if (confirm('This will replace all your current data. Are you sure?')) {
+                if (data.transactions) transactions = data.transactions;
+                if (data.accounts) accounts = data.accounts;
+                if (data.budgets) budgets = data.budgets;
+                if (data.userName) userName = data.userName;
+                
+                saveTransactions();
+                saveAccounts();
+                saveBudgets();
+                localStorage.setItem('userName', userName);
+                
+                showNotification('Data imported successfully!', 'success');
+                
+                // Reload the current page to reflect changes
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            }
+        } catch (error) {
+            showNotification('Error importing data. Please check the file format.', 'error');
+        }
+    };
+    reader.readAsText(file);
+    
+    // Reset the input
+    event.target.value = '';
+}
+
+// Add export/import to settings page
+function initializeSettingsPage() {
+    // Add export/import functionality
+    const settingsCard = document.querySelector('#settings .card');
+    if (settingsCard) {
+        settingsCard.innerHTML += `
+            <div class="mt-8 pt-6 border-t">
+                <h4 class="text-lg font-semibold mb-4">Data Management</h4>
+                <div class="space-y-4">
+                    <div>
+                        <p class="mb-2">Export your financial data as a backup file.</p>
+                        <button id="export-data-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700">
+                            <i class="fas fa-download mr-2"></i>Export Data
+                        </button>
+                    </div>
+                    <div>
+                        <p class="mb-2">Import previously exported data.</p>
+                        <input type="file" id="import-data-input" accept=".json" class="hidden">
+                        <button onclick="document.getElementById('import-data-input').click()" class="w-full bg-green-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700">
+                            <i class="fas fa-upload mr-2"></i>Import Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Add event listeners
+        document.getElementById('export-data-btn').addEventListener('click', exportData);
+        document.getElementById('import-data-input').addEventListener('change', importData);
+    }
+}
