@@ -227,3 +227,92 @@
         margin-left: 0 !important;
     }
 }
+/* Enhanced styles for new features */
+
+/* Progress bars */
+.progress-bar {
+    transition: width 0.3s ease;
+}
+
+/* Search and filter styles */
+.search-filter-container {
+    transition: all 0.3s ease;
+}
+
+/* Transfer section */
+.transfer-section {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
+/* Budget status indicators */
+.budget-status-good {
+    border-left: 4px solid #10B981;
+}
+
+.budget-status-warning {
+    border-left: 4px solid #F59E0B;
+}
+
+.budget-status-danger {
+    border-left: 4px solid #EF4444;
+}
+
+/* Data management buttons */
+.data-management-btn {
+    transition: all 0.3s ease;
+}
+
+.data-management-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive table improvements */
+@media (max-width: 640px) {
+    .transaction-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    
+    .search-filter-container {
+        flex-direction: column;
+    }
+    
+    .search-filter-container > div {
+        width: 100%;
+    }
+}
+
+/* Print styles enhancement */
+@media print {
+    .card {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #e5e7eb;
+    }
+    
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+    .card {
+        background: #374151;
+        border-color: #4B5563;
+        color: #F9FAFB;
+    }
+    
+    .transaction-table th {
+        background-color: #4B5563;
+        color: #F9FAFB;
+        border-color: #6B7280;
+    }
+    
+    .transaction-table td {
+        border-color: #6B7280;
+        color: #E5E7EB;
+    }
+}
