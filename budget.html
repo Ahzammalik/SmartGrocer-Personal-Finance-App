@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Budgets - SmartGrocer</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="antialiased">
+
+    <div id="signin-overlay" class="fixed inset-0 bg-gray-100 z-50 flex items-center justify-center p-4">
+        <div class="w-full max-w-sm text-center">
+            <h1 class="text-4xl font-bold text-primary mb-4">Welcome to SmartGrocer</h1>
+            <p class="text-gray-600 mb-8">Please enter your name to get started.</p>
+            <form id="signin-form">
+                <input type="text" id="signin-name" placeholder="Your Name" class="w-full border border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg text-center" required>
+                <button type="submit" class="mt-4 w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors text-lg">
+                    Start Managing Finances
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="sidebar-overlay" class="hidden"></div>
+    <aside id="sidebar" class="w-64 flex-shrink-0 bg-white transform -translate-x-full">
+        <div class="h-full flex flex-col">
+            <div class="h-20 flex items-center justify-center border-b">
+                <h1 class="text-2xl font-bold text-primary">SmartGrocer</h1>
+            </div>
+            <nav class="flex-1 px-4 py-6 space-y-2">
+                <a href="index.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-home w-6 h-6 mr-3"></i>Dashboard</a>
+                <a href="income.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-money-bill-wave w-6 h-6 mr-3"></i>Income</a>
+                <a href="expense.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-credit-card w-6 h-6 mr-3"></i>Expenses</a>
+                <a href="accounts.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-wallet w-6 h-6 mr-3"></i>Accounts</a>
+                <a href="budget.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary active"><i class="fas fa-chart-pie w-6 h-6 mr-3"></i>Budgets</a>
+                <a href="reports.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-chart-line w-6 h-6 mr-3"></i>Reports</a>
+                <a href="blogs.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-blog w-6 h-6 mr-3"></i>Blog</a>
+                <a href="contact.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-envelope w-6 h-6 mr-3"></i>Contact Us</a>
+                <a href="settings.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-cog w-6 h-6 mr-3"></i>Settings</a>
+            </nav>
+            <div class="px-4 py-4 border-t">
+                <a href="#privacy" class="nav-link text-sm text-gray-500 hover:text-primary block">Privacy Policy</a>
+                <a href="#terms" class="nav-link text-sm text-gray-500 hover:text-primary block mt-1">Terms & Conditions</a>
+                <a href="#disclaimers" class="nav-link text-sm text-gray-500 hover:text-primary block mt-1">Disclaimers</a>
+            </div>
+        </div>
+    </aside>
+
+    <div id="main-app-container">
+        <header class="flex justify-between items-center px-4 bg-white shadow-md">
+            <button id="mobile-menu-button" class="text-gray-600 focus:outline-none"><i class="fas fa-bars text-2xl"></i></button>
+            <h2 id="page-title" class="text-xl font-semibold text-gray-800">Budgets</h2>
+            <div id="welcome-user-container" class="flex items-center">
+                <span id="welcome-user-text" class="text-gray-600 hidden sm:block mr-3">Welcome, User!</span>
+                <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold" id="user-initial">U</div>
+            </div>
+        </header>
+
+        <main class="p-4 md:p-6">
+            <div id="budgets" class="page active">
+                <div class="card p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold">Your Budgets</h3>
+                        <button id="add-budget-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg">Create Budget</button>
+                    </div>
+                    <div id="budgets-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <div id="notification" class="notification"></div>
+    <div id="modal-container"></div>
+    <button id="fab-add-transaction"><i class="fas fa-plus"></i></button>
+
+    <script src="script.js"></script>
+</body>
+</html>
