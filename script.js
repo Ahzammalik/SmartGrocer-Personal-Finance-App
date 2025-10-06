@@ -1383,3 +1383,382 @@ function initializeSettingsPage() {
         document.getElementById('import-data-input').addEventListener('change', importData);
     }
 }
+function renderBudgets() {
+    const container = document.getElementById('budgets-container');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    budgets.forEach(budget => {
+        const spentAmount = calculateSpentInCategory(budget.category);
+        const progressPercentage = Math.min((spentAmount / budget.amount) * 100, 100);
+        const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
+        const currentDay = new Date().getDate();
+        const expectedProgress = (currentDay / daysInMonth) * 100;
+        
+        const budgetEl = document.createElement('div');
+        budgetEl.className = 'card p-6';
+        budgetEl.innerHTML = `
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h4 class="font-bold text-lg">${budget.category}</h4>
+                    <p class="text-gray-500">Monthly Budget</p>
+                </div>
+                <button class="text-red-500 delete-budget" data-id="${budget.id}">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+            <div class="mb-4">
+                <div class="flex justify-between text-sm mb-1">
+                    <span>₨${spentAmount.toFixed(2)} spent</span>
+                    <span>₨${budget.amount.toFixed(2)} budget</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3 mb-1">
+                    <div class="h-3 rounded-full ${getProgressColor(progressPercentage, expectedProgress)}" 
+                         style="width: ${progressPercentage}%"></div>
+                </div>
+                <div class="flex justify-between text-xs text-gray-500">
+                    <span>${progressPercentage.toFixed(1)}% used</span>
+                    <span>${expectedProgress.toFixed(1)}% expected</span>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-lg font-semibold ${budget.amount - spentAmount < 0 ? 'text-red-600' : 'text-green-600'}">
+                    ${budget.amount - spentAmount < 0 ? '-₨' : '₨'}${Math.abs(budget.amount - spentAmount).toFixed(2)} ${budget.amount - spentAmount < 0 ? 'Over' : 'Left'}
+                </p>
+                ${progressPercentage > expectedProgress + 10 ? 
+                    '<p class="text-sm text-yellow-600 mt-1">Spending faster than expected</p>' : 
+                    progressPercentage < expectedProgress - 10 ?
+                    '<p class="text-sm text-green-600 mt-1">Spending on track</p>' : ''}
+            </div>
+        `;
+        
+        container.appendChild(budgetEl);
+    });
+    
+    // Add event listeners to delete buttons
+    document.querySelectorAll('.delete-budget').forEach(button => {
+        button.addEventListener('click', function() {
+            const budgetId = this.getAttribute('data-id');
+            deleteBudget(budgetId);
+        });
+    });
+}
+
+function getProgressColor(progress, expected) {
+    if (progress > 100) return 'bg-red-500';
+    if (progress > expected + 15) return 'bg-yellow-500';
+    if (progress > expected) return 'bg-orange-500';
+    return 'bg-green-500';
+}
+// Add to income and expense page initialization
+function initializeIncomePage() {
+    renderIncomeTable();
+    addSearchFilter('income');
+}
+
+function initializeExpensePage() {
+    renderExpenseTable();
+    addSearchFilter('expense');
+}
+
+function addSearchFilter(type) {
+    const tableContainer = document.querySelector(`#${type} .card`);
+    if (!tableContainer) return;
+    
+    const searchHTML = `
+        <div class="mb-4 flex flex-col sm:flex-row gap-4">
+            <div class="flex-1">
+                <input type="text" id="${type}-search" placeholder="Search transactions..." class="w-full border border-gray-300 rounded-lg px-3 py-2">
+            </div>
+            <div class="flex gap-2">
+                <select id="${type}-category-filter" class="border border-gray-300 rounded-lg px-3 py-2">
+                    <option value="">All Categories</option>
+                    ${getCategories(type).map(cat => `<option value="${cat}">${cat}</option>`).join('')}
+                </select>
+                <button id="${type}-clear-filters" class="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400">
+                    Clear
+                </button>
+            </div>
+        </div>
+    `;
+    
+    const table = tableContainer.querySelector('table');
+    tableContainer.insertBefore(createElementFromHTML(searchHTML), table);
+    
+    // Add event listeners
+    document.getElementById(`${type}-search`).addEventListener('input', () => filterTransactions(type));
+    document.getElementById(`${type}-category-filter`).addEventListener('change', () => filterTransactions(type));
+    document.getElementById(`${type}-clear-filters`).addEventListener('click', () => clearFilters(type));
+}
+
+function getCategories(type) {
+    const categories = new Set();
+    transactions
+        .filter(t => t.type === type)
+        .forEach(t => categories.add(t.category));
+    return Array.from(categories);
+}
+
+function filterTransactions(type) {
+    const searchTerm = document.getElementById(`${type}-search`).value.toLowerCase();
+    const categoryFilter = document.getElementById(`${type}-category-filter`).value;
+    
+    const filteredTransactions = transactions.filter(t => 
+        t.type === type &&
+        (t.description.toLowerCase().includes(searchTerm) || 
+         t.category.toLowerCase().includes(searchTerm)) &&
+        (categoryFilter === '' || t.category === categoryFilter)
+    );
+    
+    renderFilteredTable(type, filteredTransactions);
+}
+
+function clearFilters(type) {
+    document.getElementById(`${type}-search`).value = '';
+    document.getElementById(`${type}-category-filter`).value = '';
+    filterTransactions(type);
+}
+
+function renderFilteredTable(type, filteredTransactions) {
+    const tableBody = document.getElementById(`${type}-table-body`);
+    if (!tableBody) return;
+    
+    tableBody.innerHTML = '';
+    
+    if (filteredTransactions.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-gray-500">No transactions found</td></tr>';
+        return;
+    }
+    
+    filteredTransactions
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .forEach(transaction => {
+            const row = document.createElement('tr');
+            row.className = 'border-b';
+            row.innerHTML = `
+                <td class="py-3">${formatDate(transaction.date)}</td>
+                <td class="py-3">
+                    <div>
+                        <p class="font-medium">${transaction.description}</p>
+                        <p class="text-sm text-gray-500">${transaction.category}</p>
+                    </div>
+                </td>
+                <td class="py-3 text-right ${transaction.type === 'income' ? 'text-green-600' : 'text-red-600'} font-semibold">
+                    ${transaction.type === 'income' ? '+' : '-'}₨${transaction.amount.toFixed(2)}
+                </td>
+                <td class="py-3 text-center">
+                    <button class="text-red-500 hover:text-red-700 delete-transaction" data-id="${transaction.id}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    
+    // Re-add event listeners to delete buttons
+    document.querySelectorAll('.delete-transaction').forEach(button => {
+        button.addEventListener('click', function() {
+            const transactionId = this.getAttribute('data-id');
+            deleteTransaction(transactionId);
+        });
+    });
+}
+
+// Helper function to create element from HTML string
+function createElementFromHTML(htmlString) {
+    const div = document.createElement('div');
+    div.innerHTML = htmlString.trim();
+    return div.firstChild;
+}
+function initializeReportsPage() {
+    // Set default date range to current month
+    const currentDate = new Date();
+    const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+    
+    const startDateElem = document.getElementById('start-date');
+    const endDateElem = document.getElementById('end-date');
+    
+    if (startDateElem) startDateElem.value = firstDay.toISOString().split('T')[0];
+    if (endDateElem) endDateElem.value = lastDay.toISOString().split('T')[0];
+    
+    renderReportsCharts();
+}
+
+function filterReports() {
+    const startDate = document.getElementById('start-date').value;
+    const endDate = document.getElementById('end-date').value;
+    
+    if (!startDate || !endDate) {
+        showNotification('Please select both start and end dates', 'error');
+        return;
+    }
+    
+    if (new Date(startDate) > new Date(endDate)) {
+        showNotification('Start date cannot be after end date', 'error');
+        return;
+    }
+    
+    renderReportsCharts(startDate, endDate);
+    showNotification('Reports filtered successfully', 'success');
+}
+
+function renderReportsCharts(startDate, endDate) {
+    // Income vs Expenses Chart
+    const incomeExpenseChartCanvas = document.getElementById('reports-income-expense-chart');
+    if (incomeExpenseChartCanvas) {
+        const incomeExpenseData = calculateIncomeVsExpensesByDate(startDate, endDate);
+        const ctx = incomeExpenseChartCanvas.getContext('2d');
+        
+        // Destroy existing chart if it exists
+        if (incomeExpenseChartCanvas.chart) {
+            incomeExpenseChartCanvas.chart.destroy();
+        }
+        
+        incomeExpenseChartCanvas.chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(incomeExpenseData.income),
+                datasets: [
+                    {
+                        label: 'Income',
+                        data: Object.values(incomeExpenseData.income),
+                        backgroundColor: '#10B981',
+                        borderColor: '#059669',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Expenses',
+                        data: Object.values(incomeExpenseData.expenses),
+                        backgroundColor: '#EF4444',
+                        borderColor: '#DC2626',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '₨' + value;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    // Expense Categories Chart
+    const expenseCategoriesChartCanvas = document.getElementById('expense-categories-chart');
+    if (expenseCategoriesChartCanvas) {
+        const expenseData = calculateExpenseByCategoryByDate(startDate, endDate);
+        const ctx = expenseCategoriesChartCanvas.getContext('2d');
+        
+        // Destroy existing chart if it exists
+        if (expenseCategoriesChartCanvas.chart) {
+            expenseCategoriesChartCanvas.chart.destroy();
+        }
+        
+        expenseCategoriesChartCanvas.chart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: Object.keys(expenseData),
+                datasets: [{
+                    data: Object.values(expenseData),
+                    backgroundColor: [
+                        '#EF4444', '#F59E0B', '#10B981', '#3B82F6', 
+                        '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16',
+                        '#F97316', '#6366F1'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: ₨${value.toFixed(2)} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+
+function calculateIncomeVsExpensesByDate(startDate, endDate) {
+    const incomeData = {};
+    const expenseData = {};
+    
+    const filteredTransactions = transactions.filter(t => {
+        const transactionDate = new Date(t.date);
+        const start = startDate ? new Date(startDate) : new Date('1970-01-01');
+        const end = endDate ? new Date(endDate) : new Date();
+        return transactionDate >= start && transactionDate <= end;
+    });
+    
+    // Group by week if date range is small, otherwise by month
+    const rangeMs = endDate && startDate ? new Date(endDate) - new Date(startDate) : 365 * 24 * 60 * 60 * 1000;
+    const groupByWeek = rangeMs <= 30 * 24 * 60 * 60 * 1000; // 30 days
+    
+    filteredTransactions.forEach(transaction => {
+        const date = new Date(transaction.date);
+        let groupKey;
+        
+        if (groupByWeek) {
+            // Group by week
+            const weekStart = new Date(date);
+            weekStart.setDate(date.getDate() - date.getDay());
+            groupKey = weekStart.toISOString().split('T')[0];
+        } else {
+            // Group by month
+            groupKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+        }
+        
+        if (transaction.type === 'income') {
+            incomeData[groupKey] = (incomeData[groupKey] || 0) + transaction.amount;
+        } else {
+            expenseData[groupKey] = (expenseData[groupKey] || 0) + transaction.amount;
+        }
+    });
+    
+    return { income: incomeData, expenses: expenseData };
+}
+
+function calculateExpenseByCategoryByDate(startDate, endDate) {
+    const expenseData = {};
+    
+    const filteredTransactions = transactions.filter(t => {
+        if (t.type !== 'expense') return false;
+        const transactionDate = new Date(t.date);
+        const start = startDate ? new Date(startDate) : new Date('1970-01-01');
+        const end = endDate ? new Date(endDate) : new Date();
+        return transactionDate >= start && transactionDate <= end;
+    });
+    
+    filteredTransactions.forEach(transaction => {
+        if (expenseData[transaction.category]) {
+            expenseData[transaction.category] += transaction.amount;
+        } else {
+            expenseData[transaction.category] = transaction.amount;
+        }
+    });
+    
+    return expenseData;
+}
