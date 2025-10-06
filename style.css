@@ -1,157 +1,229 @@
-/* General App Styling */
-body {
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
-    background-color: #f4f7f9;
-    color: #1a202c;
-    /* Prevents pull-to-refresh and double-tap zoom on mobile */
-    overscroll-behavior-y: contain;
-    touch-action: manipulation;
-    overflow: hidden; /* Prevent body from scrolling */
+/* style.css - Updated for Multi-Page Structure */
+
+:root {
+    --primary-color: #10B981;
+    --primary-dark: #059669;
 }
 
-/* App Layout Structure */
-#main-app-container {
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    flex-direction: column;
-}
-header {
-    height: 64px; /* Explicit height for the top bar */
-    flex-shrink: 0; /* Prevent header from shrinking */
-    z-index: 1000;
-}
-main {
-    flex-grow: 1; /* Allow main to take all available space */
-    overflow-y: auto; /* THIS IS THE KEY FIX: Allow only the main content to scroll */
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+.text-primary {
+    color: var(--primary-color);
 }
 
+.bg-primary {
+    background-color: var(--primary-color);
+}
 
-/* Card Styling (Material Design inspired) */
+.hover\:bg-primary:hover {
+    background-color: var(--primary-dark);
+}
+
+/* Card styles */
 .card {
-    background-color: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e5e7eb;
 }
-.financial-summary { border-left: 4px solid; }
-.income-summary { border-left-color: #10B981; }
-.expense-summary { border-left-color: #EF4444; }
-.balance-summary { border-left-color: #3B82F6; }
 
-/* Page Transitions */
-.page { display: none; animation: fadeIn 0.4s ease-in-out; }
-.page.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-/* Sidebar (Navigation Drawer) */
-#sidebar {
-    transition: transform 0.3s ease-in-out;
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    z-index: 1040;
+/* Financial summary cards */
+.financial-summary {
+    transition: all 0.3s ease;
 }
-#sidebar-overlay {
-    transition: opacity 0.3s ease-in-out;
-    position: fixed;
-    inset: 0;
-    z-index: 1030;
-    background-color: rgba(0,0,0,0.5);
-}
-.nav-link.active { background-color: #e6f7e6; color: #228B22; font-weight: bold; }
 
-/* Floating Action Button (FAB) */
+.financial-summary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.income-summary {
+    border-left: 4px solid #10B981;
+}
+
+.expense-summary {
+    border-left: 4px solid #EF4444;
+}
+
+.balance-summary {
+    border-left: 4px solid #3B82F6;
+}
+
+/* Transaction table */
+.transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.transaction-table th {
+    background-color: #f8fafc;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    color: #374151;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.transaction-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Navigation */
+.nav-link.active {
+    background-color: #ecfdf5;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* Contact page */
+.contact-icon {
+    width: 48px;
+    height: 48px;
+    background-color: #ecfdf5;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+    font-size: 1.25rem;
+}
+
+.contact-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.contact-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* FAB Button */
 #fab-add-transaction {
     position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
+    bottom: 2rem;
+    right: 2rem;
     width: 60px;
     height: 60px;
-    background: linear-gradient(45deg, #228B22, #3CB371);
+    background-color: var(--primary-color);
+    color: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
-    font-size: 24px;
-    box-shadow: 0 8px 16px rgba(34, 139, 34, 0.4);
+    font-size: 1.5rem;
+    box-shadow: 0 10px 25px -3px rgba(16, 185, 129, 0.4);
     border: none;
     cursor: pointer;
-    z-index: 1020;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-#fab-add-transaction:active {
-    transform: scale(0.95);
-    box-shadow: 0 4px 8px rgba(34, 139, 34, 0.3);
+    z-index: 40;
+    transition: all 0.3s ease;
 }
 
-/* Notification Styling */
+#fab-add-transaction:hover {
+    background-color: var(--primary-dark);
+    transform: scale(1.1);
+}
+
+/* Notification */
 .notification {
     position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(200%);
-    padding: 12px 24px;
-    border-radius: 24px;
-    background-color: #2D3748;
+    top: 1rem;
+    right: 1rem;
+    padding: 1rem 1.5rem;
+    background-color: #10B981;
     color: white;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 1050;
-    transition: transform 0.3s ease-in-out;
-    font-weight: 500;
-}
-.notification.show { transform: translateX(-50%) translateY(0); }
-
-/* Slide-Up Modal Animation */
-.modal {
-    display: flex;
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0,0,0,0.4);
-    z-index: 1040;
-    justify-content: center;
-    align-items: flex-end;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    transform: translateX(400px);
     opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s;
+    transition: all 0.3s ease;
 }
-.modal.show {
+
+.notification.show {
+    transform: translateX(0);
     opacity: 1;
-    visibility: visible;
-}
-.modal-content {
-    background-color: #f4f7f9;
-    border-radius: 20px 20px 0 0;
-    width: 100%;
-    max-width: 100%;
-    padding: 24px;
-    box-shadow: 0 -5px 25px rgba(0,0,0,0.1);
-    transform: translateY(100%);
-    transition: transform 0.3s ease-in-out;
-}
-.modal.show .modal-content {
-    transform: translateY(0);
 }
 
-/* Utility and Component Styles */
-.transaction-table { width: 100%; border-collapse: collapse; }
-.transaction-table th { background-color: #f8fafc; padding: 12px 16px; text-align: left; font-weight: 600; color: #374151; border-bottom: 1px solid #e5e7eb; }
-.transaction-table td { padding: 12px 16px; border-bottom: 1px solid #f3f4f6; }
+.notification.error {
+    background-color: #EF4444;
+}
 
-.progress-bar { height: 8px; border-radius: 4px; overflow: hidden; background-color: #e5e7eb; }
-.progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+.notification.warning {
+    background-color: #F59E0B;
+}
 
-.contact-icon { flex-shrink: 0; background-color: #228B22; color: white; height: 3rem; width: 3rem; border-radius: 9999px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
-.contact-input { width: 100%; border: 1px solid #e2e8f0; padding: 0.75rem; border-radius: 0.5rem; }
+.notification.info {
+    background-color: #3B82F6;
+}
 
-.legal-page h3 { font-size: 1.5rem; font-weight: 700; color: #1a202c; margin-bottom: 1.5rem; }
-.legal-page h4 { font-size: 1.125rem; font-weight: 600; margin-top: 1rem; }
-.legal-page p { margin-bottom: 1rem; line-height: 1.6; color: #4a5568; }
+/* Sidebar */
+#sidebar {
+    transition: transform 0.3s ease;
+    z-index: 30;
+}
 
-#signin-overlay { display: none; }
-#main-app-container { visibility: hidden; }
-.bg-primary { background-color: #228B22; }
-.text-primary { color: #228B22; }
+#sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 25;
+    transition: opacity 0.3s ease;
+}
+
+/* Modal */
+#modal-container > div {
+    z-index: 50;
+}
+
+/* Legal pages */
+.legal-page {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 40;
+    }
+    
+    .transaction-table {
+        font-size: 0.875rem;
+    }
+    
+    .transaction-table th,
+    .transaction-table td {
+        padding: 8px 12px;
+    }
+    
+    #fab-add-transaction {
+        bottom: 1rem;
+        right: 1rem;
+        width: 56px;
+        height: 56px;
+    }
+}
+
+/* Print styles */
+@media print {
+    #sidebar,
+    #fab-add-transaction,
+    #mobile-menu-button {
+        display: none !important;
+    }
+    
+    #main-app-container {
+        margin-left: 0 !important;
+    }
+}
