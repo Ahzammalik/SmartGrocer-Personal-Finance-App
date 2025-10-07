@@ -1,377 +1,116 @@
-/* style.css - Updated for Multi-Page Structure */
-
-:root {
-    --primary-color: #10B981;
-    --primary-dark: #059669;
+/* Enhanced styles for sign-in page */
+#signin-overlay {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-.text-primary {
-    color: var(--primary-color);
+#signin-overlay .bg-white {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.95);
 }
 
-.bg-primary {
-    background-color: var(--primary-color);
+/* Smooth transitions for all pages */
+.page {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s ease-in-out;
 }
 
-.hover\:bg-primary:hover {
-    background-color: var(--primary-dark);
+.page.active {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-/* Card styles */
+/* Enhanced card hover effects */
 .card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
 }
 
-/* Financial summary cards */
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Quick action cards */
+.quick-action-card {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.quick-action-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Financial summary animations */
 .financial-summary {
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
-.financial-summary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-}
-
-.income-summary {
-    border-left: 4px solid #10B981;
-}
-
-.expense-summary {
-    border-left: 4px solid #EF4444;
-}
-
-.balance-summary {
-    border-left: 4px solid #3B82F6;
-}
-
-/* Transaction table */
-.transaction-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.transaction-table th {
-    background-color: #f8fafc;
-    padding: 12px 16px;
-    text-align: left;
-    font-weight: 600;
-    color: #374151;
-    border-bottom: 2px solid #e5e7eb;
-}
-
-.transaction-table td {
-    padding: 12px 16px;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-/* Navigation */
-.nav-link.active {
-    background-color: #ecfdf5;
-    color: var(--primary-color);
-    font-weight: 600;
-}
-
-/* Contact page */
-.contact-icon {
-    width: 48px;
-    height: 48px;
-    background-color: #ecfdf5;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--primary-color);
-    font-size: 1.25rem;
-}
-
-.contact-input {
-    width: 100%;
-    padding: 12px 16px;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    transition: all 0.2s;
-}
-
-.contact-input:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-}
-
-/* FAB Button */
-#fab-add-transaction {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    width: 60px;
-    height: 60px;
-    background-color: var(--primary-color);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    box-shadow: 0 10px 25px -3px rgba(16, 185, 129, 0.4);
-    border: none;
-    cursor: pointer;
-    z-index: 40;
-    transition: all 0.3s ease;
-}
-
-#fab-add-transaction:hover {
-    background-color: var(--primary-dark);
-    transform: scale(1.1);
-}
-
-/* Notification */
-.notification {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    padding: 1rem 1.5rem;
-    background-color: #10B981;
-    color: white;
-    border-radius: 8px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    z-index: 100;
-    transform: translateX(400px);
-    opacity: 0;
-    transition: all 0.3s ease;
-}
-
-.notification.show {
-    transform: translateX(0);
-    opacity: 1;
-}
-
-.notification.error {
-    background-color: #EF4444;
-}
-
-.notification.warning {
-    background-color: #F59E0B;
-}
-
-.notification.info {
-    background-color: #3B82F6;
-}
-
-/* Sidebar */
-#sidebar {
-    transition: transform 0.3s ease;
-    z-index: 30;
-}
-
-#sidebar-overlay {
-    position: fixed;
+.financial-summary::before {
+    content: '';
+    position: absolute;
     top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 25;
-    transition: opacity 0.3s ease;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    transition: left 0.5s;
 }
 
-/* Modal */
-#modal-container > div {
-    z-index: 50;
+.financial-summary:hover::before {
+    left: 100%;
 }
 
-/* Legal pages */
-.legal-page {
-    max-height: 70vh;
-    overflow-y: auto;
+/* Loading animation */
+.loading-spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #10B981;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
 }
 
-/* Responsive adjustments */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Enhanced notification styles */
+.notification {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    font-weight: 500;
+}
+
+/* Mobile optimizations */
 @media (max-width: 768px) {
-    #sidebar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 100vh;
-        z-index: 40;
+    #signin-overlay .p-8 {
+        padding: 2rem 1.5rem;
     }
     
-    .transaction-table {
-        font-size: 0.875rem;
+    #signin-overlay h1 {
+        font-size: 2rem;
     }
     
-    .transaction-table th,
-    .transaction-table td {
-        padding: 8px 12px;
-    }
-    
-    #fab-add-transaction {
-        bottom: 1rem;
-        right: 1rem;
-        width: 56px;
-        height: 56px;
+    .quick-actions-grid {
+        grid-template-columns: 1fr 1fr;
     }
 }
 
 /* Print styles */
 @media print {
-    #sidebar,
-    #fab-add-transaction,
-    #mobile-menu-button {
-        display: none !important;
-    }
-    
-    #main-app-container {
-        margin-left: 0 !important;
-    }
-}
-/* Enhanced styles for new features */
-
-/* Progress bars */
-.progress-bar {
-    transition: width 0.3s ease;
-}
-
-/* Search and filter styles */
-.search-filter-container {
-    transition: all 0.3s ease;
-}
-
-/* Transfer section */
-.transfer-section {
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-}
-
-/* Budget status indicators */
-.budget-status-good {
-    border-left: 4px solid #10B981;
-}
-
-.budget-status-warning {
-    border-left: 4px solid #F59E0B;
-}
-
-.budget-status-danger {
-    border-left: 4px solid #EF4444;
-}
-
-/* Data management buttons */
-.data-management-btn {
-    transition: all 0.3s ease;
-}
-
-.data-management-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
-}
-
-/* Responsive table improvements */
-@media (max-width: 640px) {
-    .transaction-table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-    
-    .search-filter-container {
-        flex-direction: column;
-    }
-    
-    .search-filter-container > div {
-        width: 100%;
-    }
-}
-
-/* Print styles enhancement */
-@media print {
-    .card {
-        break-inside: avoid;
-        box-shadow: none;
-        border: 1px solid #e5e7eb;
-    }
-    
     .no-print {
         display: none !important;
     }
-}
-
-/* Dark mode support (optional) */
-@media (prefers-color-scheme: dark) {
+    
     .card {
-        background: #374151;
-        border-color: #4B5563;
-        color: #F9FAFB;
+        break-inside: avoid;
+        box-shadow: none !important;
+        border: 1px solid #e5e7eb !important;
     }
-    
-    .transaction-table th {
-        background-color: #4B5563;
-        color: #F9FAFB;
-        border-color: #6B7280;
-    }
-    
-    .transaction-table td {
-        border-color: #6B7280;
-        color: #E5E7EB;
-    }
-}
-/* Enhanced Dashboard Styles */
-.financial-summary {
-    transition: all 0.3s ease;
-    min-height: 100px;
-}
-
-.financial-summary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
-}
-
-/* Ensure cards have consistent height on mobile */
-@media (max-width: 768px) {
-    .financial-summary {
-        margin-bottom: 1rem;
-    }
-    
-    .grid > .card {
-        margin-bottom: 1rem;
-    }
-}
-
-/* Better spacing for the enhanced metrics */
-.grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-4.gap-4.mb-6 .card {
-    min-height: 90px;
-}
-
-/* Ensure charts have proper aspect ratio */
-.h-64 {
-    min-height: 16rem;
-}
-
-/* Recent transactions scroll area styling */
-.max-h-64 {
-    max-height: 16rem;
-}
-
-.overflow-y-auto {
-    scrollbar-width: thin;
-    scrollbar-color: #cbd5e0 #f7fafc;
-}
-
-.overflow-y-auto::-webkit-scrollbar {
-    width: 6px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-track {
-    background: #f7fafc;
-    border-radius: 3px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb {
-    background: #cbd5e0;
-    border-radius: 3px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb:hover {
-    background: #a0aec0;
 }
