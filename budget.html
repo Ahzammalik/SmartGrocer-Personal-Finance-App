@@ -9,125 +9,363 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-light: #d1fae5;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #f9fafb;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .notification {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            padding: 12px 16px;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Sidebar Styles */
+        #sidebar {
+            transition: transform 0.3s ease;
+        }
+        
+        #sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 40;
+        }
+        
+        .nav-link.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        @media (min-width: 1024px) {
+            #sidebar {
+                transform: translateX(0);
+            }
+            #main-app-container {
+                margin-left: 16rem;
+            }
+        }
+
+        .budget-card {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .budget-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background-color: #e5e7eb;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+    </style>
 </head>
 <body class="antialiased">
 
+    <!-- Sign-in Overlay -->
     <div id="signin-overlay" class="fixed inset-0 bg-gray-100 z-50 flex items-center justify-center p-4">
         <div class="w-full max-w-sm text-center">
-            <h1 class="text-4xl font-bold text-primary mb-4">Welcome to SmartGrocer</h1>
+            <div class="mb-8">
+                <i class="fas fa-chart-pie text-5xl text-green-500 mb-4"></i>
+                <h1 class="text-4xl font-bold text-green-600 mb-2">SmartGrocer</h1>
+                <p class="text-gray-600">Personal Finance Manager</p>
+            </div>
             <p class="text-gray-600 mb-8">Please enter your name to get started.</p>
             <form id="signin-form">
-                <input type="text" id="signin-name" placeholder="Your Name" class="w-full border border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg text-center" required>
-                <button type="submit" class="mt-4 w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors text-lg">
+                <input type="text" id="signin-name" placeholder="Your Name" class="w-full border border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg text-center focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required autofocus>
+                <button type="submit" class="mt-4 w-full bg-green-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-600 transition-colors text-lg">
                     Start Managing Finances
                 </button>
             </form>
         </div>
     </div>
-    
-    <div id="sidebar-overlay" class="hidden"></div>
-    <aside id="sidebar" class="w-64 flex-shrink-0 bg-white transform -translate-x-full">
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="hidden lg:hidden"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transform -translate-x-full lg:translate-x-0 bg-white border-r">
         <div class="h-full flex flex-col">
             <div class="h-20 flex items-center justify-center border-b">
-                <h1 class="text-2xl font-bold text-primary">SmartGrocer</h1>
+                <h1 class="text-2xl font-bold text-green-600">SmartGrocer</h1>
             </div>
             <nav class="flex-1 px-4 py-6 space-y-2">
-                <a href="index.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-home w-6 h-6 mr-3"></i>Dashboard</a>
-                <a href="income.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-money-bill-wave w-6 h-6 mr-3"></i>Income</a>
-                <a href="expense.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-credit-card w-6 h-6 mr-3"></i>Expenses</a>
-                <a href="accounts.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-wallet w-6 h-6 mr-3"></i>Accounts</a>
-                <a href="budget.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary active"><i class="fas fa-chart-pie w-6 h-6 mr-3"></i>Budgets</a>
-                <a href="reports.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-chart-line w-6 h-6 mr-3"></i>Reports</a>
-                <a href="blogs.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-blog w-6 h-6 mr-3"></i>Blog</a>
-                <a href="contact.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-envelope w-6 h-6 mr-3"></i>Contact Us</a>
-                <a href="settings.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-cog w-6 h-6 mr-3"></i>Settings</a>
+                <a href="index.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-home w-6 h-6 mr-3"></i>Dashboard
+                </a>
+                <a href="income.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-money-bill-wave w-6 h-6 mr-3"></i>Income
+                </a>
+                <a href="expense.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-credit-card w-6 h-6 mr-3"></i>Expenses
+                </a>
+                <a href="accounts.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-wallet w-6 h-6 mr-3"></i>Accounts
+                </a>
+                <a href="budget.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600 active">
+                    <i class="fas fa-chart-pie w-6 h-6 mr-3"></i>Budgets
+                </a>
+                <a href="reports.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-chart-line w-6 h-6 mr-3"></i>Reports
+                </a>
+                <a href="blogs.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-blog w-6 h-6 mr-3"></i>Blog
+                </a>
+                <a href="contact.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-envelope w-6 h-6 mr-3"></i>Contact Us
+                </a>
+                <a href="settings.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-cog w-6 h-6 mr-3"></i>Settings
+                </a>
             </nav>
             <div class="px-4 py-4 border-t">
-                <a href="#privacy" class="nav-link text-sm text-gray-500 hover:text-primary block">Privacy Policy</a>
-                <a href="#terms" class="nav-link text-sm text-gray-500 hover:text-primary block mt-1">Terms & Conditions</a>
-                <a href="#disclaimers" class="nav-link text-sm text-gray-500 hover:text-primary block mt-1">Disclaimers</a>
+                <a href="#privacy" class="nav-link text-sm text-gray-500 hover:text-green-600 block">Privacy Policy</a>
+                <a href="#terms" class="nav-link text-sm text-gray-500 hover:text-green-600 block mt-1">Terms & Conditions</a>
+                <a href="#disclaimers" class="nav-link text-sm text-gray-500 hover:text-green-600 block mt-1">Disclaimers</a>
             </div>
         </div>
     </aside>
 
-    <div id="main-app-container">
-        <header class="flex justify-between items-center px-4 bg-white shadow-md">
-            <button id="mobile-menu-button" class="text-gray-600 focus:outline-none"><i class="fas fa-bars text-2xl"></i></button>
-            <h2 id="page-title" class="text-xl font-semibold text-gray-800">Budgets</h2>
-            <div id="welcome-user-container" class="flex items-center">
-                <span id="welcome-user-text" class="text-gray-600 hidden sm:block mr-3">Welcome, User!</span>
-                <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold" id="user-initial">U</div>
+    <!-- Main App Container -->
+    <div id="main-app-container" class="min-h-screen bg-gray-50 hidden lg:ml-64">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b">
+            <div class="flex justify-between items-center px-4 py-4">
+                <div class="flex items-center">
+                    <button id="mobile-menu-button" class="text-gray-600 mr-4 focus:outline-none lg:hidden">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <h1 class="text-2xl font-bold text-gray-900">Budgets</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="welcome-user-text" class="text-gray-600 hidden sm:block">Welcome, User!</span>
+                    <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold" id="user-initial">U</div>
+                </div>
             </div>
         </header>
 
-        <main class="p-4 md:p-6">
-            <div id="budgets" class="page active">
-                <!-- Budget Overview Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-500">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-gray-600">Total Budget</p>
-                                <h3 class="text-2xl font-bold text-gray-800" id="total-budget">$0.00</h3>
-                            </div>
-                            <i class="fas fa-wallet text-2xl text-green-500"></i>
+        <!-- Main Content -->
+        <main class="p-4 sm:p-6">
+            <!-- Summary Cards - Fixed Grid Layout -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- Total Budget Card -->
+                <div class="card p-6 gradient-bg text-white">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm opacity-90 mb-1">Total Budget</p>
+                            <h3 class="text-3xl font-bold">$<span id="total-budget">0.00</span></h3>
                         </div>
+                        <i class="fas fa-wallet text-2xl opacity-80"></i>
                     </div>
-                    
-                    <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-blue-500">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-gray-600">Total Spent</p>
-                                <h3 class="text-2xl font-bold text-gray-800" id="total-spent">$0.00</h3>
-                            </div>
-                            <i class="fas fa-chart-bar text-2xl text-blue-500"></i>
+                    <p class="text-xs mt-3 opacity-80">Across all categories</p>
+                </div>
+                
+                <!-- Total Spent Card -->
+                <div class="card p-6">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1">Total Spent</p>
+                            <h3 class="text-3xl font-bold text-gray-900">$<span id="total-spent">0.00</span></h3>
                         </div>
+                        <i class="fas fa-chart-bar text-2xl text-blue-500"></i>
                     </div>
-                    
-                    <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-purple-500">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-gray-600">Remaining</p>
-                                <h3 class="text-2xl font-bold text-gray-800" id="total-remaining">$0.00</h3>
+                    <p class="text-xs text-gray-500 mt-3">This month</p>
+                </div>
+                
+                <!-- Remaining Card -->
+                <div class="card p-6">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1">Remaining</p>
+                            <h3 class="text-3xl font-bold text-gray-900">$<span id="total-remaining">0.00</span></h3>
+                        </div>
+                        <i class="fas fa-piggy-bank text-2xl text-purple-500"></i>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-3">Available to spend</p>
+                </div>
+            </div>
+
+            <!-- Main Content Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left Column - Budgets List -->
+                <div class="lg:col-span-2 space-y-8">
+                    <!-- Budgets Section -->
+                    <div class="card p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-xl font-bold text-gray-900">Your Budgets</h2>
+                            <button id="add-budget-btn" class="btn-primary flex items-center py-2 px-4 rounded-lg font-medium">
+                                <i class="fas fa-plus mr-2"></i>Create Budget
+                            </button>
+                        </div>
+                        
+                        <!-- Search Bar -->
+                        <div class="mb-6">
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-gray-400"></i>
+                                </div>
+                                <input type="text" placeholder="Type here to search budgets..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20">
                             </div>
-                            <i class="fas fa-piggy-bank text-2xl text-purple-500"></i>
+                        </div>
+                        
+                        <!-- Budgets Grid -->
+                        <div id="budgets-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Budgets will be populated here -->
+                            <div class="col-span-2 text-center py-12">
+                                <i class="fas fa-chart-pie text-6xl text-gray-300 mb-4"></i>
+                                <h3 class="text-xl font-semibold text-gray-600 mb-2">No Budgets Yet</h3>
+                                <p class="text-gray-500">Create your first budget to start tracking your spending limits.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="card p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold">Your Budgets</h3>
-                        <button id="add-budget-btn" class="bg-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
-                            <i class="fas fa-plus mr-2"></i>Create Budget
-                        </button>
+                
+                <!-- Right Column - Budget Insights & Actions -->
+                <div class="lg:col-span-1 space-y-8">
+                    <!-- Budget Progress -->
+                    <div class="card p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Budget Progress</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                    <span>Food & Dining</span>
+                                    <span>75%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-green-500" style="width: 75%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                    <span>Transportation</span>
+                                    <span>45%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-blue-500" style="width: 45%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                    <span>Entertainment</span>
+                                    <span>90%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-yellow-500" style="width: 90%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm text-gray-600 mb-1">
+                                    <span>Shopping</span>
+                                    <span>30%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-purple-500" style="width: 30%"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div id="budgets-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+                    
+                    <!-- Quick Actions -->
+                    <div class="card p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                        <div class="space-y-3">
+                            <button class="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <span class="text-gray-700">View Budget Report</span>
+                                <i class="fas fa-chart-line text-green-500"></i>
+                            </button>
+                            <button class="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <span class="text-gray-700">Set Budget Alerts</span>
+                                <i class="fas fa-bell text-green-500"></i>
+                            </button>
+                            <button class="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <span class="text-gray-700">Export Budget Data</span>
+                                <i class="fas fa-download text-green-500"></i>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
     
+    <!-- Notification -->
     <div id="notification" class="notification hidden fixed top-4 right-4 z-50 max-w-sm"></div>
     
     <!-- Add Budget Modal -->
     <div id="add-budget-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-gray-800">Create New Budget</h3>
+                <h3 class="text-xl font-bold text-gray-900">Create New Budget</h3>
                 <button id="close-budget-modal" class="text-gray-500 hover:text-gray-700">
                     <i class="fas fa-times text-2xl"></i>
                 </button>
             </div>
             <form id="add-budget-form" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Budget Name</label>
-                    <input type="text" id="budget-name" placeholder="e.g., Groceries, Entertainment" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Budget Name</label>
+                    <input type="text" id="budget-name" placeholder="e.g., Groceries, Entertainment" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                    <select id="budget-category" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                    <select id="budget-category" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required>
                         <option value="">Select Category</option>
                         <option value="Food & Dining">Food & Dining</option>
                         <option value="Transportation">Transportation</option>
@@ -142,22 +380,25 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Budget Amount</label>
-                    <input type="number" id="budget-amount" step="0.01" min="0.01" placeholder="0.00" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Budget Amount</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                        <input type="number" id="budget-amount" step="0.01" min="0.01" placeholder="0.00" class="w-full border border-gray-300 rounded-lg pl-8 pr-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required>
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Budget Period</label>
-                    <select id="budget-period" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Budget Period</label>
+                    <select id="budget-period" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required>
                         <option value="monthly">Monthly</option>
                         <option value="weekly">Weekly</option>
                         <option value="yearly">Yearly</option>
                     </select>
                 </div>
                 <div class="flex space-x-3 pt-4">
-                    <button type="button" id="cancel-budget" class="flex-1 bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded-lg hover:bg-gray-400 transition-colors">
+                    <button type="button" id="cancel-budget" class="flex-1 bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-lg hover:bg-gray-300">
                         Cancel
                     </button>
-                    <button type="submit" class="flex-1 bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                    <button type="submit" class="flex-1 btn-primary font-medium py-3 px-4 rounded-lg">
                         Create Budget
                     </button>
                 </div>
@@ -169,7 +410,7 @@
     <div id="edit-budget-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-gray-800">Edit Budget</h3>
+                <h3 class="text-xl font-bold text-gray-900">Edit Budget</h3>
                 <button id="close-edit-budget-modal" class="text-gray-500 hover:text-gray-700">
                     <i class="fas fa-times text-2xl"></i>
                 </button>
@@ -177,12 +418,12 @@
             <form id="edit-budget-form" class="space-y-4">
                 <input type="hidden" id="edit-budget-id">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Budget Name</label>
-                    <input type="text" id="edit-budget-name" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Budget Name</label>
+                    <input type="text" id="edit-budget-name" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                    <select id="edit-budget-category" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                    <select id="edit-budget-category" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required>
                         <option value="Food & Dining">Food & Dining</option>
                         <option value="Transportation">Transportation</option>
                         <option value="Shopping">Shopping</option>
@@ -196,22 +437,25 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Budget Amount</label>
-                    <input type="number" id="edit-budget-amount" step="0.01" min="0.01" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Budget Amount</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                        <input type="number" id="edit-budget-amount" step="0.01" min="0.01" class="w-full border border-gray-300 rounded-lg pl-8 pr-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required>
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Budget Period</label>
-                    <select id="edit-budget-period" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Budget Period</label>
+                    <select id="edit-budget-period" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required>
                         <option value="monthly">Monthly</option>
                         <option value="weekly">Weekly</option>
                         <option value="yearly">Yearly</option>
                     </select>
                 </div>
                 <div class="flex space-x-3 pt-4">
-                    <button type="button" id="delete-budget" class="flex-1 bg-red-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-600 transition-colors">
+                    <button type="button" id="delete-budget" class="flex-1 bg-red-500 text-white font-medium py-3 px-4 rounded-lg hover:bg-red-600">
                         <i class="fas fa-trash mr-2"></i>Delete
                     </button>
-                    <button type="submit" class="flex-1 bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                    <button type="submit" class="flex-1 btn-primary font-medium py-3 px-4 rounded-lg">
                         Update Budget
                     </button>
                 </div>
@@ -219,19 +463,54 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
-    
     <script>
-        // Budgets page specific functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeBudgetsPage();
-        });
+        // Sample data for demonstration
+        let budgets = JSON.parse(localStorage.getItem('smartgrocer-budgets')) || [];
+        let transactions = JSON.parse(localStorage.getItem('smartgrocer-transactions')) || [];
 
-        function initializeBudgetsPage() {
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu functionality
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            mobileMenuButton.addEventListener('click', function() {
+                sidebar.classList.toggle('-translate-x-full');
+                sidebarOverlay.classList.toggle('hidden');
+            });
+
+            sidebarOverlay.addEventListener('click', function() {
+                sidebar.classList.add('-translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+            });
+
+            // Check if user is already signed in
+            const currentUser = localStorage.getItem('smartgrocer-currentUser');
+            if (currentUser) {
+                hideSignInOverlay();
+                document.getElementById('welcome-user-text').textContent = `Welcome, ${currentUser}!`;
+                document.getElementById('user-initial').textContent = currentUser.charAt(0).toUpperCase();
+            }
+
+            // Initialize sign-in form
+            document.getElementById('signin-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const userName = document.getElementById('signin-name').value.trim();
+                if (userName) {
+                    localStorage.setItem('smartgrocer-currentUser', userName);
+                    hideSignInOverlay();
+                    document.getElementById('welcome-user-text').textContent = `Welcome, ${userName}!`;
+                    document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
+                    showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
+                }
+            });
+
+            // Initialize budget modals
+            setupBudgetModals();
             renderBudgets();
             updateBudgetOverview();
-            setupBudgetModals();
-        }
+        });
 
         function setupBudgetModals() {
             const addBudgetBtn = document.getElementById('add-budget-btn');
@@ -398,9 +677,9 @@
             const totalSpent = budgets.reduce((total, budget) => total + calculateBudgetSpent(budget.category), 0);
             const totalRemaining = totalBudget - totalSpent;
 
-            document.getElementById('total-budget').textContent = `$${totalBudget.toFixed(2)}`;
-            document.getElementById('total-spent').textContent = `$${totalSpent.toFixed(2)}`;
-            document.getElementById('total-remaining').textContent = `$${totalRemaining.toFixed(2)}`;
+            document.getElementById('total-budget').textContent = totalBudget.toFixed(2);
+            document.getElementById('total-spent').textContent = totalSpent.toFixed(2);
+            document.getElementById('total-remaining').textContent = totalRemaining.toFixed(2);
         }
 
         function renderBudgets() {
@@ -431,18 +710,18 @@
                 const periodText = getPeriodText(budget.period);
 
                 return `
-                    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 hover:shadow-xl transition-shadow duration-200">
+                    <div class="budget-card bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-all duration-200">
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-primary bg-opacity-10 rounded-full flex items-center justify-center">
-                                    <i class="${icon} text-primary text-lg"></i>
+                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="${icon} text-green-600 text-lg"></i>
                                 </div>
                                 <div>
                                     <h4 class="font-semibold text-gray-800">${budget.name}</h4>
                                     <p class="text-sm text-gray-600">${budget.category} • ${periodText}</p>
                                 </div>
                             </div>
-                            <button onclick="editBudget('${budget.id}')" class="text-gray-400 hover:text-primary transition-colors">
+                            <button onclick="editBudget('${budget.id}')" class="text-gray-400 hover:text-green-600 transition-colors">
                                 <i class="fas fa-edit"></i>
                             </button>
                         </div>
@@ -452,9 +731,8 @@
                                 <span>Spent: $${spent.toFixed(2)}</span>
                                 <span>Budget: $${budget.amount.toFixed(2)}</span>
                             </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="h-2 rounded-full ${progressColor} transition-all duration-300" 
-                                     style="width: ${percentage}%"></div>
+                            <div class="progress-bar">
+                                <div class="progress-fill ${progressColor}" style="width: ${percentage}%"></div>
                             </div>
                         </div>
                         
@@ -492,6 +770,41 @@
                 'yearly': 'Yearly'
             };
             return periods[period] || 'Monthly';
+        }
+
+        function generateId() {
+            return '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function saveBudgets() {
+            localStorage.setItem('smartgrocer-budgets', JSON.stringify(budgets));
+        }
+
+        function hideSignInOverlay() {
+            document.getElementById('signin-overlay').classList.add('hidden');
+            document.getElementById('main-app-container').classList.remove('hidden');
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const bgColor = type === 'success' ? 'bg-green-500' : 
+                           type === 'error' ? 'bg-red-500' : 
+                           type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500';
+            
+            notification.innerHTML = `
+                <div class="${bgColor} text-white p-4 rounded-lg flex items-center">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 
+                                 type === 'error' ? 'fa-exclamation-circle' : 
+                                 type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'} mr-3"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            notification.classList.remove('hidden');
+            
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 3000);
         }
     </script>
 </body>
