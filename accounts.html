@@ -146,16 +146,24 @@
         .transaction-item:last-child {
             border-bottom: none;
         }
+        
+        #signin-overlay {
+            z-index: 9999;
+        }
     </style>
 </head>
 <body class="antialiased bg-gray-50">
 
     <div id="signin-overlay" class="fixed inset-0 bg-gray-100 z-50 flex items-center justify-center p-4">
         <div class="w-full max-w-sm text-center">
-            <h1 class="text-4xl font-bold text-primary mb-4">Welcome to SmartGrocer</h1>
+            <div class="mb-8">
+                <i class="fas fa-wallet text-5xl text-primary mb-4"></i>
+                <h1 class="text-4xl font-bold text-primary mb-2">SmartGrocer</h1>
+                <p class="text-gray-600">Personal Finance Manager</p>
+            </div>
             <p class="text-gray-600 mb-8">Please enter your name to get started.</p>
             <form id="signin-form">
-                <input type="text" id="signin-name" placeholder="Your Name" class="w-full border border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg text-center" required>
+                <input type="text" id="signin-name" placeholder="Your Name" class="w-full border border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg text-center focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required autofocus>
                 <button type="submit" class="mt-4 w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors text-lg">
                     Start Managing Finances
                 </button>
@@ -188,7 +196,7 @@
         </div>
     </aside>
 
-    <div id="main-app-container">
+    <div id="main-app-container" class="hidden">
         <header class="flex justify-between items-center px-4 bg-white shadow-sm py-4">
             <button id="mobile-menu-button" class="text-gray-600 focus:outline-none"><i class="fas fa-bars text-2xl"></i></button>
             <h2 id="page-title" class="text-xl font-semibold text-gray-800">Accounts</h2>
@@ -361,11 +369,49 @@
         // Sample data for demonstration
         let accounts = JSON.parse(localStorage.getItem('smartgrocer-accounts')) || [];
         let transactions = JSON.parse(localStorage.getItem('smartgrocer-transactions')) || [];
+        let currentUser = localStorage.getItem('smartgrocer-currentUser');
         
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
+            initializeSignIn();
+            if (currentUser) {
+                hideSignInOverlay();
+            }
             initializeAccountsPage();
         });
+
+        function initializeSignIn() {
+            const signInForm = document.getElementById('signin-form');
+            const signInName = document.getElementById('signin-name');
+            
+            signInForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const userName = signInName.value.trim();
+                if (!userName) {
+                    showNotification('Please enter your name', 'error');
+                    return;
+                }
+                
+                // Save user to localStorage
+                localStorage.setItem('smartgrocer-currentUser', userName);
+                currentUser = userName;
+                
+                // Update UI
+                document.getElementById('welcome-user-text').textContent = `Welcome, ${userName}!`;
+                document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
+                
+                // Hide sign-in overlay and show main app
+                hideSignInOverlay();
+                
+                showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
+            });
+        }
+        
+        function hideSignInOverlay() {
+            document.getElementById('signin-overlay').classList.add('hidden');
+            document.getElementById('main-app-container').classList.remove('hidden');
+        }
 
         function initializeAccountsPage() {
             renderAccounts();
