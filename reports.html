@@ -244,12 +244,8 @@
         
         @media (min-width: 1024px) {
             .grid-cols-fix {
-                grid-template-columns: 2fr 1fr;
+                grid-template-columns: 1fr;
             }
-        }
-        
-        .profile-section {
-            min-height: 400px;
         }
         
         .currency-section {
@@ -312,48 +308,8 @@
         <main class="p-4 md:p-6">
             <div id="reports" class="page active">
                 <div class="max-w-7xl mx-auto">
-                    <!-- Profile and Currency Section -->
+                    <!-- Currency Section Only -->
                     <div class="grid-cols-fix mb-8">
-                        <div class="profile-section">
-                            <div class="card p-6 h-full">
-                                <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                                    <i class="fas fa-user-circle mr-2 text-primary"></i> Profile Information
-                                </h3>
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                                        <div class="flex">
-                                            <input type="text" id="profile-name" class="profile-input rounded-r-none" value="John Doe">
-                                            <button id="edit-name-btn" class="bg-gray-100 text-gray-700 px-4 rounded-r-lg border border-l-0 border-gray-300 hover:bg-gray-200 transition-colors">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
-                                        <div class="flex">
-                                            <input type="tel" id="profile-phone" class="profile-input rounded-r-none" value="+92 300 1234567">
-                                            <button id="edit-phone-btn" class="bg-gray-100 text-gray-700 px-4 rounded-r-lg border border-l-0 border-gray-300 hover:bg-gray-200 transition-colors">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                                        <div class="flex">
-                                            <input type="email" id="profile-email" class="profile-input rounded-r-none" value="john.doe@example.com">
-                                            <button id="edit-email-btn" class="bg-gray-100 text-gray-700 px-4 rounded-r-lg border border-l-0 border-gray-300 hover:bg-gray-200 transition-colors">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <button id="save-profile-btn" class="w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors">
-                                        <i class="fas fa-save mr-2"></i> Save Profile Changes
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
                         <div class="currency-section">
                             <div class="card p-6 h-full">
                                 <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
@@ -498,15 +454,6 @@
         const sidebarOverlay = document.getElementById('sidebar-overlay');
         const notification = document.getElementById('notification');
         
-        // Profile elements
-        const profileName = document.getElementById('profile-name');
-        const profilePhone = document.getElementById('profile-phone');
-        const profileEmail = document.getElementById('profile-email');
-        const editNameBtn = document.getElementById('edit-name-btn');
-        const editPhoneBtn = document.getElementById('edit-phone-btn');
-        const editEmailBtn = document.getElementById('edit-email-btn');
-        const saveProfileBtn = document.getElementById('save-profile-btn');
-        
         // Currency elements
         const currencyOptions = document.querySelectorAll('.currency-option');
         
@@ -516,7 +463,6 @@
             signinOverlay.style.display = 'none';
             welcomeUserText.textContent = `Welcome, ${userName}!`;
             userInitial.textContent = userName.charAt(0).toUpperCase();
-            profileName.value = userName;
         } else {
             signinOverlay.style.display = 'flex';
         }
@@ -530,7 +476,6 @@
                 signinOverlay.style.display = 'none';
                 welcomeUserText.textContent = `Welcome, ${name}!`;
                 userInitial.textContent = name.charAt(0).toUpperCase();
-                profileName.value = name;
                 showNotification('Successfully signed in!', 'success');
             }
         });
@@ -574,44 +519,6 @@
         const defaultCurrency = localStorage.getItem('preferredCurrency') || 'PKR';
         document.querySelector(`.currency-option[data-currency="${defaultCurrency}"]`).classList.add('selected');
         updateCurrencyDisplay(defaultCurrency);
-        
-        // Profile editing
-        editNameBtn.addEventListener('click', function() {
-            profileName.focus();
-        });
-        
-        editPhoneBtn.addEventListener('click', function() {
-            profilePhone.focus();
-        });
-        
-        editEmailBtn.addEventListener('click', function() {
-            profileEmail.focus();
-        });
-        
-        // Save profile changes
-        saveProfileBtn.addEventListener('click', function() {
-            const newName = profileName.value.trim();
-            const newPhone = profilePhone.value.trim();
-            const newEmail = profileEmail.value.trim();
-            
-            if (newName) {
-                localStorage.setItem('userName', newName);
-                welcomeUserText.textContent = `Welcome, ${newName}!`;
-                userInitial.textContent = newName.charAt(0).toUpperCase();
-            }
-            
-            localStorage.setItem('userPhone', newPhone);
-            localStorage.setItem('userEmail', newEmail);
-            
-            showNotification('Profile updated successfully!', 'success');
-        });
-        
-        // Load saved profile data
-        const savedPhone = localStorage.getItem('userPhone');
-        const savedEmail = localStorage.getItem('userEmail');
-        
-        if (savedPhone) profilePhone.value = savedPhone;
-        if (savedEmail) profileEmail.value = savedEmail;
         
         // Show notification function
         function showNotification(message, type) {
