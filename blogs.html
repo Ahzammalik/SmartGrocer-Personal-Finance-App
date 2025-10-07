@@ -9,71 +9,489 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --primary-light: #d1fae5;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background-color: #f9fafb;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .notification {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            padding: 12px 16px;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Sidebar Styles */
+        #sidebar {
+            transition: transform 0.3s ease;
+        }
+        
+        #sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 40;
+        }
+        
+        .nav-link.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        @media (min-width: 1024px) {
+            #sidebar {
+                transform: translateX(0);
+            }
+            #main-app-container {
+                margin-left: 16rem;
+            }
+        }
+
+        .blog-card {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .blog-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .blog-card-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        
+        .blog-card-image::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
+        }
+        
+        .category-tag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(255,255,255,0.9);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+        
+        .read-time {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            color: white;
+            font-size: 0.75rem;
+            z-index: 2;
+        }
+        
+        .featured-post {
+            grid-column: 1 / -1;
+        }
+        
+        @media (min-width: 768px) {
+            .featured-post {
+                grid-column: span 2;
+            }
+        }
+    </style>
 </head>
 <body class="antialiased">
 
+    <!-- Sign-in Overlay -->
     <div id="signin-overlay" class="fixed inset-0 bg-gray-100 z-50 flex items-center justify-center p-4">
         <div class="w-full max-w-sm text-center">
-            <h1 class="text-4xl font-bold text-primary mb-4">Welcome to SmartGrocer</h1>
+            <div class="mb-8">
+                <i class="fas fa-blog text-5xl text-green-500 mb-4"></i>
+                <h1 class="text-4xl font-bold text-green-600 mb-2">SmartGrocer</h1>
+                <p class="text-gray-600">Personal Finance Manager</p>
+            </div>
             <p class="text-gray-600 mb-8">Please enter your name to get started.</p>
             <form id="signin-form">
-                <input type="text" id="signin-name" placeholder="Your Name" class="w-full border border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg text-center" required>
-                <button type="submit" class="mt-4 w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors text-lg">
+                <input type="text" id="signin-name" placeholder="Your Name" class="w-full border border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg text-center focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required autofocus>
+                <button type="submit" class="mt-4 w-full bg-green-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-600 transition-colors text-lg">
                     Start Managing Finances
                 </button>
             </form>
         </div>
     </div>
-    
-    <div id="sidebar-overlay" class="hidden"></div>
-    <aside id="sidebar" class="w-64 flex-shrink-0 bg-white transform -translate-x-full">
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="hidden lg:hidden"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transform -translate-x-full lg:translate-x-0 bg-white border-r">
         <div class="h-full flex flex-col">
             <div class="h-20 flex items-center justify-center border-b">
-                <h1 class="text-2xl font-bold text-primary">SmartGrocer</h1>
+                <h1 class="text-2xl font-bold text-green-600">SmartGrocer</h1>
             </div>
             <nav class="flex-1 px-4 py-6 space-y-2">
-                <a href="index.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-home w-6 h-6 mr-3"></i>Dashboard</a>
-                <a href="income.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-money-bill-wave w-6 h-6 mr-3"></i>Income</a>
-                <a href="expense.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-credit-card w-6 h-6 mr-3"></i>Expenses</a>
-                <a href="accounts.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-wallet w-6 h-6 mr-3"></i>Accounts</a>
-                <a href="budget.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-chart-pie w-6 h-6 mr-3"></i>Budgets</a>
-                <a href="reports.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-chart-line w-6 h-6 mr-3"></i>Reports</a>
-                <a href="blogs.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary active"><i class="fas fa-blog w-6 h-6 mr-3"></i>Blog</a>
-                <a href="contact.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-envelope w-6 h-6 mr-3"></i>Contact Us</a>
-                <a href="settings.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-cog w-6 h-6 mr-3"></i>Settings</a>
+                <a href="index.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-home w-6 h-6 mr-3"></i>Dashboard
+                </a>
+                <a href="income.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-money-bill-wave w-6 h-6 mr-3"></i>Income
+                </a>
+                <a href="expense.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-credit-card w-6 h-6 mr-3"></i>Expenses
+                </a>
+                <a href="accounts.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-wallet w-6 h-6 mr-3"></i>Accounts
+                </a>
+                <a href="budget.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-chart-pie w-6 h-6 mr-3"></i>Budgets
+                </a>
+                <a href="reports.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-chart-line w-6 h-6 mr-3"></i>Reports
+                </a>
+                <a href="blogs.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600 active">
+                    <i class="fas fa-blog w-6 h-6 mr-3"></i>Blog
+                </a>
+                <a href="contact.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-envelope w-6 h-6 mr-3"></i>Contact Us
+                </a>
+                <a href="settings.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-cog w-6 h-6 mr-3"></i>Settings
+                </a>
             </nav>
             <div class="px-4 py-4 border-t">
-                <a href="#privacy" class="nav-link text-sm text-gray-500 hover:text-primary block">Privacy Policy</a>
-                <a href="#terms" class="nav-link text-sm text-gray-500 hover:text-primary block mt-1">Terms & Conditions</a>
-                <a href="#disclaimers" class="nav-link text-sm text-gray-500 hover:text-primary block mt-1">Disclaimers</a>
+                <a href="#privacy" class="nav-link text-sm text-gray-500 hover:text-green-600 block">Privacy Policy</a>
+                <a href="#terms" class="nav-link text-sm text-gray-500 hover:text-green-600 block mt-1">Terms & Conditions</a>
+                <a href="#disclaimers" class="nav-link text-sm text-gray-500 hover:text-green-600 block mt-1">Disclaimers</a>
             </div>
         </div>
     </aside>
 
-    <div id="main-app-container">
-        <header class="flex justify-between items-center px-4 bg-white shadow-md">
-            <button id="mobile-menu-button" class="text-gray-600 focus:outline-none"><i class="fas fa-bars text-2xl"></i></button>
-            <h2 id="page-title" class="text-xl font-semibold text-gray-800">Blog</h2>
-            <div id="welcome-user-container" class="flex items-center">
-                <span id="welcome-user-text" class="text-gray-600 hidden sm:block mr-3">Welcome, User!</span>
-                <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold" id="user-initial">U</div>
+    <!-- Main App Container -->
+    <div id="main-app-container" class="min-h-screen bg-gray-50 hidden lg:ml-64">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b">
+            <div class="flex justify-between items-center px-4 py-4">
+                <div class="flex items-center">
+                    <button id="mobile-menu-button" class="text-gray-600 mr-4 focus:outline-none lg:hidden">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <h1 class="text-2xl font-bold text-gray-900">Blog</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="welcome-user-text" class="text-gray-600 hidden sm:block">Welcome, User!</span>
+                    <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold" id="user-initial">U</div>
+                </div>
             </div>
         </header>
 
-        <main class="p-4 md:p-6">
-            <div id="blog" class="page active">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Blog content will be loaded here -->
+        <!-- Main Content -->
+        <main class="p-4 sm:p-6">
+            <!-- Hero Section -->
+            <div class="card p-8 mb-8 gradient-bg text-white text-center">
+                <h1 class="text-4xl font-bold mb-4">SmartGrocer Blog</h1>
+                <p class="text-xl opacity-90 max-w-2xl mx-auto">
+                    Discover tips, strategies, and insights to master your personal finances and achieve financial freedom.
+                </p>
+                <div class="mt-6">
+                    <div class="relative max-w-md mx-auto">
+                        <input type="text" placeholder="Search blog posts..." class="w-full pl-10 pr-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50">
+                        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Categories Filter -->
+            <div class="flex flex-wrap gap-2 mb-8">
+                <button class="px-4 py-2 bg-green-500 text-white rounded-full font-medium">All</button>
+                <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full font-medium hover:bg-gray-300">Budgeting</button>
+                <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full font-medium hover:bg-gray-300">Saving</button>
+                <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full font-medium hover:bg-gray-300">Investing</button>
+                <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full font-medium hover:bg-gray-300">Debt Management</button>
+                <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-full font-medium hover:bg-gray-300">Financial Planning</button>
+            </div>
+
+            <!-- Featured Post -->
+            <div class="blog-card card featured-post mb-8">
+                <div class="blog-card-image" style="background-image: url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80')">
+                    <div class="category-tag">Featured</div>
+                    <div class="read-time">8 min read</div>
+                </div>
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-3">The Complete Guide to Building Your Emergency Fund</h2>
+                    <p class="text-gray-600 mb-4">
+                        Learn how to create a robust emergency fund that will protect you from unexpected financial shocks. 
+                        This comprehensive guide covers how much to save, where to keep your emergency fund, and when to use it.
+                    </p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold mr-3">SG</div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">SmartGrocer Team</p>
+                                <p class="text-xs text-gray-500">May 15, 2023</p>
+                            </div>
+                        </div>
+                        <a href="#" class="text-green-600 font-medium hover:text-green-700">Read More →</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blog Posts Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Blog Post 1 -->
+                <div class="blog-card card">
+                    <div class="blog-card-image" style="background-image: url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
+                        <div class="category-tag" style="background-color: #3b82f6; color: white">Budgeting</div>
+                        <div class="read-time">5 min read</div>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">5 Budgeting Methods That Actually Work</h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Explore different budgeting techniques and find the one that fits your lifestyle and financial goals.
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-500">Jun 2, 2023</span>
+                            <a href="#" class="text-green-600 text-sm font-medium hover:text-green-700">Read →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blog Post 2 -->
+                <div class="blog-card card">
+                    <div class="blog-card-image" style="background-image: url('https://images.unsplash.com/photo-1554224154-2604a99aeea6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
+                        <div class="category-tag" style="background-color: #f59e0b; color: white">Investing</div>
+                        <div class="read-time">7 min read</div>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Beginner's Guide to Stock Market Investing</h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Start your investment journey with confidence. Learn the basics of stock market investing for beginners.
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-500">May 28, 2023</span>
+                            <a href="#" class="text-green-600 text-sm font-medium hover:text-green-700">Read →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blog Post 3 -->
+                <div class="blog-card card">
+                    <div class="blog-card-image" style="background-image: url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
+                        <div class="category-tag" style="background-color: #ef4444; color: white">Debt Management</div>
+                        <div class="read-time">6 min read</div>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">How to Pay Off Credit Card Debt Faster</h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Effective strategies to eliminate credit card debt and save thousands in interest payments.
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-500">May 20, 2023</span>
+                            <a href="#" class="text-green-600 text-sm font-medium hover:text-green-700">Read →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blog Post 4 -->
+                <div class="blog-card card">
+                    <div class="blog-card-image" style="background-image: url('https://images.unsplash.com/photo-1554224154-22dec7ec8818?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
+                        <div class="category-tag" style="background-color: #8b5cf6; color: white">Saving</div>
+                        <div class="read-time">4 min read</div>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Automate Your Savings: Set It and Forget It</h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Discover how automation can help you save money effortlessly and consistently.
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-500">May 12, 2023</span>
+                            <a href="#" class="text-green-600 text-sm font-medium hover:text-green-700">Read →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blog Post 5 -->
+                <div class="blog-card card">
+                    <div class="blog-card-image" style="background-image: url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
+                        <div class="category-tag" style="background-color: #10b981; color: white">Financial Planning</div>
+                        <div class="read-time">9 min read</div>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Creating a Financial Plan for Your Future</h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Step-by-step guide to building a comprehensive financial plan that aligns with your life goals.
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-500">May 5, 2023</span>
+                            <a href="#" class="text-green-600 text-sm font-medium hover:text-green-700">Read →</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blog Post 6 -->
+                <div class="blog-card card">
+                    <div class="blog-card-image" style="background-image: url('https://images.unsplash.com/photo-1554224154-2604a99aeea6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80')">
+                        <div class="category-tag" style="background-color: #f59e0b; color: white">Investing</div>
+                        <div class="read-time">5 min read</div>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-lg font-bold text-gray-900 mb-2">Understanding Compound Interest</h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            How compound interest works and why it's called the eighth wonder of the world.
+                        </p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs text-gray-500">Apr 28, 2023</span>
+                            <a href="#" class="text-green-600 text-sm font-medium hover:text-green-700">Read →</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Load More Button -->
+            <div class="text-center mt-8">
+                <button class="btn-primary py-3 px-6 rounded-lg font-medium">
+                    <i class="fas fa-spinner mr-2"></i>Load More Articles
+                </button>
             </div>
         </main>
     </div>
     
-    <div id="notification" class="notification"></div>
-    <div id="modal-container"></div>
-    <button id="fab-add-transaction"><i class="fas fa-plus"></i></button>
+    <!-- Notification -->
+    <div id="notification" class="notification hidden fixed top-4 right-4 z-50 max-w-sm"></div>
 
-    <script src="script.js"></script>
+    <script>
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu functionality
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            mobileMenuButton.addEventListener('click', function() {
+                sidebar.classList.toggle('-translate-x-full');
+                sidebarOverlay.classList.toggle('hidden');
+            });
+
+            sidebarOverlay.addEventListener('click', function() {
+                sidebar.classList.add('-translate-x-full');
+                sidebarOverlay.classList.add('hidden');
+            });
+
+            // Check if user is already signed in
+            const currentUser = localStorage.getItem('smartgrocer-currentUser');
+            if (currentUser) {
+                hideSignInOverlay();
+                document.getElementById('welcome-user-text').textContent = `Welcome, ${currentUser}!`;
+                document.getElementById('user-initial').textContent = currentUser.charAt(0).toUpperCase();
+            }
+
+            // Initialize sign-in form
+            document.getElementById('signin-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const userName = document.getElementById('signin-name').value.trim();
+                if (userName) {
+                    localStorage.setItem('smartgrocer-currentUser', userName);
+                    hideSignInOverlay();
+                    document.getElementById('welcome-user-text').textContent = `Welcome, ${userName}!`;
+                    document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
+                    showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
+                }
+            });
+
+            // Category filter functionality
+            const categoryButtons = document.querySelectorAll('.flex-wrap button');
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    categoryButtons.forEach(btn => {
+                        btn.classList.remove('bg-green-500', 'text-white');
+                        btn.classList.add('bg-gray-200', 'text-gray-700');
+                    });
+                    
+                    // Add active class to clicked button
+                    this.classList.remove('bg-gray-200', 'text-gray-700');
+                    this.classList.add('bg-green-500', 'text-white');
+                    
+                    // In a real app, you would filter blog posts here
+                    showNotification(`Showing ${this.textContent} articles`, 'info');
+                });
+            });
+        });
+
+        function hideSignInOverlay() {
+            document.getElementById('signin-overlay').classList.add('hidden');
+            document.getElementById('main-app-container').classList.remove('hidden');
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            const bgColor = type === 'success' ? 'bg-green-500' : 
+                           type === 'error' ? 'bg-red-500' : 
+                           type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500';
+            
+            notification.innerHTML = `
+                <div class="${bgColor} text-white p-4 rounded-lg flex items-center">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 
+                                 type === 'error' ? 'fa-exclamation-circle' : 
+                                 type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'} mr-3"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            notification.classList.remove('hidden');
+            
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
