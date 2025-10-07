@@ -644,82 +644,92 @@
         }
         
         // Initialize charts
-        document.addEventListener('DOMContentLoaded', function() {
+        function initializeCharts() {
             // Income vs Expense Chart
-            const incomeExpenseCtx = document.getElementById('incomeExpenseChart').getContext('2d');
-            const incomeExpenseChart = new Chart(incomeExpenseCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    datasets: [
-                        {
-                            label: 'Income',
-                            data: [12000, 19000, 15000, 18000, 22000, 25000],
-                            backgroundColor: '#10B981',
-                            borderRadius: 4
-                        },
-                        {
-                            label: 'Expenses',
-                            data: [8000, 12000, 10000, 11000, 15000, 14000],
-                            backgroundColor: '#EF4444',
-                            borderRadius: 4
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        }
+            const incomeExpenseCtx = document.getElementById('incomeExpenseChart');
+            if (incomeExpenseCtx) {
+                const incomeExpenseChart = new Chart(incomeExpenseCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        datasets: [
+                            {
+                                label: 'Income',
+                                data: [12000, 19000, 15000, 18000, 22000, 25000],
+                                backgroundColor: '#10B981',
+                                borderRadius: 4
+                            },
+                            {
+                                label: 'Expenses',
+                                data: [8000, 12000, 10000, 11000, 15000, 14000],
+                                backgroundColor: '#EF4444',
+                                borderRadius: 4
+                            }
+                        ]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                drawBorder: false
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
                             }
                         },
-                        x: {
-                            grid: {
-                                display: false
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    drawBorder: false
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
+            }
             
             // Category Chart
-            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-            const categoryChart = new Chart(categoryCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Food & Dining', 'Shopping', 'Transportation', 'Entertainment', 'Bills & Utilities', 'Others'],
-                    datasets: [{
-                        data: [30, 25, 15, 10, 12, 8],
-                        backgroundColor: [
-                            '#10B981',
-                            '#3B82F6',
-                            '#F59E0B',
-                            '#EF4444',
-                            '#8B5CF6',
-                            '#6B7280'
-                        ],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
+            const categoryCtx = document.getElementById('categoryChart');
+            if (categoryCtx) {
+                const categoryChart = new Chart(categoryCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Food & Dining', 'Shopping', 'Transportation', 'Entertainment', 'Bills & Utilities', 'Others'],
+                        datasets: [{
+                            data: [30, 25, 15, 10, 12, 8],
+                            backgroundColor: [
+                                '#10B981',
+                                '#3B82F6',
+                                '#F59E0B',
+                                '#EF4444',
+                                '#8B5CF6',
+                                '#6B7280'
+                            ],
+                            borderWidth: 0
+                        }]
                     },
-                    cutout: '70%'
-                }
-            });
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        },
+                        cutout: '70%'
+                    }
+                });
+            }
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show the reports page
+            document.getElementById('reports').classList.add('active');
             
             // Add active class to current page in navigation
             const currentPage = window.location.pathname.split('/').pop() || 'index.html';
@@ -733,6 +743,9 @@
                     link.classList.remove('active');
                 }
             });
+
+            // Initialize charts
+            initializeCharts();
 
             // Fix for mobile view
             if (window.innerWidth < 768) {
