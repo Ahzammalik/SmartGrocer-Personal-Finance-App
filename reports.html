@@ -11,372 +11,428 @@
     
     <style>
         :root {
-            --primary: #10b981;
+            --primary: #10B981;
             --primary-dark: #059669;
-            --primary-light: #d1fae5;
+            --primary-light: #D1FAE5;
+            --secondary: #3B82F6;
+            --dark: #1F2937;
+            --light: #F9FAFB;
         }
         
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background-color: #f9fafb;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #F3F4F6;
         }
         
         .card {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
         }
         
-        .gradient-bg {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        }
-        
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-            transition: all 0.2s ease;
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
+        .nav-link.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
         }
         
         .notification {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
             border-radius: 8px;
-            padding: 12px 16px;
-            animation: slideIn 0.3s ease-out;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
         }
         
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+        .notification.show {
+            transform: translateX(0);
         }
-
-        /* Sidebar Styles */
-        #sidebar {
-            transition: transform 0.3s ease;
+        
+        .notification.success {
+            background-color: var(--primary);
+        }
+        
+        .notification.error {
+            background-color: #EF4444;
+        }
+        
+        #fab-add-transaction {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            z-index: 90;
+            transition: all 0.2s;
+        }
+        
+        #fab-add-transaction:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.05);
         }
         
         #sidebar-overlay {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
             z-index: 40;
+            display: none;
         }
         
-        .nav-link.active {
-            background-color: var(--primary-light);
-            color: var(--primary);
-        }
-        
-        @media (min-width: 1024px) {
-            #sidebar {
-                transform: translateX(0);
-            }
-            #main-app-container {
-                margin-left: 16rem;
-            }
-        }
-
-        .stat-card {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .stat-card::before {
-            content: '';
-            position: absolute;
+        #sidebar {
+            position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-dark) 100%);
+            height: 100%;
+            width: 256px;
+            background-color: white;
+            z-index: 50;
+            transition: transform 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-
+        
+        #sidebar.show {
+            transform: translateX(0);
+        }
+        
+        #main-app-container {
+            transition: margin-left 0.3s ease;
+        }
+        
+        @media (min-width: 768px) {
+            #sidebar {
+                transform: translateX(0);
+                position: static;
+                height: auto;
+            }
+            
+            #main-app-container {
+                margin-left: 0;
+                width: calc(100% - 256px);
+            }
+            
+            #mobile-menu-button {
+                display: none;
+            }
+            
+            #sidebar-overlay {
+                display: none !important;
+            }
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
         .chart-container {
             position: relative;
             height: 300px;
+            width: 100%;
+        }
+        
+        .currency-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #E5E7EB;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .currency-option:hover {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+        
+        .currency-option.selected {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+        
+        .currency-flag {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .profile-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        
+        .profile-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        .report-card {
+            transition: all 0.2s;
+        }
+        
+        .report-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
         }
     </style>
 </head>
 <body class="antialiased">
 
-    <!-- Sign-in Overlay -->
     <div id="signin-overlay" class="fixed inset-0 bg-gray-100 z-50 flex items-center justify-center p-4">
         <div class="w-full max-w-sm text-center">
-            <div class="mb-8">
-                <i class="fas fa-chart-line text-5xl text-green-500 mb-4"></i>
-                <h1 class="text-4xl font-bold text-green-600 mb-2">SmartGrocer</h1>
-                <p class="text-gray-600">Personal Finance Manager</p>
-            </div>
+            <h1 class="text-4xl font-bold text-primary mb-4">Welcome to SmartGrocer</h1>
             <p class="text-gray-600 mb-8">Please enter your name to get started.</p>
             <form id="signin-form">
-                <input type="text" id="signin-name" placeholder="Your Name" class="w-full border border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg text-center focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required autofocus>
-                <button type="submit" class="mt-4 w-full bg-green-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-600 transition-colors text-lg">
+                <input type="text" id="signin-name" placeholder="Your Name" class="w-full border border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg text-center" required>
+                <button type="submit" class="mt-4 w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors text-lg">
                     Start Managing Finances
                 </button>
             </form>
         </div>
     </div>
-
-    <!-- Sidebar Overlay -->
-    <div id="sidebar-overlay" class="hidden lg:hidden"></div>
-
-    <!-- Sidebar -->
-    <aside id="sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transform -translate-x-full lg:translate-x-0 bg-white border-r">
+    
+    <div id="sidebar-overlay" class="hidden"></div>
+    <aside id="sidebar" class="w-64 flex-shrink-0 bg-white transform -translate-x-full md:translate-x-0">
         <div class="h-full flex flex-col">
             <div class="h-20 flex items-center justify-center border-b">
-                <h1 class="text-2xl font-bold text-green-600">SmartGrocer</h1>
+                <h1 class="text-2xl font-bold text-primary">SmartGrocer</h1>
             </div>
             <nav class="flex-1 px-4 py-6 space-y-2">
-                <a href="index.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
-                    <i class="fas fa-home w-6 h-6 mr-3"></i>Dashboard
-                </a>
-                <a href="income.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
-                    <i class="fas fa-money-bill-wave w-6 h-6 mr-3"></i>Income
-                </a>
-                <a href="expense.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
-                    <i class="fas fa-credit-card w-6 h-6 mr-3"></i>Expenses
-                </a>
-                <a href="accounts.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
-                    <i class="fas fa-wallet w-6 h-6 mr-3"></i>Accounts
-                </a>
-                <a href="budget.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
-                    <i class="fas fa-chart-pie w-6 h-6 mr-3"></i>Budgets
-                </a>
-                <a href="reports.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600 active">
-                    <i class="fas fa-chart-line w-6 h-6 mr-3"></i>Reports
-                </a>
-                <a href="blogs.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
-                    <i class="fas fa-blog w-6 h-6 mr-3"></i>Blog
-                </a>
-                <a href="contact.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
-                    <i class="fas fa-envelope w-6 h-6 mr-3"></i>Contact Us
-                </a>
-                <a href="settings.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
-                    <i class="fas fa-cog w-6 h-6 mr-3"></i>Settings
-                </a>
+                <a href="index.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-home w-6 h-6 mr-3"></i>Dashboard</a>
+                <a href="income.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-money-bill-wave w-6 h-6 mr-3"></i>Income</a>
+                <a href="expense.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-credit-card w-6 h-6 mr-3"></i>Expenses</a>
+                <a href="accounts.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-wallet w-6 h-6 mr-3"></i>Accounts</a>
+                <a href="budget.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-chart-pie w-6 h-6 mr-3"></i>Budgets</a>
+                <a href="reports.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary active"><i class="fas fa-chart-line w-6 h-6 mr-3"></i>Reports</a>
+                <a href="blogs.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-blog w-6 h-6 mr-3"></i>Blog</a>
+                <a href="contact.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-envelope w-6 h-6 mr-3"></i>Contact Us</a>
+                <a href="settings.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-cog w-6 h-6 mr-3"></i>Settings</a>
             </nav>
             <div class="px-4 py-4 border-t">
-                <a href="#privacy" class="nav-link text-sm text-gray-500 hover:text-green-600 block">Privacy Policy</a>
-                <a href="#terms" class="nav-link text-sm text-gray-500 hover:text-green-600 block mt-1">Terms & Conditions</a>
-                <a href="#disclaimers" class="nav-link text-sm text-gray-500 hover:text-green-600 block mt-1">Disclaimers</a>
+                <a href="#privacy" class="nav-link text-sm text-gray-500 hover:text-primary block">Privacy Policy</a>
+                <a href="#terms" class="nav-link text-sm text-gray-500 hover:text-primary block mt-1">Terms & Conditions</a>
+                <a href="#disclaimers" class="nav-link text-sm text-gray-500 hover:text-primary block mt-1">Disclaimers</a>
             </div>
         </div>
     </aside>
 
-    <!-- Main App Container -->
-    <div id="main-app-container" class="min-h-screen bg-gray-50 hidden lg:ml-64">
-        <!-- Header -->
-        <header class="bg-white shadow-sm border-b">
-            <div class="flex justify-between items-center px-4 py-4">
-                <div class="flex items-center">
-                    <button id="mobile-menu-button" class="text-gray-600 mr-4 focus:outline-none lg:hidden">
-                        <i class="fas fa-bars text-xl"></i>
-                    </button>
-                    <h1 class="text-2xl font-bold text-gray-900">Reports</h1>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <span id="welcome-user-text" class="text-gray-600 hidden sm:block">Welcome, User!</span>
-                    <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold" id="user-initial">U</div>
-                </div>
+    <div id="main-app-container" class="md:ml-64">
+        <header class="flex justify-between items-center px-4 py-4 bg-white shadow-sm">
+            <button id="mobile-menu-button" class="text-gray-600 focus:outline-none"><i class="fas fa-bars text-2xl"></i></button>
+            <h2 id="page-title" class="text-xl font-semibold text-gray-800">Reports & Analytics</h2>
+            <div id="welcome-user-container" class="flex items-center">
+                <span id="welcome-user-text" class="text-gray-600 hidden sm:block mr-3">Welcome, User!</span>
+                <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold" id="user-initial">U</div>
             </div>
         </header>
 
-        <!-- Main Content -->
-        <main class="p-4 sm:p-6">
-            <!-- Date Filter Section -->
-            <div class="card p-6 mb-8">
-                <h2 class="text-xl font-bold text-gray-900 mb-4">Report Period</h2>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
-                        <input type="date" id="start-date" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">End Date</label>
-                        <input type="date" id="end-date" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20">
-                    </div>
-                    <div class="flex items-end space-x-2">
-                        <button id="filter-reports-btn" class="w-full btn-primary py-2.5 px-4 rounded-lg font-medium">
-                            <i class="fas fa-filter mr-2"></i>Apply Filter
-                        </button>
-                    </div>
-                    <div class="flex items-end">
-                        <button id="reset-reports-btn" class="w-full bg-gray-200 text-gray-700 py-2.5 px-4 rounded-lg font-medium hover:bg-gray-300">
-                            <i class="fas fa-redo mr-2"></i>Reset
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Summary Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <!-- Total Income -->
-                <div class="stat-card card p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1">Total Income</p>
-                            <h3 class="text-2xl font-bold text-gray-900">$<span id="total-income">0.00</span></h3>
-                        </div>
-                        <i class="fas fa-arrow-up text-2xl text-green-500"></i>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-3">Current period</p>
-                </div>
-                
-                <!-- Total Expenses -->
-                <div class="stat-card card p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1">Total Expenses</p>
-                            <h3 class="text-2xl font-bold text-gray-900">$<span id="total-expenses">0.00</span></h3>
-                        </div>
-                        <i class="fas fa-arrow-down text-2xl text-red-500"></i>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-3">Current period</p>
-                </div>
-                
-                <!-- Net Balance -->
-                <div class="stat-card card p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1">Net Balance</p>
-                            <h3 class="text-2xl font-bold text-gray-900">$<span id="net-balance">0.00</span></h3>
-                        </div>
-                        <i class="fas fa-balance-scale text-2xl text-blue-500"></i>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-3">Income - Expenses</p>
-                </div>
-                
-                <!-- Savings Rate -->
-                <div class="stat-card card p-6">
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <p class="text-sm text-gray-500 mb-1">Savings Rate</p>
-                            <h3 class="text-2xl font-bold text-gray-900"><span id="savings-rate">0</span>%</h3>
-                        </div>
-                        <i class="fas fa-piggy-bank text-2xl text-purple-500"></i>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-3">Of total income</p>
-                </div>
-            </div>
-
-            <!-- Charts Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                <!-- Income vs Expenses Chart -->
-                <div class="card p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-semibold text-gray-900">Income vs Expenses</h3>
-                        <div class="flex items-center space-x-2">
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-                                <span class="text-xs text-gray-600">Income</span>
-                            </div>
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                                <span class="text-xs text-gray-600">Expenses</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="income-expense-chart"></canvas>
-                    </div>
-                </div>
-                
-                <!-- Expense Breakdown Chart -->
-                <div class="card p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-semibold text-gray-900">Expense Breakdown</h3>
-                        <button class="text-sm text-green-600 font-medium hover:underline">View Details</button>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="expense-categories-chart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Additional Reports Section -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Monthly Trends -->
-                <div class="card p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-semibold text-gray-900">Monthly Trends</h3>
-                        <select class="text-sm border border-gray-300 rounded-lg px-3 py-1 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20">
-                            <option>Last 6 Months</option>
-                            <option>Last 12 Months</option>
-                            <option>Year to Date</option>
-                        </select>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="monthly-trends-chart"></canvas>
-                    </div>
-                </div>
-                
-                <!-- Top Spending Categories -->
-                <div class="card p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-semibold text-gray-900">Top Spending Categories</h3>
-                        <button class="text-sm text-green-600 font-medium hover:underline">View All</button>
-                    </div>
-                    <div class="space-y-4">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                                    <i class="fas fa-utensils text-blue-600"></i>
+        <main class="p-4 md:p-6">
+            <div id="reports" class="page active">
+                <div class="max-w-7xl mx-auto">
+                    <!-- Profile Section -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                        <div class="lg:col-span-2">
+                            <div class="card p-6">
+                                <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                                    <i class="fas fa-user-circle mr-2 text-primary"></i> Profile Information
+                                </h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                        <div class="flex">
+                                            <input type="text" id="profile-name" class="profile-input rounded-r-none" value="John Doe">
+                                            <button id="edit-name-btn" class="bg-gray-100 text-gray-700 px-4 rounded-r-lg border border-l-0 border-gray-300 hover:bg-gray-200 transition-colors">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
+                                        <div class="flex">
+                                            <input type="tel" id="profile-phone" class="profile-input rounded-r-none" value="+92 300 1234567">
+                                            <button id="edit-phone-btn" class="bg-gray-100 text-gray-700 px-4 rounded-r-lg border border-l-0 border-gray-300 hover:bg-gray-200 transition-colors">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                        <div class="flex">
+                                            <input type="email" id="profile-email" class="profile-input rounded-r-none" value="john.doe@example.com">
+                                            <button id="edit-email-btn" class="bg-gray-100 text-gray-700 px-4 rounded-r-lg border border-l-0 border-gray-300 hover:bg-gray-200 transition-colors">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <button id="save-profile-btn" class="w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                                        <i class="fas fa-save mr-2"></i> Save Profile Changes
+                                    </button>
                                 </div>
-                                <span class="text-gray-700">Food & Dining</span>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-semibold text-gray-900">$450.00</p>
-                                <p class="text-xs text-gray-500">25% of expenses</p>
                             </div>
                         </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
-                                    <i class="fas fa-shopping-bag text-purple-600"></i>
+                        
+                        <div class="lg:col-span-1">
+                            <div class="card p-6 h-full">
+                                <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                                    <i class="fas fa-coins mr-2 text-primary"></i> Preferred Currency
+                                </h3>
+                                <p class="text-gray-600 mb-4">Select your preferred currency for displaying financial data.</p>
+                                <div class="space-y-3">
+                                    <div class="currency-option" data-currency="PKR">
+                                        <div class="currency-flag bg-green-600">PK</div>
+                                        <div>
+                                            <div class="font-medium">Pakistani Rupee (PKR)</div>
+                                            <div class="text-sm text-gray-500">₨</div>
+                                        </div>
+                                    </div>
+                                    <div class="currency-option" data-currency="USD">
+                                        <div class="currency-flag bg-blue-600">US</div>
+                                        <div>
+                                            <div class="font-medium">US Dollar (USD)</div>
+                                            <div class="text-sm text-gray-500">$</div>
+                                        </div>
+                                    </div>
+                                    <div class="currency-option" data-currency="INR">
+                                        <div class="currency-flag bg-orange-600">IN</div>
+                                        <div>
+                                            <div class="font-medium">Indian Rupee (INR)</div>
+                                            <div class="text-sm text-gray-500">₹</div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <span class="text-gray-700">Shopping</span>
-                            </div>
-                            <div class="text-right">
-                                <p class="font-semibold text-gray-900">$320.00</p>
-                                <p class="text-xs text-gray-500">18% of expenses</p>
                             </div>
                         </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center mr-3">
-                                    <i class="fas fa-car text-yellow-600"></i>
+                    </div>
+                    
+                    <!-- Financial Overview -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div class="stat-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-green-100">Total Balance</p>
+                                    <h3 class="text-2xl font-bold mt-2" id="total-balance">₨ 85,430</h3>
                                 </div>
-                                <span class="text-gray-700">Transportation</span>
+                                <div class="bg-white bg-opacity-20 p-2 rounded-lg">
+                                    <i class="fas fa-wallet text-white"></i>
+                                </div>
                             </div>
-                            <div class="text-right">
-                                <p class="font-semibold text-gray-900">$280.00</p>
-                                <p class="text-xs text-gray-500">15% of expenses</p>
+                            <p class="text-green-100 text-sm mt-4"><i class="fas fa-arrow-up mr-1"></i> 12% from last month</p>
+                        </div>
+                        
+                        <div class="stat-card" style="background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-blue-100">Total Income</p>
+                                    <h3 class="text-2xl font-bold mt-2" id="total-income">₨ 125,000</h3>
+                                </div>
+                                <div class="bg-white bg-opacity-20 p-2 rounded-lg">
+                                    <i class="fas fa-money-bill-wave text-white"></i>
+                                </div>
+                            </div>
+                            <p class="text-blue-100 text-sm mt-4"><i class="fas fa-arrow-up mr-1"></i> 8% from last month</p>
+                        </div>
+                        
+                        <div class="stat-card" style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-red-100">Total Expenses</p>
+                                    <h3 class="text-2xl font-bold mt-2" id="total-expenses">₨ 39,570</h3>
+                                </div>
+                                <div class="bg-white bg-opacity-20 p-2 rounded-lg">
+                                    <i class="fas fa-credit-card text-white"></i>
+                                </div>
+                            </div>
+                            <p class="text-red-100 text-sm mt-4"><i class="fas fa-arrow-down mr-1"></i> 5% from last month</p>
+                        </div>
+                        
+                        <div class="stat-card" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-purple-100">Savings Rate</p>
+                                    <h3 class="text-2xl font-bold mt-2" id="savings-rate">68%</h3>
+                                </div>
+                                <div class="bg-white bg-opacity-20 p-2 rounded-lg">
+                                    <i class="fas fa-piggy-bank text-white"></i>
+                                </div>
+                            </div>
+                            <p class="text-purple-100 text-sm mt-4"><i class="fas fa-arrow-up mr-1"></i> 3% from last month</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Charts Section -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <div class="card p-6 report-card">
+                            <h3 class="text-xl font-bold text-gray-800 mb-6">Income vs Expenses</h3>
+                            <div class="chart-container">
+                                <canvas id="incomeExpenseChart"></canvas>
                             </div>
                         </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-3">
-                                    <i class="fas fa-film text-red-600"></i>
-                                </div>
-                                <span class="text-gray-700">Entertainment</span>
+                        
+                        <div class="card p-6 report-card">
+                            <h3 class="text-xl font-bold text-gray-800 mb-6">Spending by Category</h3>
+                            <div class="chart-container">
+                                <canvas id="categoryChart"></canvas>
                             </div>
-                            <div class="text-right">
-                                <p class="font-semibold text-gray-900">$180.00</p>
-                                <p class="text-xs text-gray-500">10% of expenses</p>
-                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Report Options -->
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Generate Reports</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <button class="bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center">
+                                <i class="fas fa-file-pdf mr-2"></i> PDF Report
+                            </button>
+                            <button class="bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
+                                <i class="fas fa-file-excel mr-2"></i> Excel Export
+                            </button>
+                            <button class="bg-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center">
+                                <i class="fas fa-chart-bar mr-2"></i> Custom Report
+                            </button>
+                            <button class="bg-gray-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center">
+                                <i class="fas fa-print mr-2"></i> Print Report
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -384,110 +440,182 @@
         </main>
     </div>
     
-    <!-- Notification -->
-    <div id="notification" class="notification hidden fixed top-4 right-4 z-50 max-w-sm"></div>
+    <div id="notification" class="notification"></div>
+    <div id="modal-container"></div>
+    <button id="fab-add-transaction"><i class="fas fa-plus"></i></button>
 
     <script>
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
-            // Mobile menu functionality
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const sidebar = document.getElementById('sidebar');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
-
-            mobileMenuButton.addEventListener('click', function() {
-                sidebar.classList.toggle('-translate-x-full');
-                sidebarOverlay.classList.toggle('hidden');
-            });
-
-            sidebarOverlay.addEventListener('click', function() {
-                sidebar.classList.add('-translate-x-full');
-                sidebarOverlay.classList.add('hidden');
-            });
-
-            // Check if user is already signed in
-            const currentUser = localStorage.getItem('smartgrocer-currentUser');
-            if (currentUser) {
-                hideSignInOverlay();
-                document.getElementById('welcome-user-text').textContent = `Welcome, ${currentUser}!`;
-                document.getElementById('user-initial').textContent = currentUser.charAt(0).toUpperCase();
+        // DOM elements
+        const signinOverlay = document.getElementById('signin-overlay');
+        const signinForm = document.getElementById('signin-form');
+        const signinName = document.getElementById('signin-name');
+        const welcomeUserText = document.getElementById('welcome-user-text');
+        const userInitial = document.getElementById('user-initial');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const notification = document.getElementById('notification');
+        
+        // Profile elements
+        const profileName = document.getElementById('profile-name');
+        const profilePhone = document.getElementById('profile-phone');
+        const profileEmail = document.getElementById('profile-email');
+        const editNameBtn = document.getElementById('edit-name-btn');
+        const editPhoneBtn = document.getElementById('edit-phone-btn');
+        const editEmailBtn = document.getElementById('edit-email-btn');
+        const saveProfileBtn = document.getElementById('save-profile-btn');
+        
+        // Currency elements
+        const currencyOptions = document.querySelectorAll('.currency-option');
+        
+        // Check if user is signed in
+        const userName = localStorage.getItem('userName');
+        if (userName) {
+            signinOverlay.style.display = 'none';
+            welcomeUserText.textContent = `Welcome, ${userName}!`;
+            userInitial.textContent = userName.charAt(0).toUpperCase();
+            profileName.value = userName;
+        } else {
+            signinOverlay.style.display = 'flex';
+        }
+        
+        // Sign in form submission
+        signinForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = signinName.value.trim();
+            if (name) {
+                localStorage.setItem('userName', name);
+                signinOverlay.style.display = 'none';
+                welcomeUserText.textContent = `Welcome, ${name}!`;
+                userInitial.textContent = name.charAt(0).toUpperCase();
+                profileName.value = name;
+                showNotification('Successfully signed in!', 'success');
             }
-
-            // Initialize sign-in form
-            document.getElementById('signin-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const userName = document.getElementById('signin-name').value.trim();
-                if (userName) {
-                    localStorage.setItem('smartgrocer-currentUser', userName);
-                    hideSignInOverlay();
-                    document.getElementById('welcome-user-text').textContent = `Welcome, ${userName}!`;
-                    document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
-                    showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
-                }
-            });
-
-            // Initialize charts
-            initializeCharts();
-            
-            // Set default dates
-            setDefaultDates();
-            
-            // Initialize filter buttons
-            document.getElementById('filter-reports-btn').addEventListener('click', applyFilters);
-            document.getElementById('reset-reports-btn').addEventListener('click', resetFilters);
         });
-
-        function setDefaultDates() {
-            const today = new Date();
-            const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        
+        // Mobile menu toggle
+        mobileMenuButton.addEventListener('click', function() {
+            sidebar.classList.toggle('show');
+            sidebarOverlay.classList.toggle('hidden');
+        });
+        
+        // Close sidebar when clicking on overlay
+        sidebarOverlay.addEventListener('click', function() {
+            sidebar.classList.remove('show');
+            sidebarOverlay.classList.add('hidden');
+        });
+        
+        // Currency selection
+        currencyOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all options
+                currencyOptions.forEach(opt => opt.classList.remove('selected'));
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                
+                // Get selected currency
+                const currency = this.getAttribute('data-currency');
+                
+                // Update currency display in the app
+                updateCurrencyDisplay(currency);
+                
+                showNotification(`Currency changed to ${currency}`, 'success');
+            });
+        });
+        
+        // Set default currency
+        const defaultCurrency = localStorage.getItem('preferredCurrency') || 'PKR';
+        document.querySelector(`.currency-option[data-currency="${defaultCurrency}"]`).classList.add('selected');
+        updateCurrencyDisplay(defaultCurrency);
+        
+        // Profile editing
+        editNameBtn.addEventListener('click', function() {
+            profileName.focus();
+        });
+        
+        editPhoneBtn.addEventListener('click', function() {
+            profilePhone.focus();
+        });
+        
+        editEmailBtn.addEventListener('click', function() {
+            profileEmail.focus();
+        });
+        
+        // Save profile changes
+        saveProfileBtn.addEventListener('click', function() {
+            const newName = profileName.value.trim();
+            const newPhone = profilePhone.value.trim();
+            const newEmail = profileEmail.value.trim();
             
-            document.getElementById('start-date').valueAsDate = firstDayOfMonth;
-            document.getElementById('end-date').valueAsDate = today;
-        }
-
-        function applyFilters() {
-            const startDate = document.getElementById('start-date').value;
-            const endDate = document.getElementById('end-date').value;
-            
-            if (!startDate || !endDate) {
-                showNotification('Please select both start and end dates', 'error');
-                return;
+            if (newName) {
+                localStorage.setItem('userName', newName);
+                welcomeUserText.textContent = `Welcome, ${newName}!`;
+                userInitial.textContent = newName.charAt(0).toUpperCase();
             }
             
-            if (new Date(startDate) > new Date(endDate)) {
-                showNotification('Start date cannot be after end date', 'error');
-                return;
-            }
+            localStorage.setItem('userPhone', newPhone);
+            localStorage.setItem('userEmail', newEmail);
             
-            // In a real app, you would fetch data based on these dates
-            updateCharts();
-            showNotification('Reports filtered successfully', 'success');
+            showNotification('Profile updated successfully!', 'success');
+        });
+        
+        // Load saved profile data
+        const savedPhone = localStorage.getItem('userPhone');
+        const savedEmail = localStorage.getItem('userEmail');
+        
+        if (savedPhone) profilePhone.value = savedPhone;
+        if (savedEmail) profileEmail.value = savedEmail;
+        
+        // Show notification function
+        function showNotification(message, type) {
+            notification.textContent = message;
+            notification.className = 'notification ' + type;
+            notification.classList.add('show');
+            
+            setTimeout(function() {
+                notification.classList.remove('show');
+            }, 5000);
         }
-
-        function resetFilters() {
-            setDefaultDates();
-            updateCharts();
-            showNotification('Filters reset to default', 'info');
+        
+        // Update currency display
+        function updateCurrencyDisplay(currency) {
+            localStorage.setItem('preferredCurrency', currency);
+            
+            // Update currency symbols in the UI
+            const currencySymbols = {
+                'PKR': '₨',
+                'USD': '$',
+                'INR': '₹'
+            };
+            
+            const symbol = currencySymbols[currency];
+            
+            // Update financial overview
+            document.getElementById('total-balance').textContent = `${symbol} 85,430`;
+            document.getElementById('total-income').textContent = `${symbol} 125,000`;
+            document.getElementById('total-expenses').textContent = `${symbol} 39,570`;
         }
-
-        function initializeCharts() {
-            // Income vs Expenses Chart
-            const incomeExpenseCtx = document.getElementById('income-expense-chart').getContext('2d');
-            new Chart(incomeExpenseCtx, {
+        
+        // Initialize charts
+        document.addEventListener('DOMContentLoaded', function() {
+            // Income vs Expense Chart
+            const incomeExpenseCtx = document.getElementById('incomeExpenseChart').getContext('2d');
+            const incomeExpenseChart = new Chart(incomeExpenseCtx, {
                 type: 'bar',
                 data: {
                     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
                     datasets: [
                         {
                             label: 'Income',
-                            data: [3200, 3500, 3800, 4200, 3900, 4100],
-                            backgroundColor: '#10b981',
+                            data: [12000, 19000, 15000, 18000, 22000, 25000],
+                            backgroundColor: '#10B981',
                             borderRadius: 4
                         },
                         {
                             label: 'Expenses',
-                            data: [2800, 3000, 3200, 3500, 3300, 3400],
-                            backgroundColor: '#ef4444',
+                            data: [8000, 12000, 10000, 11000, 15000, 14000],
+                            backgroundColor: '#EF4444',
                             borderRadius: 4
                         }
                     ]
@@ -497,7 +625,7 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            display: false
+                            position: 'top',
                         }
                     },
                     scales: {
@@ -515,22 +643,22 @@
                     }
                 }
             });
-
-            // Expense Categories Chart
-            const expenseCategoriesCtx = document.getElementById('expense-categories-chart').getContext('2d');
-            new Chart(expenseCategoriesCtx, {
+            
+            // Category Chart
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            const categoryChart = new Chart(categoryCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Food & Dining', 'Shopping', 'Transportation', 'Entertainment', 'Bills', 'Other'],
+                    labels: ['Food & Dining', 'Shopping', 'Transportation', 'Entertainment', 'Bills & Utilities', 'Others'],
                     datasets: [{
-                        data: [25, 18, 15, 10, 20, 12],
+                        data: [30, 25, 15, 10, 12, 8],
                         backgroundColor: [
-                            '#10b981',
-                            '#3b82f6',
-                            '#f59e0b',
-                            '#ef4444',
-                            '#8b5cf6',
-                            '#6b7280'
+                            '#10B981',
+                            '#3B82F6',
+                            '#F59E0B',
+                            '#EF4444',
+                            '#8B5CF6',
+                            '#6B7280'
                         ],
                         borderWidth: 0
                     }]
@@ -540,87 +668,26 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'right'
-                        }
-                    }
-                }
-            });
-
-            // Monthly Trends Chart
-            const monthlyTrendsCtx = document.getElementById('monthly-trends-chart').getContext('2d');
-            new Chart(monthlyTrendsCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    datasets: [{
-                        label: 'Net Balance',
-                        data: [400, 500, 600, 700, 600, 700],
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
+                            position: 'bottom'
                         }
                     },
-                    scales: {
-                        y: {
-                            grid: {
-                                drawBorder: false
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
+                    cutout: '70%'
                 }
             });
-        }
-
-        function updateCharts() {
-            // In a real app, you would update chart data based on the selected date range
-            // For now, we'll just simulate an update
-            document.getElementById('total-income').textContent = '4,200.00';
-            document.getElementById('total-expenses').textContent = '3,500.00';
-            document.getElementById('net-balance').textContent = '700.00';
-            document.getElementById('savings-rate').textContent = '17';
-        }
-
-        function hideSignInOverlay() {
-            document.getElementById('signin-overlay').classList.add('hidden');
-            document.getElementById('main-app-container').classList.remove('hidden');
-        }
-
-        function showNotification(message, type = 'info') {
-            const notification = document.getElementById('notification');
-            const bgColor = type === 'success' ? 'bg-green-500' : 
-                           type === 'error' ? 'bg-red-500' : 
-                           type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500';
             
-            notification.innerHTML = `
-                <div class="${bgColor} text-white p-4 rounded-lg flex items-center">
-                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 
-                                 type === 'error' ? 'fa-exclamation-circle' : 
-                                 type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'} mr-3"></i>
-                    <span>${message}</span>
-                </div>
-            `;
+            // Add active class to current page in navigation
+            const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+            const navLinks = document.querySelectorAll('.nav-link');
             
-            notification.classList.remove('hidden');
-            
-            setTimeout(() => {
-                notification.classList.add('hidden');
-            }, 3000);
-        }
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href === currentPage) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        });
     </script>
 </body>
 </html>
