@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Reports - SmartGrocer</title>
+    <title>Contact Us - SmartGrocer</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -29,6 +29,33 @@
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             overflow: hidden;
+        }
+        
+        .contact-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background-color: var(--primary-light);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+        
+        .contact-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        
+        .contact-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
         }
         
         .nav-link.active {
@@ -146,74 +173,24 @@
             display: block;
         }
         
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-        
-        .currency-option {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
+        .contact-map {
+            height: 200px;
+            background-color: #E5E7EB;
             border-radius: 8px;
-            border: 1px solid #E5E7EB;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .currency-option:hover {
-            border-color: var(--primary);
-            background-color: var(--primary-light);
-        }
-        
-        .currency-option.selected {
-            border-color: var(--primary);
-            background-color: var(--primary-light);
-        }
-        
-        .currency-flag {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            margin-right: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            color: white;
-            font-weight: bold;
+            color: #6B7280;
+            margin-top: 16px;
         }
         
-        .profile-input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #D1D5DB;
-            border-radius: 8px;
-            font-size: 1rem;
+        .contact-info-card {
             transition: all 0.2s;
         }
         
-        .profile-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-        }
-        
-        .report-card {
-            transition: all 0.2s;
-        }
-        
-        .report-card:hover {
+        .contact-info-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        
-        .stat-card {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            border-radius: 12px;
-            padding: 20px;
         }
     </style>
 </head>
@@ -244,9 +221,9 @@
                 <a href="expense.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-credit-card w-6 h-6 mr-3"></i>Expenses</a>
                 <a href="accounts.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-wallet w-6 h-6 mr-3"></i>Accounts</a>
                 <a href="budget.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-chart-pie w-6 h-6 mr-3"></i>Budgets</a>
-                <a href="reports.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary active"><i class="fas fa-chart-line w-6 h-6 mr-3"></i>Reports</a>
+                <a href="reports.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-chart-line w-6 h-6 mr-3"></i>Reports</a>
                 <a href="blogs.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-blog w-6 h-6 mr-3"></i>Blog</a>
-                <a href="contact.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-envelope w-6 h-6 mr-3"></i>Contact Us</a>
+                <a href="contact.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary active"><i class="fas fa-envelope w-6 h-6 mr-3"></i>Contact Us</a>
                 <a href="settings.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-cog w-6 h-6 mr-3"></i>Settings</a>
             </nav>
             <div class="px-4 py-4 border-t">
@@ -260,7 +237,7 @@
     <div id="main-app-container" class="md:ml-64">
         <header class="flex justify-between items-center px-4 py-4 bg-white shadow-sm">
             <button id="mobile-menu-button" class="text-gray-600 focus:outline-none"><i class="fas fa-bars text-2xl"></i></button>
-            <h2 id="page-title" class="text-xl font-semibold text-gray-800">Reports & Analytics</h2>
+            <h2 id="page-title" class="text-xl font-semibold text-gray-800">Contact Us</h2>
             <div id="welcome-user-container" class="flex items-center">
                 <span id="welcome-user-text" class="text-gray-600 hidden sm:block mr-3">Welcome, User!</span>
                 <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold" id="user-initial">U</div>
@@ -268,171 +245,107 @@
         </header>
 
         <main class="p-4 md:p-6">
-            <div id="reports" class="page active">
-                <div class="max-w-7xl mx-auto">
-                    <!-- Profile Section -->
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <div id="contact" class="page active">
+                <div class="max-w-6xl mx-auto">
+                    <div class="mb-8">
+                        <h1 class="text-3xl font-bold text-gray-900">Get In Touch</h1>
+                        <p class="text-gray-600 mt-2">We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-1 space-y-6">
+                            <div class="card p-6 contact-info-card">
+                                <div class="flex items-start">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="font-semibold text-lg text-gray-900">Our Office</h4>
+                                        <p class="text-gray-600 mt-1">123 Business Avenue, Karachi, Pakistan</p>
+                                    </div>
+                                </div>
+                                <div class="contact-map">
+                                    <i class="fas fa-map mr-2"></i> Interactive Map
+                                </div>
+                            </div>
+                            
+                            <div class="card p-6 contact-info-card">
+                                <div class="flex items-start">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="font-semibold text-lg text-gray-900">Email Us</h4>
+                                        <p class="text-gray-600 mt-1">support@smartgrocer.dev</p>
+                                        <p class="text-gray-600">info@smartgrocer.dev</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card p-6 contact-info-card">
+                                <div class="flex items-start">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-phone"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="font-semibold text-lg text-gray-900">Call Us</h4>
+                                        <p class="text-gray-600 mt-1">+92 300 1234567</p>
+                                        <p class="text-gray-600">+92 21 1234567</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card p-6 contact-info-card">
+                                <div class="flex items-start">
+                                    <div class="contact-icon">
+                                        <i class="fas fa-clock"></i>
+                                    </div>
+                                    <div class="ml-4">
+                                        <h4 class="font-semibold text-lg text-gray-900">Business Hours</h4>
+                                        <p class="text-gray-600 mt-1">Monday - Friday: 9:00 AM - 6:00 PM</p>
+                                        <p class="text-gray-600">Saturday: 10:00 AM - 4:00 PM</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="lg:col-span-2">
-                            <div class="card p-6">
-                                <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                                    <i class="fas fa-user-circle mr-2 text-primary"></i> Profile Information
-                                </h3>
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                                        <div class="flex">
-                                            <input type="text" id="profile-name" class="profile-input rounded-r-none" value="John Doe">
-                                            <button id="edit-name-btn" class="bg-gray-100 text-gray-700 px-4 rounded-r-lg border border-l-0 border-gray-300 hover:bg-gray-200 transition-colors">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
+                            <div class="card p-8">
+                                <h3 class="text-2xl font-bold text-gray-800 mb-6">Send us a Message</h3>
+                                <form id="contact-form" class="space-y-6">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                                            <input type="text" id="name" placeholder="Enter your full name" class="contact-input" required>
+                                        </div>
+                                        <div>
+                                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Your Email</label>
+                                            <input type="email" id="email" placeholder="Enter your email address" class="contact-input" required>
                                         </div>
                                     </div>
+                                    
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
-                                        <div class="flex">
-                                            <input type="tel" id="profile-phone" class="profile-input rounded-r-none" value="+92 300 1234567">
-                                            <button id="edit-phone-btn" class="bg-gray-100 text-gray-700 px-4 rounded-r-lg border border-l-0 border-gray-300 hover:bg-gray-200 transition-colors">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                        </div>
+                                        <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                                        <input type="text" id="subject" placeholder="What is this regarding?" class="contact-input" required>
                                     </div>
+                                    
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                                        <div class="flex">
-                                            <input type="email" id="profile-email" class="profile-input rounded-r-none" value="john.doe@example.com">
-                                            <button id="edit-email-btn" class="bg-gray-100 text-gray-700 px-4 rounded-r-lg border border-l-0 border-gray-300 hover:bg-gray-200 transition-colors">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                        </div>
+                                        <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Your Message</label>
+                                        <textarea id="message" placeholder="Please describe your inquiry in detail..." rows="6" class="contact-input" required></textarea>
                                     </div>
-                                    <button id="save-profile-btn" class="w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors">
-                                        <i class="fas fa-save mr-2"></i> Save Profile Changes
+                                    
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="newsletter" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+                                        <label for="newsletter" class="ml-2 block text-sm text-gray-700">
+                                            Subscribe to our newsletter for updates and tips
+                                        </label>
+                                    </div>
+                                    
+                                    <button type="submit" class="w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center">
+                                        <i class="fas fa-paper-plane mr-2"></i> Send Message
                                     </button>
-                                </div>
+                                </form>
                             </div>
-                        </div>
-                        
-                        <div class="lg:col-span-1">
-                            <div class="card p-6 h-full">
-                                <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                                    <i class="fas fa-coins mr-2 text-primary"></i> Preferred Currency
-                                </h3>
-                                <p class="text-gray-600 mb-4">Select your preferred currency for displaying financial data.</p>
-                                <div class="space-y-3">
-                                    <div class="currency-option" data-currency="PKR">
-                                        <div class="currency-flag bg-green-600">PK</div>
-                                        <div>
-                                            <div class="font-medium">Pakistani Rupee (PKR)</div>
-                                            <div class="text-sm text-gray-500">₨</div>
-                                        </div>
-                                    </div>
-                                    <div class="currency-option" data-currency="USD">
-                                        <div class="currency-flag bg-blue-600">US</div>
-                                        <div>
-                                            <div class="font-medium">US Dollar (USD)</div>
-                                            <div class="text-sm text-gray-500">$</div>
-                                        </div>
-                                    </div>
-                                    <div class="currency-option" data-currency="INR">
-                                        <div class="currency-flag bg-orange-600">IN</div>
-                                        <div>
-                                            <div class="font-medium">Indian Rupee (INR)</div>
-                                            <div class="text-sm text-gray-500">₹</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Financial Overview -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="stat-card">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-green-100">Total Balance</p>
-                                    <h3 class="text-2xl font-bold mt-2" id="total-balance">₨ 85,430</h3>
-                                </div>
-                                <div class="bg-white bg-opacity-20 p-2 rounded-lg">
-                                    <i class="fas fa-wallet text-white"></i>
-                                </div>
-                            </div>
-                            <p class="text-green-100 text-sm mt-4"><i class="fas fa-arrow-up mr-1"></i> 12% from last month</p>
-                        </div>
-                        
-                        <div class="stat-card" style="background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-blue-100">Total Income</p>
-                                    <h3 class="text-2xl font-bold mt-2" id="total-income">₨ 125,000</h3>
-                                </div>
-                                <div class="bg-white bg-opacity-20 p-2 rounded-lg">
-                                    <i class="fas fa-money-bill-wave text-white"></i>
-                                </div>
-                            </div>
-                            <p class="text-blue-100 text-sm mt-4"><i class="fas fa-arrow-up mr-1"></i> 8% from last month</p>
-                        </div>
-                        
-                        <div class="stat-card" style="background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-red-100">Total Expenses</p>
-                                    <h3 class="text-2xl font-bold mt-2" id="total-expenses">₨ 39,570</h3>
-                                </div>
-                                <div class="bg-white bg-opacity-20 p-2 rounded-lg">
-                                    <i class="fas fa-credit-card text-white"></i>
-                                </div>
-                            </div>
-                            <p class="text-red-100 text-sm mt-4"><i class="fas fa-arrow-down mr-1"></i> 5% from last month</p>
-                        </div>
-                        
-                        <div class="stat-card" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-purple-100">Savings Rate</p>
-                                    <h3 class="text-2xl font-bold mt-2" id="savings-rate">68%</h3>
-                                </div>
-                                <div class="bg-white bg-opacity-20 p-2 rounded-lg">
-                                    <i class="fas fa-piggy-bank text-white"></i>
-                                </div>
-                            </div>
-                            <p class="text-purple-100 text-sm mt-4"><i class="fas fa-arrow-up mr-1"></i> 3% from last month</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Charts Section -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                        <div class="card p-6 report-card">
-                            <h3 class="text-xl font-bold text-gray-800 mb-6">Income vs Expenses</h3>
-                            <div class="chart-container">
-                                <canvas id="incomeExpenseChart"></canvas>
-                            </div>
-                        </div>
-                        
-                        <div class="card p-6 report-card">
-                            <h3 class="text-xl font-bold text-gray-800 mb-6">Spending by Category</h3>
-                            <div class="chart-container">
-                                <canvas id="categoryChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Report Options -->
-                    <div class="card p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-6">Generate Reports</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <button class="bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center">
-                                <i class="fas fa-file-pdf mr-2"></i> PDF Report
-                            </button>
-                            <button class="bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
-                                <i class="fas fa-file-excel mr-2"></i> Excel Export
-                            </button>
-                            <button class="bg-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center">
-                                <i class="fas fa-chart-bar mr-2"></i> Custom Report
-                            </button>
-                            <button class="bg-gray-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center">
-                                <i class="fas fa-print mr-2"></i> Print Report
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -454,19 +367,8 @@
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const contactForm = document.getElementById('contact-form');
         const notification = document.getElementById('notification');
-        
-        // Profile elements
-        const profileName = document.getElementById('profile-name');
-        const profilePhone = document.getElementById('profile-phone');
-        const profileEmail = document.getElementById('profile-email');
-        const editNameBtn = document.getElementById('edit-name-btn');
-        const editPhoneBtn = document.getElementById('edit-phone-btn');
-        const editEmailBtn = document.getElementById('edit-email-btn');
-        const saveProfileBtn = document.getElementById('save-profile-btn');
-        
-        // Currency elements
-        const currencyOptions = document.querySelectorAll('.currency-option');
         
         // Check if user is signed in
         const userName = localStorage.getItem('userName');
@@ -474,7 +376,6 @@
             signinOverlay.style.display = 'none';
             welcomeUserText.textContent = `Welcome, ${userName}!`;
             userInitial.textContent = userName.charAt(0).toUpperCase();
-            profileName.value = userName;
         } else {
             signinOverlay.style.display = 'flex';
         }
@@ -488,7 +389,6 @@
                 signinOverlay.style.display = 'none';
                 welcomeUserText.textContent = `Welcome, ${name}!`;
                 userInitial.textContent = name.charAt(0).toUpperCase();
-                profileName.value = name;
                 showNotification('Successfully signed in!', 'success');
             }
         });
@@ -505,67 +405,23 @@
             sidebarOverlay.classList.add('hidden');
         });
         
-        // Currency selection
-        currencyOptions.forEach(option => {
-            option.addEventListener('click', function() {
-                // Remove selected class from all options
-                currencyOptions.forEach(opt => opt.classList.remove('selected'));
-                
-                // Add selected class to clicked option
-                this.classList.add('selected');
-                
-                // Get selected currency
-                const currency = this.getAttribute('data-currency');
-                
-                // Update currency display in the app
-                updateCurrencyDisplay(currency);
-                
-                showNotification(`Currency changed to ${currency}`, 'success');
-            });
-        });
-        
-        // Set default currency
-        const defaultCurrency = localStorage.getItem('preferredCurrency') || 'PKR';
-        document.querySelector(`.currency-option[data-currency="${defaultCurrency}"]`).classList.add('selected');
-        updateCurrencyDisplay(defaultCurrency);
-        
-        // Profile editing
-        editNameBtn.addEventListener('click', function() {
-            profileName.focus();
-        });
-        
-        editPhoneBtn.addEventListener('click', function() {
-            profilePhone.focus();
-        });
-        
-        editEmailBtn.addEventListener('click', function() {
-            profileEmail.focus();
-        });
-        
-        // Save profile changes
-        saveProfileBtn.addEventListener('click', function() {
-            const newName = profileName.value.trim();
-            const newPhone = profilePhone.value.trim();
-            const newEmail = profileEmail.value.trim();
+        // Contact form submission
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            if (newName) {
-                localStorage.setItem('userName', newName);
-                welcomeUserText.textContent = `Welcome, ${newName}!`;
-                userInitial.textContent = newName.charAt(0).toUpperCase();
-            }
+            // Get form values
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const subject = document.getElementById('subject').value;
+            const message = document.getElementById('message').value;
             
-            localStorage.setItem('userPhone', newPhone);
-            localStorage.setItem('userEmail', newEmail);
+            // In a real application, you would send this data to a server
+            // For now, we'll just show a success message
+            showNotification('Your message has been sent successfully! We will get back to you soon.', 'success');
             
-            showNotification('Profile updated successfully!', 'success');
+            // Reset form
+            contactForm.reset();
         });
-        
-        // Load saved profile data
-        const savedPhone = localStorage.getItem('userPhone');
-        const savedEmail = localStorage.getItem('userEmail');
-        
-        if (savedPhone) profilePhone.value = savedPhone;
-        if (savedEmail) profileEmail.value = savedEmail;
         
         // Show notification function
         function showNotification(message, type) {
@@ -578,103 +434,8 @@
             }, 5000);
         }
         
-        // Update currency display
-        function updateCurrencyDisplay(currency) {
-            localStorage.setItem('preferredCurrency', currency);
-            
-            // Update currency symbols in the UI
-            const currencySymbols = {
-                'PKR': '₨',
-                'USD': '$',
-                'INR': '₹'
-            };
-            
-            const symbol = currencySymbols[currency];
-            
-            // Update financial overview
-            document.getElementById('total-balance').textContent = `${symbol} 85,430`;
-            document.getElementById('total-income').textContent = `${symbol} 125,000`;
-            document.getElementById('total-expenses').textContent = `${symbol} 39,570`;
-        }
-        
-        // Initialize charts
+        // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            // Income vs Expense Chart
-            const incomeExpenseCtx = document.getElementById('incomeExpenseChart').getContext('2d');
-            const incomeExpenseChart = new Chart(incomeExpenseCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    datasets: [
-                        {
-                            label: 'Income',
-                            data: [12000, 19000, 15000, 18000, 22000, 25000],
-                            backgroundColor: '#10B981',
-                            borderRadius: 4
-                        },
-                        {
-                            label: 'Expenses',
-                            data: [8000, 12000, 10000, 11000, 15000, 14000],
-                            backgroundColor: '#EF4444',
-                            borderRadius: 4
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                drawBorder: false
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                }
-            });
-            
-            // Category Chart
-            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
-            const categoryChart = new Chart(categoryCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Food & Dining', 'Shopping', 'Transportation', 'Entertainment', 'Bills & Utilities', 'Others'],
-                    datasets: [{
-                        data: [30, 25, 15, 10, 12, 8],
-                        backgroundColor: [
-                            '#10B981',
-                            '#3B82F6',
-                            '#F59E0B',
-                            '#EF4444',
-                            '#8B5CF6',
-                            '#6B7280'
-                        ],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        }
-                    },
-                    cutout: '70%'
-                }
-            });
-            
             // Add active class to current page in navigation
             const currentPage = window.location.pathname.split('/').pop() || 'index.html';
             const navLinks = document.querySelectorAll('.nav-link');
