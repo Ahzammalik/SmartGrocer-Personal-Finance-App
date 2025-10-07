@@ -63,23 +63,642 @@
 
         <main class="p-4 md:p-6">
             <div id="income" class="page active">
+                <!-- Income Overview Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600">Today's Income</p>
+                                <h3 class="text-2xl font-bold text-gray-800" id="today-income">$0.00</h3>
+                            </div>
+                            <i class="fas fa-calendar-day text-2xl text-green-500"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-blue-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600">This Week</p>
+                                <h3 class="text-2xl font-bold text-gray-800" id="week-income">$0.00</h3>
+                            </div>
+                            <i class="fas fa-calendar-week text-2xl text-blue-500"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-purple-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600">This Month</p>
+                                <h3 class="text-2xl font-bold text-gray-800" id="month-income">$0.00</h3>
+                            </div>
+                            <i class="fas fa-calendar-alt text-2xl text-purple-500"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-yellow-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600">Total Income</p>
+                                <h3 class="text-2xl font-bold text-gray-800" id="total-income">$0.00</h3>
+                            </div>
+                            <i class="fas fa-chart-line text-2xl text-yellow-500"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Income Trends Chart -->
+                <div class="card p-6 mb-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold">Income Trends</h3>
+                        <select id="chart-period" class="border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20">
+                            <option value="monthly">Monthly</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="incomeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Filters and Controls -->
+                <div class="card p-6 mb-6">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                        <h3 class="text-xl font-bold">Income History</h3>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <select id="category-filter" class="border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20">
+                                <option value="">All Categories</option>
+                                <option value="Salary">Salary</option>
+                                <option value="Freelance">Freelance</option>
+                                <option value="Business">Business</option>
+                                <option value="Investment">Investment</option>
+                                <option value="Rental">Rental</option>
+                                <option value="Bonus">Bonus</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <select id="time-filter" class="border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20">
+                                <option value="all">All Time</option>
+                                <option value="today">Today</option>
+                                <option value="week">This Week</option>
+                                <option value="month">This Month</option>
+                                <option value="year">This Year</option>
+                            </select>
+                            <button id="clear-filters" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors">
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Income Table -->
                 <div class="card p-6">
-                    <h3 class="text-xl font-bold">Income History</h3>
-                    <div class="overflow-x-auto mt-4">
-                        <table class="transaction-table">
-                            <thead><tr><th>Date</th><th>Description</th><th class="text-right">Amount</th><th class="text-center">Actions</th></tr></thead>
-                            <tbody id="income-table-body"></tbody>
+                    <div class="overflow-x-auto">
+                        <table class="w-full transaction-table">
+                            <thead>
+                                <tr class="border-b-2 border-gray-200">
+                                    <th class="text-left py-3 px-4 font-semibold text-gray-700">Date</th>
+                                    <th class="text-left py-3 px-4 font-semibold text-gray-700">Description</th>
+                                    <th class="text-left py-3 px-4 font-semibold text-gray-700">Category</th>
+                                    <th class="text-left py-3 px-4 font-semibold text-gray-700">Account</th>
+                                    <th class="text-right py-3 px-4 font-semibold text-gray-700">Amount</th>
+                                    <th class="text-center py-3 px-4 font-semibold text-gray-700">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="income-table-body" class="divide-y divide-gray-200">
+                                <!-- Income records will be populated here -->
+                            </tbody>
                         </table>
+                        <div id="no-income-message" class="text-center py-12 hidden">
+                            <i class="fas fa-money-bill-wave text-6xl text-gray-300 mb-4"></i>
+                            <h3 class="text-xl font-semibold text-gray-600 mb-2">No Income Recorded</h3>
+                            <p class="text-gray-500">Add your first income to start tracking your earnings.</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
     
-    <div id="notification" class="notification"></div>
-    <div id="modal-container"></div>
-    <button id="fab-add-transaction"><i class="fas fa-plus"></i></button>
+    <div id="notification" class="notification hidden fixed top-4 right-4 z-50 max-w-sm"></div>
+    
+    <!-- Add Income Modal -->
+    <div id="add-income-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-800">Add New Income</h3>
+                <button id="close-income-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <form id="add-income-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <input type="text" id="income-description" placeholder="Where did this income come from?" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                    <input type="number" id="income-amount" step="0.01" min="0.01" placeholder="0.00" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                    <select id="income-category" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
+                        <option value="Salary">Salary</option>
+                        <option value="Freelance">Freelance</option>
+                        <option value="Business">Business</option>
+                        <option value="Investment">Investment</option>
+                        <option value="Rental">Rental</option>
+                        <option value="Bonus">Bonus</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Account</label>
+                    <select id="income-account" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
+                        <option value="">Select Account</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                    <input type="date" id="income-date" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
+                </div>
+                <div class="flex space-x-3 pt-4">
+                    <button type="button" id="cancel-income" class="flex-1 bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded-lg hover:bg-gray-400 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                        Add Income
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Income Modal -->
+    <div id="edit-income-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-800">Edit Income</h3>
+                <button id="close-edit-income-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <form id="edit-income-form" class="space-y-4">
+                <input type="hidden" id="edit-income-id">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <input type="text" id="edit-income-description" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                    <input type="number" id="edit-income-amount" step="0.01" min="0.01" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                    <select id="edit-income-category" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
+                        <option value="Salary">Salary</option>
+                        <option value="Freelance">Freelance</option>
+                        <option value="Business">Business</option>
+                        <option value="Investment">Investment</option>
+                        <option value="Rental">Rental</option>
+                        <option value="Bonus">Bonus</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Account</label>
+                    <select id="edit-income-account" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                    <input type="date" id="edit-income-date" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
+                </div>
+                <div class="flex space-x-3 pt-4">
+                    <button type="button" id="delete-income" class="flex-1 bg-red-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-600 transition-colors">
+                        <i class="fas fa-trash mr-2"></i>Delete
+                    </button>
+                    <button type="submit" class="flex-1 bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                        Update Income
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <button id="fab-add-transaction" class="fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-lg hover:bg-green-700 transition-colors flex items-center justify-center z-40">
+        <i class="fas fa-plus text-xl"></i>
+    </button>
 
     <script src="script.js"></script>
+    
+    <script>
+        // Income page specific functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeIncomePage();
+        });
+
+        let incomeChart = null;
+
+        function initializeIncomePage() {
+            renderIncome();
+            updateIncomeOverview();
+            setupIncomeModals();
+            setupFilters();
+            setupFAB();
+            initializeIncomeChart();
+        }
+
+        function setupIncomeModals() {
+            const addModal = document.getElementById('add-income-modal');
+            const editModal = document.getElementById('edit-income-modal');
+            const closeAddBtn = document.getElementById('close-income-modal');
+            const closeEditBtn = document.getElementById('close-edit-income-modal');
+            const cancelAddBtn = document.getElementById('cancel-income');
+            const addForm = document.getElementById('add-income-form');
+            const editForm = document.getElementById('edit-income-form');
+            const deleteBtn = document.getElementById('delete-income');
+
+            closeAddBtn.addEventListener('click', closeAddModal);
+            cancelAddBtn.addEventListener('click', closeAddModal);
+            closeEditBtn.addEventListener('click', closeEditModal);
+
+            addForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                addNewIncome();
+            });
+
+            editForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                updateIncome();
+            });
+
+            deleteBtn.addEventListener('click', function() {
+                deleteIncome();
+            });
+
+            function closeAddModal() {
+                addModal.classList.add('hidden');
+                addForm.reset();
+            }
+
+            function closeEditModal() {
+                editModal.classList.add('hidden');
+            }
+        }
+
+        function setupFAB() {
+            const fab = document.getElementById('fab-add-transaction');
+            const addModal = document.getElementById('add-income-modal');
+
+            fab.addEventListener('click', () => {
+                // Set today's date as default
+                document.getElementById('income-date').valueAsDate = new Date();
+                // Populate accounts dropdown
+                updateAccountDropdowns();
+                addModal.classList.remove('hidden');
+            });
+        }
+
+        function setupFilters() {
+            const categoryFilter = document.getElementById('category-filter');
+            const timeFilter = document.getElementById('time-filter');
+            const chartPeriod = document.getElementById('chart-period');
+            const clearFilters = document.getElementById('clear-filters');
+
+            categoryFilter.addEventListener('change', renderIncome);
+            timeFilter.addEventListener('change', renderIncome);
+            chartPeriod.addEventListener('change', updateIncomeChart);
+            
+            clearFilters.addEventListener('click', function() {
+                categoryFilter.value = '';
+                timeFilter.value = 'all';
+                renderIncome();
+            });
+        }
+
+        function updateAccountDropdowns() {
+            const addAccountSelect = document.getElementById('income-account');
+            const editAccountSelect = document.getElementById('edit-income-account');
+            
+            addAccountSelect.innerHTML = '<option value="">Select Account</option>';
+            editAccountSelect.innerHTML = '<option value="">Select Account</option>';
+            
+            accounts.forEach(account => {
+                const option = new Option(account.name, account.id);
+                addAccountSelect.add(option.cloneNode(true));
+                editAccountSelect.add(option);
+            });
+        }
+
+        function addNewIncome() {
+            const description = document.getElementById('income-description').value.trim();
+            const amount = parseFloat(document.getElementById('income-amount').value);
+            const category = document.getElementById('income-category').value;
+            const accountId = document.getElementById('income-account').value;
+            const date = document.getElementById('income-date').value;
+
+            if (!description) {
+                showNotification('Please enter a description', 'error');
+                return;
+            }
+
+            if (!amount || amount <= 0) {
+                showNotification('Please enter a valid amount', 'error');
+                return;
+            }
+
+            if (!accountId) {
+                showNotification('Please select an account', 'error');
+                return;
+            }
+
+            if (!date) {
+                showNotification('Please select a date', 'error');
+                return;
+            }
+
+            const newIncome = {
+                id: generateId(),
+                type: 'income',
+                description,
+                amount,
+                category,
+                date,
+                accountId,
+                createdAt: new Date().toISOString()
+            };
+
+            transactions.push(newIncome);
+            saveTransactions();
+
+            closeAddModal();
+            renderIncome();
+            updateIncomeOverview();
+            updateIncomeChart();
+            showNotification('Income added successfully', 'success');
+        }
+
+        function editIncome(incomeId) {
+            const income = transactions.find(t => t.id === incomeId && t.type === 'income');
+            if (!income) return;
+
+            document.getElementById('edit-income-id').value = income.id;
+            document.getElementById('edit-income-description').value = income.description;
+            document.getElementById('edit-income-amount').value = income.amount;
+            document.getElementById('edit-income-category').value = income.category;
+            document.getElementById('edit-income-date').value = income.date;
+
+            updateAccountDropdowns();
+            document.getElementById('edit-income-account').value = income.accountId;
+
+            const modal = document.getElementById('edit-income-modal');
+            modal.classList.remove('hidden');
+        }
+
+        function updateIncome() {
+            const incomeId = document.getElementById('edit-income-id').value;
+            const description = document.getElementById('edit-income-description').value.trim();
+            const amount = parseFloat(document.getElementById('edit-income-amount').value);
+            const category = document.getElementById('edit-income-category').value;
+            const accountId = document.getElementById('edit-income-account').value;
+            const date = document.getElementById('edit-income-date').value;
+
+            const incomeIndex = transactions.findIndex(t => t.id === incomeId);
+            if (incomeIndex === -1) return;
+
+            if (!description || !amount || amount <= 0 || !category || !accountId || !date) {
+                showNotification('Please fill all fields correctly', 'error');
+                return;
+            }
+
+            transactions[incomeIndex] = {
+                ...transactions[incomeIndex],
+                description,
+                amount,
+                category,
+                accountId,
+                date
+            };
+
+            saveTransactions();
+            closeEditModal();
+            renderIncome();
+            updateIncomeOverview();
+            updateIncomeChart();
+            showNotification('Income updated successfully', 'success');
+        }
+
+        function deleteIncome() {
+            const incomeId = document.getElementById('edit-income-id').value;
+            const incomeIndex = transactions.findIndex(t => t.id === incomeId);
+            
+            if (incomeIndex === -1) return;
+
+            if (confirm('Are you sure you want to delete this income?')) {
+                transactions.splice(incomeIndex, 1);
+                saveTransactions();
+                closeEditModal();
+                renderIncome();
+                updateIncomeOverview();
+                updateIncomeChart();
+                showNotification('Income deleted successfully', 'success');
+            }
+        }
+
+        function getFilteredIncome() {
+            const categoryFilter = document.getElementById('category-filter').value;
+            const timeFilter = document.getElementById('time-filter').value;
+            
+            let filtered = transactions.filter(t => t.type === 'income' && !t.isTransfer);
+
+            // Apply category filter
+            if (categoryFilter) {
+                filtered = filtered.filter(t => t.category === categoryFilter);
+            }
+
+            // Apply time filter
+            const now = new Date();
+            if (timeFilter === 'today') {
+                const today = now.toISOString().split('T')[0];
+                filtered = filtered.filter(t => t.date === today);
+            } else if (timeFilter === 'week') {
+                const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+                filtered = filtered.filter(t => new Date(t.date) >= startOfWeek);
+            } else if (timeFilter === 'month') {
+                const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+                filtered = filtered.filter(t => new Date(t.date) >= startOfMonth);
+            } else if (timeFilter === 'year') {
+                const startOfYear = new Date(now.getFullYear(), 0, 1);
+                filtered = filtered.filter(t => new Date(t.date) >= startOfYear);
+            }
+
+            return filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+        }
+
+        function renderIncome() {
+            const container = document.getElementById('income-table-body');
+            const noIncome = document.getElementById('no-income-message');
+            const filteredIncome = getFilteredIncome();
+
+            if (filteredIncome.length === 0) {
+                container.innerHTML = '';
+                noIncome.classList.remove('hidden');
+                return;
+            }
+
+            noIncome.classList.add('hidden');
+            container.innerHTML = filteredIncome.map(income => {
+                const account = accounts.find(a => a.id === income.accountId);
+                const accountName = account ? account.name : 'Unknown Account';
+                const icon = getIncomeIcon(income.category);
+                
+                return `
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="py-3 px-4 text-gray-700">${formatDate(income.date)}</td>
+                        <td class="py-3 px-4">
+                            <div class="flex items-center space-x-2">
+                                <i class="${icon} text-gray-400"></i>
+                                <span class="font-medium">${income.description}</span>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                ${income.category}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-gray-600">${accountName}</td>
+                        <td class="py-3 px-4 text-right font-semibold text-green-600">+$${income.amount.toFixed(2)}</td>
+                        <td class="py-3 px-4 text-center">
+                            <button onclick="editIncome('${income.id}')" class="text-blue-600 hover:text-blue-800 transition-colors mr-3">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateIncomeOverview() {
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
+            const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+            const todayIncome = transactions
+                .filter(t => t.type === 'income' && t.date === today && !t.isTransfer)
+                .reduce((sum, t) => sum + t.amount, 0);
+
+            const weekIncome = transactions
+                .filter(t => t.type === 'income' && new Date(t.date) >= startOfWeek && !t.isTransfer)
+                .reduce((sum, t) => sum + t.amount, 0);
+
+            const monthIncome = transactions
+                .filter(t => t.type === 'income' && new Date(t.date) >= startOfMonth && !t.isTransfer)
+                .reduce((sum, t) => sum + t.amount, 0);
+
+            const totalIncome = transactions
+                .filter(t => t.type === 'income' && !t.isTransfer)
+                .reduce((sum, t) => sum + t.amount, 0);
+
+            document.getElementById('today-income').textContent = `$${todayIncome.toFixed(2)}`;
+            document.getElementById('week-income').textContent = `$${weekIncome.toFixed(2)}`;
+            document.getElementById('month-income').textContent = `$${monthIncome.toFixed(2)}`;
+            document.getElementById('total-income').textContent = `$${totalIncome.toFixed(2)}`;
+        }
+
+        function initializeIncomeChart() {
+            const ctx = document.getElementById('incomeChart').getContext('2d');
+            incomeChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Income',
+                        data: [],
+                        borderColor: '#10B981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+            updateIncomeChart();
+        }
+
+        function updateIncomeChart() {
+            if (!incomeChart) return;
+
+            const period = document.getElementById('chart-period').value;
+            const { labels, data } = getChartData(period);
+            
+            incomeChart.data.labels = labels;
+            incomeChart.data.datasets[0].data = data;
+            incomeChart.update();
+        }
+
+        function getChartData(period) {
+            // This is a simplified version - you'd want to implement proper data aggregation
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+            
+            if (period === 'monthly') {
+                return {
+                    labels: months.slice(0, 6),
+                    data: [1200, 1500, 1800, 1400, 1600, 1900]
+                };
+            } else if (period === 'weekly') {
+                return {
+                    labels: weeks,
+                    data: [400, 600, 350, 700]
+                };
+            } else {
+                return {
+                    labels: ['2023', '2024'],
+                    data: [15000, 18000]
+                };
+            }
+        }
+
+        function getIncomeIcon(category) {
+            const icons = {
+                'Salary': 'fas fa-briefcase',
+                'Freelance': 'fas fa-laptop-code',
+                'Business': 'fas fa-store',
+                'Investment': 'fas fa-chart-line',
+                'Rental': 'fas fa-home',
+                'Bonus': 'fas fa-gift',
+                'Other': 'fas fa-money-bill-wave'
+            };
+            return icons[category] || icons.Other;
+        }
+
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+    </script>
 </body>
 </html>
