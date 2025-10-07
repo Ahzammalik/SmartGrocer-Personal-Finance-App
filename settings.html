@@ -9,7 +9,245 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --primary: #10B981;
+            --primary-dark: #059669;
+            --primary-light: #D1FAE5;
+            --secondary: #3B82F6;
+            --dark: #1F2937;
+            --light: #F9FAFB;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #F3F4F6;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+        
+        .nav-link.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background-color: var(--primary);
+        }
+        
+        .notification.error {
+            background-color: #EF4444;
+        }
+        
+        #fab-add-transaction {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            z-index: 90;
+            transition: all 0.2s;
+        }
+        
+        #fab-add-transaction:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.05);
+        }
+        
+        #sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 40;
+            display: none;
+        }
+        
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 256px;
+            background-color: white;
+            z-index: 50;
+            transition: transform 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        #sidebar.show {
+            transform: translateX(0);
+        }
+        
+        #main-app-container {
+            transition: margin-left 0.3s ease;
+        }
+        
+        @media (min-width: 768px) {
+            #sidebar {
+                transform: translateX(0);
+                position: static;
+                height: auto;
+            }
+            
+            #main-app-container {
+                margin-left: 0;
+                width: calc(100% - 256px);
+            }
+            
+            #mobile-menu-button {
+                display: none;
+            }
+            
+            #sidebar-overlay {
+                display: none !important;
+            }
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .currency-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #E5E7EB;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .currency-option:hover {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+        
+        .currency-option.selected {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+        
+        .currency-flag {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .profile-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+        
+        .profile-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        .setting-card {
+            transition: all 0.2s;
+        }
+        
+        .setting-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+    </style>
 </head>
 <body class="antialiased">
 
@@ -27,7 +265,7 @@
     </div>
     
     <div id="sidebar-overlay" class="hidden"></div>
-    <aside id="sidebar" class="w-64 flex-shrink-0 bg-white transform -translate-x-full">
+    <aside id="sidebar" class="w-64 flex-shrink-0 bg-white transform -translate-x-full md:translate-x-0">
         <div class="h-full flex flex-col">
             <div class="h-20 flex items-center justify-center border-b">
                 <h1 class="text-2xl font-bold text-primary">SmartGrocer</h1>
@@ -51,8 +289,8 @@
         </div>
     </aside>
 
-    <div id="main-app-container">
-        <header class="flex justify-between items-center px-4 bg-white shadow-md">
+    <div id="main-app-container" class="md:ml-64">
+        <header class="flex justify-between items-center px-4 py-4 bg-white shadow-sm">
             <button id="mobile-menu-button" class="text-gray-600 focus:outline-none"><i class="fas fa-bars text-2xl"></i></button>
             <h2 id="page-title" class="text-xl font-semibold text-gray-800">Settings</h2>
             <div id="welcome-user-container" class="flex items-center">
@@ -63,10 +301,163 @@
 
         <main class="p-4 md:p-6">
             <div id="settings" class="page active">
-                <div class="card p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-6">Settings</h3>
-                    <p class="mb-4">Reset all your saved financial data. This action cannot be undone.</p>
-                    <button id="reset-data-btn" class="w-full bg-red-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-700"><i class="fas fa-exclamation-triangle mr-2"></i>Reset All Data</button>
+                <div class="max-w-4xl mx-auto">
+                    <h1 class="text-2xl font-bold text-gray-900 mb-8">Account Settings</h1>
+                    
+                    <!-- Profile Information Section -->
+                    <div class="card p-6 mb-8 setting-card">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                            <i class="fas fa-user-circle mr-3 text-primary"></i> Profile Information
+                        </h3>
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                                <div class="flex">
+                                    <input type="text" id="profile-name" class="profile-input rounded-r-none" value="John Doe">
+                                    <button id="edit-name-btn" class="bg-gray-100 text-gray-700 px-4 rounded-r-lg border border-l-0 border-gray-300 hover:bg-gray-200 transition-colors">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Mobile Number</label>
+                                <div class="flex">
+                                    <input type="tel" id="profile-phone" class="profile-input rounded-r-none" value="+92 300 1234567">
+                                    <button id="edit-phone-btn" class="bg-gray-100 text-gray-700 px-4 rounded-r-lg border border-l-0 border-gray-300 hover:bg-gray-200 transition-colors">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                                <div class="flex">
+                                    <input type="email" id="profile-email" class="profile-input rounded-r-none" value="john.doe@example.com">
+                                    <button id="edit-email-btn" class="bg-gray-100 text-gray-700 px-4 rounded-r-lg border border-l-0 border-gray-300 hover:bg-gray-200 transition-colors">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button id="save-profile-btn" class="w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                                <i class="fas fa-save mr-2"></i> Save Profile Changes
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Currency Preferences Section -->
+                    <div class="card p-6 mb-8 setting-card">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                            <i class="fas fa-coins mr-3 text-primary"></i> Currency Preferences
+                        </h3>
+                        <p class="text-gray-600 mb-4">Select your preferred currency for displaying financial data.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="currency-option" data-currency="PKR">
+                                <div class="currency-flag bg-green-600">PK</div>
+                                <div>
+                                    <div class="font-medium">Pakistani Rupee</div>
+                                    <div class="text-sm text-gray-500">PKR (₨)</div>
+                                </div>
+                            </div>
+                            <div class="currency-option" data-currency="USD">
+                                <div class="currency-flag bg-blue-600">US</div>
+                                <div>
+                                    <div class="font-medium">US Dollar</div>
+                                    <div class="text-sm text-gray-500">USD ($)</div>
+                                </div>
+                            </div>
+                            <div class="currency-option" data-currency="INR">
+                                <div class="currency-flag bg-orange-600">IN</div>
+                                <div>
+                                    <div class="font-medium">Indian Rupee</div>
+                                    <div class="text-sm text-gray-500">INR (₹)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- App Preferences Section -->
+                    <div class="card p-6 mb-8 setting-card">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                            <i class="fas fa-sliders-h mr-3 text-primary"></i> App Preferences
+                        </h3>
+                        <div class="space-y-6">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Dark Mode</h4>
+                                    <p class="text-sm text-gray-600">Switch between light and dark themes</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="dark-mode-toggle">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Biometric Login</h4>
+                                    <p class="text-sm text-gray-600">Use fingerprint or face recognition to login</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="biometric-toggle">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Monthly Reports</h4>
+                                    <p class="text-sm text-gray-600">Receive monthly financial reports via email</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="reports-toggle" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Budget Notifications</h4>
+                                    <p class="text-sm text-gray-600">Get alerts when approaching budget limits</p>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="notifications-toggle" checked>
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Data Management Section -->
+                    <div class="card p-6 setting-card">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+                            <i class="fas fa-database mr-3 text-primary"></i> Data Management
+                        </h3>
+                        <div class="space-y-6">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Export Data</h4>
+                                    <p class="text-sm text-gray-600">Download your financial data as CSV or PDF</p>
+                                </div>
+                                <button class="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                                    <i class="fas fa-download mr-2"></i> Export
+                                </button>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-medium text-gray-800">Backup Data</h4>
+                                    <p class="text-sm text-gray-600">Create a backup of your financial data</p>
+                                </div>
+                                <button class="bg-green-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                                    <i class="fas fa-save mr-2"></i> Backup
+                                </button>
+                            </div>
+                            <div class="pt-4 border-t">
+                                <div class="mb-4">
+                                    <h4 class="font-medium text-gray-800 mb-2">Reset All Data</h4>
+                                    <p class="text-sm text-gray-600">Permanently delete all your financial data. This action cannot be undone.</p>
+                                </div>
+                                <button id="reset-data-btn" class="w-full bg-red-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-700 transition-colors">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i> Reset All Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -76,6 +467,204 @@
     <div id="modal-container"></div>
     <button id="fab-add-transaction"><i class="fas fa-plus"></i></button>
 
-    <script src="script.js"></script>
+    <script>
+        // DOM elements
+        const signinOverlay = document.getElementById('signin-overlay');
+        const signinForm = document.getElementById('signin-form');
+        const signinName = document.getElementById('signin-name');
+        const welcomeUserText = document.getElementById('welcome-user-text');
+        const userInitial = document.getElementById('user-initial');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const notification = document.getElementById('notification');
+        
+        // Profile elements
+        const profileName = document.getElementById('profile-name');
+        const profilePhone = document.getElementById('profile-phone');
+        const profileEmail = document.getElementById('profile-email');
+        const editNameBtn = document.getElementById('edit-name-btn');
+        const editPhoneBtn = document.getElementById('edit-phone-btn');
+        const editEmailBtn = document.getElementById('edit-email-btn');
+        const saveProfileBtn = document.getElementById('save-profile-btn');
+        
+        // Currency elements
+        const currencyOptions = document.querySelectorAll('.currency-option');
+        
+        // Toggle elements
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const biometricToggle = document.getElementById('biometric-toggle');
+        const reportsToggle = document.getElementById('reports-toggle');
+        const notificationsToggle = document.getElementById('notifications-toggle');
+        
+        // Reset button
+        const resetDataBtn = document.getElementById('reset-data-btn');
+        
+        // Check if user is signed in
+        const userName = localStorage.getItem('userName');
+        if (userName) {
+            signinOverlay.style.display = 'none';
+            welcomeUserText.textContent = `Welcome, ${userName}!`;
+            userInitial.textContent = userName.charAt(0).toUpperCase();
+            profileName.value = userName;
+        } else {
+            signinOverlay.style.display = 'flex';
+        }
+        
+        // Sign in form submission
+        signinForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = signinName.value.trim();
+            if (name) {
+                localStorage.setItem('userName', name);
+                signinOverlay.style.display = 'none';
+                welcomeUserText.textContent = `Welcome, ${name}!`;
+                userInitial.textContent = name.charAt(0).toUpperCase();
+                profileName.value = name;
+                showNotification('Successfully signed in!', 'success');
+            }
+        });
+        
+        // Mobile menu toggle
+        mobileMenuButton.addEventListener('click', function() {
+            sidebar.classList.toggle('show');
+            sidebarOverlay.classList.toggle('hidden');
+        });
+        
+        // Close sidebar when clicking on overlay
+        sidebarOverlay.addEventListener('click', function() {
+            sidebar.classList.remove('show');
+            sidebarOverlay.classList.add('hidden');
+        });
+        
+        // Currency selection
+        currencyOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all options
+                currencyOptions.forEach(opt => opt.classList.remove('selected'));
+                
+                // Add selected class to clicked option
+                this.classList.add('selected');
+                
+                // Get selected currency
+                const currency = this.getAttribute('data-currency');
+                
+                // Save to localStorage
+                localStorage.setItem('preferredCurrency', currency);
+                
+                showNotification(`Currency preference saved: ${currency}`, 'success');
+            });
+        });
+        
+        // Set default currency
+        const defaultCurrency = localStorage.getItem('preferredCurrency') || 'PKR';
+        document.querySelector(`.currency-option[data-currency="${defaultCurrency}"]`).classList.add('selected');
+        
+        // Profile editing
+        editNameBtn.addEventListener('click', function() {
+            profileName.focus();
+        });
+        
+        editPhoneBtn.addEventListener('click', function() {
+            profilePhone.focus();
+        });
+        
+        editEmailBtn.addEventListener('click', function() {
+            profileEmail.focus();
+        });
+        
+        // Save profile changes
+        saveProfileBtn.addEventListener('click', function() {
+            const newName = profileName.value.trim();
+            const newPhone = profilePhone.value.trim();
+            const newEmail = profileEmail.value.trim();
+            
+            if (newName) {
+                localStorage.setItem('userName', newName);
+                welcomeUserText.textContent = `Welcome, ${newName}!`;
+                userInitial.textContent = newName.charAt(0).toUpperCase();
+            }
+            
+            localStorage.setItem('userPhone', newPhone);
+            localStorage.setItem('userEmail', newEmail);
+            
+            showNotification('Profile updated successfully!', 'success');
+        });
+        
+        // Load saved profile data
+        const savedPhone = localStorage.getItem('userPhone');
+        const savedEmail = localStorage.getItem('userEmail');
+        
+        if (savedPhone) profilePhone.value = savedPhone;
+        if (savedEmail) profileEmail.value = savedEmail;
+        
+        // Load toggle states
+        const darkModeState = localStorage.getItem('darkMode') === 'true';
+        const biometricState = localStorage.getItem('biometric') === 'true';
+        const reportsState = localStorage.getItem('reports') !== 'false'; // Default to true
+        const notificationsState = localStorage.getItem('notifications') !== 'false'; // Default to true
+        
+        darkModeToggle.checked = darkModeState;
+        biometricToggle.checked = biometricState;
+        reportsToggle.checked = reportsState;
+        notificationsToggle.checked = notificationsState;
+        
+        // Save toggle states
+        darkModeToggle.addEventListener('change', function() {
+            localStorage.setItem('darkMode', this.checked);
+            showNotification(`Dark mode ${this.checked ? 'enabled' : 'disabled'}`, 'success');
+        });
+        
+        biometricToggle.addEventListener('change', function() {
+            localStorage.setItem('biometric', this.checked);
+            showNotification(`Biometric login ${this.checked ? 'enabled' : 'disabled'}`, 'success');
+        });
+        
+        reportsToggle.addEventListener('change', function() {
+            localStorage.setItem('reports', this.checked);
+            showNotification(`Monthly reports ${this.checked ? 'enabled' : 'disabled'}`, 'success');
+        });
+        
+        notificationsToggle.addEventListener('change', function() {
+            localStorage.setItem('notifications', this.checked);
+            showNotification(`Budget notifications ${this.checked ? 'enabled' : 'disabled'}`, 'success');
+        });
+        
+        // Reset data button
+        resetDataBtn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to reset all your financial data? This action cannot be undone.')) {
+                // In a real app, this would clear all financial data
+                // For now, we'll just show a notification
+                showNotification('All financial data has been reset.', 'success');
+            }
+        });
+        
+        // Show notification function
+        function showNotification(message, type) {
+            notification.textContent = message;
+            notification.className = 'notification ' + type;
+            notification.classList.add('show');
+            
+            setTimeout(function() {
+                notification.classList.remove('show');
+            }, 5000);
+        }
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add active class to current page in navigation
+            const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href === currentPage) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
