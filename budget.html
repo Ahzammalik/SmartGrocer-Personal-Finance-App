@@ -116,6 +116,56 @@
             border-radius: 4px;
             transition: width 0.5s ease;
         }
+
+        /* Currency Styles */
+        .currency-option {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #E5E7EB;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 8px;
+        }
+        
+        .currency-option:hover {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+        
+        .currency-option.selected {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+        }
+        
+        .currency-flag {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .currency-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background-color: #f3f4f6;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        .currency-symbol {
+            font-weight: 600;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -204,6 +254,35 @@
 
         <!-- Main Content -->
         <main class="p-4 sm:p-6">
+            <!-- Currency Selection Section -->
+            <div class="card p-6 mb-8">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">Select Display Currency</h3>
+                <p class="text-gray-600 mb-4">Choose your preferred currency for displaying budget amounts. No conversion will be applied.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="currency-option" data-currency="USD">
+                        <div class="currency-flag bg-blue-600">US</div>
+                        <div>
+                            <div class="font-medium">US Dollar</div>
+                            <div class="text-sm text-gray-500">USD ($)</div>
+                        </div>
+                    </div>
+                    <div class="currency-option" data-currency="PKR">
+                        <div class="currency-flag bg-green-600">PK</div>
+                        <div>
+                            <div class="font-medium">Pakistani Rupee</div>
+                            <div class="text-sm text-gray-500">PKR (₨)</div>
+                        </div>
+                    </div>
+                    <div class="currency-option" data-currency="INR">
+                        <div class="currency-flag bg-orange-600">IN</div>
+                        <div>
+                            <div class="font-medium">Indian Rupee</div>
+                            <div class="text-sm text-gray-500">INR (₹)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Summary Cards - Fixed Grid Layout -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                 <!-- Total Budget Card -->
@@ -211,7 +290,7 @@
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-sm opacity-90 mb-1">Total Budget</p>
-                            <h3 class="text-3xl font-bold">$<span id="total-budget">0.00</span></h3>
+                            <h3 class="text-3xl font-bold"><span id="total-budget-display">$0.00</span></h3>
                         </div>
                         <i class="fas fa-wallet text-2xl opacity-80"></i>
                     </div>
@@ -223,7 +302,7 @@
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-sm text-gray-500 mb-1">Total Spent</p>
-                            <h3 class="text-3xl font-bold text-gray-900">$<span id="total-spent">0.00</span></h3>
+                            <h3 class="text-3xl font-bold text-gray-900"><span id="total-spent-display">$0.00</span></h3>
                         </div>
                         <i class="fas fa-chart-bar text-2xl text-blue-500"></i>
                     </div>
@@ -235,7 +314,7 @@
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-sm text-gray-500 mb-1">Remaining</p>
-                            <h3 class="text-3xl font-bold text-gray-900">$<span id="total-remaining">0.00</span></h3>
+                            <h3 class="text-3xl font-bold text-gray-900"><span id="total-remaining-display">$0.00</span></h3>
                         </div>
                         <i class="fas fa-piggy-bank text-2xl text-purple-500"></i>
                     </div>
@@ -380,9 +459,17 @@
                     </select>
                 </div>
                 <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Budget Currency</label>
+                    <select id="budget-currency" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required>
+                        <option value="USD">US Dollar (USD)</option>
+                        <option value="PKR">Pakistani Rupee (PKR)</option>
+                        <option value="INR">Indian Rupee (INR)</option>
+                    </select>
+                </div>
+                <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Budget Amount</label>
                     <div class="relative">
-                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" id="modal-currency-symbol">$</span>
                         <input type="number" id="budget-amount" step="0.01" min="0.01" placeholder="0.00" class="w-full border border-gray-300 rounded-lg pl-8 pr-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required>
                     </div>
                 </div>
@@ -437,9 +524,17 @@
                     </select>
                 </div>
                 <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Budget Currency</label>
+                    <select id="edit-budget-currency" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required>
+                        <option value="USD">US Dollar (USD)</option>
+                        <option value="PKR">Pakistani Rupee (PKR)</option>
+                        <option value="INR">Indian Rupee (INR)</option>
+                    </select>
+                </div>
+                <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Budget Amount</label>
                     <div class="relative">
-                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" id="edit-modal-currency-symbol">$</span>
                         <input type="number" id="edit-budget-amount" step="0.01" min="0.01" class="w-full border border-gray-300 rounded-lg pl-8 pr-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required>
                     </div>
                 </div>
@@ -464,9 +559,17 @@
     </div>
 
     <script>
+        // Currency configuration
+        const currencies = {
+            'USD': { symbol: '$', name: 'US Dollar', flag: 'US' },
+            'PKR': { symbol: '₨', name: 'Pakistani Rupee', flag: 'PK' },
+            'INR': { symbol: '₹', name: 'Indian Rupee', flag: 'IN' }
+        };
+
         // Sample data for demonstration
         let budgets = JSON.parse(localStorage.getItem('smartgrocer-budgets')) || [];
         let transactions = JSON.parse(localStorage.getItem('smartgrocer-transactions')) || [];
+        let selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
@@ -504,6 +607,45 @@
                     document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
                     showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
                 }
+            });
+
+            // Currency selection
+            const currencyOptions = document.querySelectorAll('.currency-option');
+            
+            // Initialize currency display
+            updateCurrencyDisplay(selectedCurrency);
+            
+            currencyOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    const currency = this.getAttribute('data-currency');
+                    selectedCurrency = currency;
+                    localStorage.setItem('selectedCurrency', currency);
+                    
+                    // Update UI
+                    updateCurrencyDisplay(currency);
+                    
+                    // Update selected state
+                    currencyOptions.forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    showNotification(`Display currency set to ${currencies[currency].name}`, 'success');
+                });
+                
+                // Set initial selected state
+                if (option.getAttribute('data-currency') === selectedCurrency) {
+                    option.classList.add('selected');
+                }
+            });
+
+            // Budget currency change handlers
+            document.getElementById('budget-currency').addEventListener('change', function() {
+                const currency = this.value;
+                document.getElementById('modal-currency-symbol').textContent = currencies[currency].symbol;
+            });
+
+            document.getElementById('edit-budget-currency').addEventListener('change', function() {
+                const currency = this.value;
+                document.getElementById('edit-modal-currency-symbol').textContent = currencies[currency].symbol;
             });
 
             // Initialize budget modals
@@ -550,6 +692,9 @@
                 addModal.classList.add('hidden');
                 addModal.classList.remove('flex');
                 addForm.reset();
+                // Reset modal currency symbol
+                document.getElementById('modal-currency-symbol').textContent = currencies['USD'].symbol;
+                document.getElementById('budget-currency').value = 'USD';
             }
 
             function closeEditModal() {
@@ -561,6 +706,7 @@
         function addNewBudget() {
             const name = document.getElementById('budget-name').value.trim();
             const category = document.getElementById('budget-category').value;
+            const currency = document.getElementById('budget-currency').value;
             const amount = parseFloat(document.getElementById('budget-amount').value);
             const period = document.getElementById('budget-period').value;
 
@@ -583,6 +729,7 @@
                 id: generateId(),
                 name,
                 category,
+                currency,
                 amount,
                 period,
                 createdAt: new Date().toISOString()
@@ -604,8 +751,12 @@
             document.getElementById('edit-budget-id').value = budget.id;
             document.getElementById('edit-budget-name').value = budget.name;
             document.getElementById('edit-budget-category').value = budget.category;
+            document.getElementById('edit-budget-currency').value = budget.currency;
             document.getElementById('edit-budget-amount').value = budget.amount;
             document.getElementById('edit-budget-period').value = budget.period;
+
+            // Update modal currency symbol
+            document.getElementById('edit-modal-currency-symbol').textContent = currencies[budget.currency].symbol;
 
             const modal = document.getElementById('edit-budget-modal');
             modal.classList.remove('hidden');
@@ -616,6 +767,7 @@
             const budgetId = document.getElementById('edit-budget-id').value;
             const name = document.getElementById('edit-budget-name').value.trim();
             const category = document.getElementById('edit-budget-category').value;
+            const currency = document.getElementById('edit-budget-currency').value;
             const amount = parseFloat(document.getElementById('edit-budget-amount').value);
             const period = document.getElementById('edit-budget-period').value;
 
@@ -631,6 +783,7 @@
                 ...budgets[budgetIndex],
                 name,
                 category,
+                currency,
                 amount,
                 period
             };
@@ -673,31 +826,47 @@
         }
 
         function updateBudgetOverview() {
-            const totalBudget = budgets.reduce((total, budget) => total + budget.amount, 0);
-            const totalSpent = budgets.reduce((total, budget) => total + calculateBudgetSpent(budget.category), 0);
+            const selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+            const currencyInfo = currencies[selectedCurrency];
+            
+            // Calculate totals in selected currency
+            const totalBudget = budgets
+                .filter(budget => budget.currency === selectedCurrency)
+                .reduce((total, budget) => total + budget.amount, 0);
+                
+            const totalSpent = budgets
+                .filter(budget => budget.currency === selectedCurrency)
+                .reduce((total, budget) => total + calculateBudgetSpent(budget.category), 0);
+                
             const totalRemaining = totalBudget - totalSpent;
 
-            document.getElementById('total-budget').textContent = totalBudget.toFixed(2);
-            document.getElementById('total-spent').textContent = totalSpent.toFixed(2);
-            document.getElementById('total-remaining').textContent = totalRemaining.toFixed(2);
+            document.getElementById('total-budget-display').textContent = `${currencyInfo.symbol}${totalBudget.toFixed(2)}`;
+            document.getElementById('total-spent-display').textContent = `${currencyInfo.symbol}${totalSpent.toFixed(2)}`;
+            document.getElementById('total-remaining-display').textContent = `${currencyInfo.symbol}${totalRemaining.toFixed(2)}`;
         }
 
         function renderBudgets() {
             const container = document.getElementById('budgets-container');
             if (!container) return;
 
-            if (budgets.length === 0) {
+            const selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+            const currencyInfo = currencies[selectedCurrency];
+
+            // Filter budgets by selected currency
+            const filteredBudgets = budgets.filter(budget => budget.currency === selectedCurrency);
+
+            if (filteredBudgets.length === 0) {
                 container.innerHTML = `
                     <div class="col-span-2 text-center py-12">
                         <i class="fas fa-chart-pie text-6xl text-gray-300 mb-4"></i>
-                        <h3 class="text-xl font-semibold text-gray-600 mb-2">No Budgets Yet</h3>
-                        <p class="text-gray-500">Create your first budget to start tracking your spending limits.</p>
+                        <h3 class="text-xl font-semibold text-gray-600 mb-2">No Budgets in ${currencyInfo.name}</h3>
+                        <p class="text-gray-500">Create your first ${selectedCurrency} budget to start tracking your spending limits.</p>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = budgets.map(budget => {
+            container.innerHTML = filteredBudgets.map(budget => {
                 const spent = calculateBudgetSpent(budget.category);
                 const remaining = budget.amount - spent;
                 const percentage = Math.min((spent / budget.amount) * 100, 100);
@@ -728,8 +897,8 @@
                         
                         <div class="mb-4">
                             <div class="flex justify-between text-sm text-gray-600 mb-2">
-                                <span>Spent: $${spent.toFixed(2)}</span>
-                                <span>Budget: $${budget.amount.toFixed(2)}</span>
+                                <span>Spent: <span class="currency-symbol">${currencyInfo.symbol}</span>${spent.toFixed(2)}</span>
+                                <span>Budget: <span class="currency-symbol">${currencyInfo.symbol}</span>${budget.amount.toFixed(2)}</span>
                             </div>
                             <div class="progress-bar">
                                 <div class="progress-fill ${progressColor}" style="width: ${percentage}%"></div>
@@ -738,13 +907,23 @@
                         
                         <div class="text-center">
                             <p class="text-lg font-bold ${isOverBudget ? 'text-red-600' : 'text-green-600'}">
-                                $${Math.abs(remaining).toFixed(2)} ${isOverBudget ? 'Over' : 'Remaining'}
+                                <span class="currency-symbol">${currencyInfo.symbol}</span>${Math.abs(remaining).toFixed(2)} ${isOverBudget ? 'Over' : 'Remaining'}
                             </p>
                             <p class="text-sm text-gray-500 mt-1">${percentage.toFixed(1)}% of budget used</p>
                         </div>
                     </div>
                 `;
             }).join('');
+        }
+
+        function updateCurrencyDisplay(currency) {
+            const currencyInfo = currencies[currency];
+            
+            // Update budget overview with new currency
+            updateBudgetOverview();
+            
+            // Re-render budgets to show updated currency symbols
+            renderBudgets();
         }
 
         function getBudgetIcon(category) {
