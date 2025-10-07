@@ -11,6 +11,7 @@
 </head>
 <body class="antialiased bg-gray-50 min-h-screen">
 
+    <!-- Sign-in Overlay -->
     <div id="signin-overlay" class="fixed inset-0 bg-gray-100 z-50 flex items-center justify-center p-4">
         <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8">
             <div class="text-center mb-8">
@@ -39,6 +40,102 @@
                 <p class="text-sm text-gray-500">Your data is stored locally on your device for privacy</p>
             </div>
         </div>
+    </div>
+
+    <!-- Main App Content (Hidden by default) -->
+    <div id="main-app" class="hidden">
+        <!-- Header -->
+        <header class="bg-primary text-white shadow-lg">
+            <div class="container mx-auto px-4 py-4">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-chart-line text-2xl"></i>
+                        <h1 class="text-2xl font-bold">SmartGrocer</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span id="user-greeting" class="text-lg">Hello, User!</span>
+                        <button id="logout-btn" class="bg-white text-primary px-4 py-2 rounded-lg hover:bg-gray-100 transition duration-200">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 py-8">
+            <!-- Dashboard Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600">Monthly Budget</p>
+                            <h3 class="text-3xl font-bold text-gray-800">$1,500</h3>
+                        </div>
+                        <i class="fas fa-wallet text-2xl text-primary"></i>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600">Spent This Month</p>
+                            <h3 class="text-3xl font-bold text-gray-800">$847</h3>
+                        </div>
+                        <i class="fas fa-shopping-cart text-2xl text-primary"></i>
+                    </div>
+                </div>
+                
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600">Remaining</p>
+                            <h3 class="text-3xl font-bold text-green-600">$653</h3>
+                        </div>
+                        <i class="fas fa-piggy-bank text-2xl text-green-500"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h2 class="text-2xl font-bold mb-6 text-gray-800">Recent Transactions</h2>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <i class="fas fa-utensils text-primary text-xl"></i>
+                            <div>
+                                <p class="font-semibold">Groceries</p>
+                                <p class="text-gray-600 text-sm">Supermarket</p>
+                            </div>
+                        </div>
+                        <span class="text-red-600 font-bold">-$125.50</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <i class="fas fa-gas-pump text-primary text-xl"></i>
+                            <div>
+                                <p class="font-semibold">Fuel</p>
+                                <p class="text-gray-600 text-sm">Gas Station</p>
+                            </div>
+                        </div>
+                        <span class="text-red-600 font-bold">-$65.00</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <i class="fas fa-shopping-bag text-primary text-xl"></i>
+                            <div>
+                                <p class="font-semibold">Shopping</p>
+                                <p class="text-gray-600 text-sm">Mall</p>
+                            </div>
+                        </div>
+                        <span class="text-red-600 font-bold">-$89.99</span>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
     <script src="script.js"></script>
