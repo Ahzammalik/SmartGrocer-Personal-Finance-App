@@ -224,6 +224,20 @@
                 box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
             }
         }
+
+        /* Auto-update indicator */
+        .auto-update-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background-color: #d1fae5;
+            color: #065f46;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: 8px;
+            animation: pulse 2s infinite;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -259,7 +273,7 @@
                                 <div class="currency-flag bg-blue-600 mx-auto mb-2">US</div>
                                 <div class="text-xs font-medium">USD ($)</div>
                             </div>
-                            <div class="currency-option text-center" data-currency="PKR">
+                            <div class="currency-option text-center selected" data-currency="PKR">
                                 <div class="currency-flag bg-green-600 mx-auto mb-2">PK</div>
                                 <div class="text-xs font-medium">PKR (₨)</div>
                             </div>
@@ -358,8 +372,11 @@
                 <!-- User Info and Currency -->
                 <div class="flex items-center space-x-4">
                     <div class="hidden md:flex items-center space-x-2 bg-gray-100 rounded-lg px-3 py-1">
-                        <span id="current-currency" class="text-sm font-medium text-gray-700">USD</span>
-                        <span id="currency-symbol" class="text-sm font-medium text-gray-700">$</span>
+                        <span id="current-currency" class="text-sm font-medium text-gray-700">PKR</span>
+                        <span id="currency-symbol" class="text-sm font-medium text-gray-700">₨</span>
+                        <span class="auto-update-indicator ml-2" id="auto-update-indicator">
+                            <i class="fas fa-sync-alt mr-1"></i> Auto-updating
+                        </span>
                     </div>
                     <div class="flex items-center space-x-3">
                         <span id="user-greeting" class="text-gray-600 hidden sm:block">Hello, User!</span>
@@ -378,13 +395,13 @@
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-green-100 text-sm font-medium">Total Balance</p>
-                            <h3 class="text-2xl font-bold mt-2" id="total-balance">$5,430</h3>
+                            <h3 class="text-2xl font-bold mt-2" id="total-balance">₨0</h3>
                         </div>
                         <div class="bg-white bg-opacity-20 p-2 rounded-lg">
                             <i class="fas fa-wallet text-white"></i>
                         </div>
                     </div>
-                    <p class="text-green-100 text-xs mt-4"><i class="fas fa-arrow-up mr-1"></i> 12% from last month</p>
+                    <p class="text-green-100 text-xs mt-4"><i class="fas fa-arrow-up mr-1"></i> <span id="balance-change">0%</span> from last month</p>
                 </div>
                 
                 <!-- Total Income -->
@@ -392,13 +409,13 @@
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-blue-100 text-sm font-medium">Total Income</p>
-                            <h3 class="text-2xl font-bold mt-2" id="total-income">$8,250</h3>
+                            <h3 class="text-2xl font-bold mt-2" id="total-income">₨0</h3>
                         </div>
                         <div class="bg-white bg-opacity-20 p-2 rounded-lg">
                             <i class="fas fa-money-bill-wave text-white"></i>
                         </div>
                     </div>
-                    <p class="text-blue-100 text-xs mt-4"><i class="fas fa-arrow-up mr-1"></i> 8% from last month</p>
+                    <p class="text-blue-100 text-xs mt-4"><i class="fas fa-arrow-up mr-1"></i> <span id="income-change">0%</span> from last month</p>
                 </div>
                 
                 <!-- Total Expenses -->
@@ -406,13 +423,13 @@
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-purple-100 text-sm font-medium">Total Expenses</p>
-                            <h3 class="text-2xl font-bold mt-2" id="total-expenses">$2,820</h3>
+                            <h3 class="text-2xl font-bold mt-2" id="total-expenses">₨0</h3>
                         </div>
                         <div class="bg-white bg-opacity-20 p-2 rounded-lg">
                             <i class="fas fa-credit-card text-white"></i>
                         </div>
                     </div>
-                    <p class="text-purple-100 text-xs mt-4"><i class="fas fa-arrow-down mr-1"></i> 5% from last month</p>
+                    <p class="text-purple-100 text-xs mt-4"><i class="fas fa-arrow-down mr-1"></i> <span id="expenses-change">0%</span> from last month</p>
                 </div>
                 
                 <!-- Savings Rate -->
@@ -420,13 +437,13 @@
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="text-orange-100 text-sm font-medium">Savings Rate</p>
-                            <h3 class="text-2xl font-bold mt-2" id="savings-rate">65%</h3>
+                            <h3 class="text-2xl font-bold mt-2" id="savings-rate">0%</h3>
                         </div>
                         <div class="bg-white bg-opacity-20 p-2 rounded-lg">
                             <i class="fas fa-piggy-bank text-white"></i>
                         </div>
                     </div>
-                    <p class="text-orange-100 text-xs mt-4"><i class="fas fa-arrow-up mr-1"></i> 3% from last month</p>
+                    <p class="text-orange-100 text-xs mt-4"><i class="fas fa-arrow-up mr-1"></i> <span id="savings-change">0%</span> from last month</p>
                 </div>
             </div>
 
@@ -439,49 +456,11 @@
                         <span class="text-sm text-gray-500">This Month</span>
                     </div>
                     
-                    <div class="space-y-6">
-                        <!-- Groceries Budget -->
-                        <div>
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="font-medium text-gray-700">Groceries</span>
-                                <span class="text-sm text-gray-500">$320 / $400</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 80%"></div>
-                            </div>
-                        </div>
-                        
-                        <!-- Entertainment Budget -->
-                        <div>
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="font-medium text-gray-700">Entertainment</span>
-                                <span class="text-sm text-gray-500">$75 / $150</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 50%"></div>
-                            </div>
-                        </div>
-                        
-                        <!-- Transportation Budget -->
-                        <div>
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="font-medium text-gray-700">Transportation</span>
-                                <span class="text-sm text-gray-500">$120 / $200</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 60%"></div>
-                            </div>
-                        </div>
-                        
-                        <!-- Dining Out Budget -->
-                        <div>
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="font-medium text-gray-700">Dining Out</span>
-                                <span class="text-sm text-gray-500">$90 / $120</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 75%"></div>
-                            </div>
+                    <div id="budget-progress-container" class="space-y-6">
+                        <!-- Budget items will be populated here -->
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-chart-pie text-3xl mb-3 opacity-40"></i>
+                            <p>No budgets set yet</p>
                         </div>
                     </div>
                     
@@ -500,61 +479,11 @@
                         <span class="text-sm text-gray-500">Last 7 days</span>
                     </div>
                     
-                    <div class="space-y-4">
-                        <!-- Transaction 1 -->
-                        <div class="transaction-item flex justify-between items-center p-3 rounded-lg border border-gray-100">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-shopping-basket text-green-600"></i>
-                                </div>
-                                <div>
-                                    <p class="font-semibold text-gray-800">Groceries</p>
-                                    <p class="text-gray-500 text-xs">Supermarket • Today</p>
-                                </div>
-                            </div>
-                            <span class="text-red-500 font-bold">-$85.30</span>
-                        </div>
-                        
-                        <!-- Transaction 2 -->
-                        <div class="transaction-item flex justify-between items-center p-3 rounded-lg border border-gray-100">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-gas-pump text-blue-600"></i>
-                                </div>
-                                <div>
-                                    <p class="font-semibold text-gray-800">Fuel</p>
-                                    <p class="text-gray-500 text-xs">Gas Station • Yesterday</p>
-                                </div>
-                            </div>
-                            <span class="text-red-500 font-bold">-$45.00</span>
-                        </div>
-                        
-                        <!-- Transaction 3 -->
-                        <div class="transaction-item flex justify-between items-center p-3 rounded-lg border border-gray-100">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-utensils text-purple-600"></i>
-                                </div>
-                                <div>
-                                    <p class="font-semibold text-gray-800">Dinner</p>
-                                    <p class="text-gray-500 text-xs">Restaurant • 2 days ago</p>
-                                </div>
-                            </div>
-                            <span class="text-red-500 font-bold">-$62.50</span>
-                        </div>
-                        
-                        <!-- Transaction 4 -->
-                        <div class="transaction-item flex justify-between items-center p-3 rounded-lg border border-gray-100">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-money-bill-wave text-green-600"></i>
-                                </div>
-                                <div>
-                                    <p class="font-semibold text-gray-800">Salary</p>
-                                    <p class="text-gray-500 text-xs">Employer • 3 days ago</p>
-                                </div>
-                            </div>
-                            <span class="text-green-500 font-bold">+$2,500</span>
+                    <div id="recent-transactions-container" class="space-y-4">
+                        <!-- Transactions will be populated here -->
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-exchange-alt text-3xl mb-3 opacity-40"></i>
+                            <p>No recent transactions</p>
                         </div>
                     </div>
                     
@@ -614,6 +543,22 @@
             'INR': { symbol: '₹', name: 'Indian Rupee', flag: 'IN' }
         };
 
+        // Sample data for the dashboard
+        let financialData = {
+            totalBalance: 0,
+            totalIncome: 0,
+            totalExpenses: 0,
+            savingsRate: 0,
+            budgets: [],
+            transactions: [],
+            lastMonthData: {
+                totalBalance: 0,
+                totalIncome: 0,
+                totalExpenses: 0,
+                savingsRate: 0
+            }
+        };
+
         // Initialize the page when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
             initializeDashboard();
@@ -627,10 +572,15 @@
             
             // Check if user is already signed in
             const userName = localStorage.getItem('userName');
-            const selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+            const selectedCurrency = localStorage.getItem('selectedCurrency') || 'PKR';
             
             if (userName) {
                 showMainApp(userName, selectedCurrency);
+                loadFinancialData();
+                updateDashboard();
+                
+                // Set up auto-update interval
+                setInterval(autoUpdateDashboard, 30000); // Update every 30 seconds
             }
         }
 
@@ -642,20 +592,24 @@
                 e.preventDefault();
                 
                 const userName = document.getElementById('signin-name').value.trim();
-                const selectedCurrency = document.querySelector('.currency-option.selected')?.getAttribute('data-currency') || 'USD';
+                const selectedCurrency = document.querySelector('.currency-option.selected')?.getAttribute('data-currency') || 'PKR';
                 
                 if (userName) {
                     localStorage.setItem('userName', userName);
                     localStorage.setItem('selectedCurrency', selectedCurrency);
                     
                     showMainApp(userName, selectedCurrency);
+                    loadFinancialData();
+                    updateDashboard();
                     showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
+                    
+                    // Set up auto-update interval
+                    setInterval(autoUpdateDashboard, 30000); // Update every 30 seconds
                 }
             });
             
-            // Set default currency in sign-in form
-            const defaultCurrency = localStorage.getItem('selectedCurrency') || 'USD';
-            document.querySelector(`.currency-option[data-currency="${defaultCurrency}"]`).classList.add('selected');
+            // Set default currency in sign-in form (PKR)
+            document.querySelector(`.currency-option[data-currency="PKR"]`).classList.add('selected');
         }
 
         function setupSidebar() {
@@ -694,6 +648,7 @@
                     if (userName) {
                         localStorage.setItem('selectedCurrency', currency);
                         updateCurrencyDisplay(currency);
+                        updateDashboard();
                         showNotification(`Display currency set to ${currencies[currency].name}`, 'success');
                     }
                 });
@@ -718,11 +673,186 @@
             // Update header currency display
             document.getElementById('current-currency').textContent = currency;
             document.getElementById('currency-symbol').textContent = currencyInfo.symbol;
+        }
+
+        function loadFinancialData() {
+            // Try to load data from localStorage
+            const storedData = localStorage.getItem('smartgrocer-financialData');
+            if (storedData) {
+                financialData = JSON.parse(storedData);
+            } else {
+                // Initialize with sample data if no data exists
+                initializeSampleData();
+            }
             
-            // Update financial overview with new currency
-            document.getElementById('total-balance').textContent = `${currencyInfo.symbol}5,430`;
-            document.getElementById('total-income').textContent = `${currencyInfo.symbol}8,250`;
-            document.getElementById('total-expenses').textContent = `${currencyInfo.symbol}2,820`;
+            // Load accounts data
+            const accountsData = localStorage.getItem('smartgrocer-accounts');
+            if (accountsData) {
+                const accounts = JSON.parse(accountsData);
+                updateFinancialDataFromAccounts(accounts);
+            }
+        }
+
+        function initializeSampleData() {
+            // Sample data in PKR
+            financialData = {
+                totalBalance: 154300,
+                totalIncome: 82500,
+                totalExpenses: 28200,
+                savingsRate: 65,
+                budgets: [
+                    { category: 'Groceries', spent: 320, limit: 400 },
+                    { category: 'Entertainment', spent: 75, limit: 150 },
+                    { category: 'Transportation', spent: 120, limit: 200 },
+                    { category: 'Dining Out', spent: 90, limit: 120 }
+                ],
+                transactions: [
+                    { description: 'Groceries', category: 'Supermarket', amount: -85.30, date: 'Today', type: 'expense' },
+                    { description: 'Fuel', category: 'Gas Station', amount: -45.00, date: 'Yesterday', type: 'expense' },
+                    { description: 'Dinner', category: 'Restaurant', amount: -62.50, date: '2 days ago', type: 'expense' },
+                    { description: 'Salary', category: 'Employer', amount: 2500, date: '3 days ago', type: 'income' }
+                ],
+                lastMonthData: {
+                    totalBalance: 138000,
+                    totalIncome: 78000,
+                    totalExpenses: 30000,
+                    savingsRate: 62
+                }
+            };
+            
+            saveFinancialData();
+        }
+
+        function updateFinancialDataFromAccounts(accounts) {
+            if (!accounts || accounts.length === 0) return;
+            
+            // Calculate total balance from accounts
+            let totalBalance = 0;
+            accounts.forEach(account => {
+                totalBalance += account.balance;
+            });
+            
+            financialData.totalBalance = totalBalance;
+            saveFinancialData();
+        }
+
+        function saveFinancialData() {
+            localStorage.setItem('smartgrocer-financialData', JSON.stringify(financialData));
+        }
+
+        function updateDashboard() {
+            const currency = localStorage.getItem('selectedCurrency') || 'PKR';
+            const currencyInfo = currencies[currency];
+            
+            // Update financial overview cards
+            document.getElementById('total-balance').textContent = 
+                `${currencyInfo.symbol}${financialData.totalBalance.toLocaleString()}`;
+            document.getElementById('total-income').textContent = 
+                `${currencyInfo.symbol}${financialData.totalIncome.toLocaleString()}`;
+            document.getElementById('total-expenses').textContent = 
+                `${currencyInfo.symbol}${financialData.totalExpenses.toLocaleString()}`;
+            document.getElementById('savings-rate').textContent = 
+                `${financialData.savingsRate}%`;
+            
+            // Calculate and display percentage changes
+            const balanceChange = calculatePercentageChange(financialData.totalBalance, financialData.lastMonthData.totalBalance);
+            const incomeChange = calculatePercentageChange(financialData.totalIncome, financialData.lastMonthData.totalIncome);
+            const expensesChange = calculatePercentageChange(financialData.totalExpenses, financialData.lastMonthData.totalExpenses);
+            const savingsChange = calculatePercentageChange(financialData.savingsRate, financialData.lastMonthData.savingsRate);
+            
+            document.getElementById('balance-change').textContent = `${balanceChange}%`;
+            document.getElementById('income-change').textContent = `${incomeChange}%`;
+            document.getElementById('expenses-change').textContent = `${expensesChange}%`;
+            document.getElementById('savings-change').textContent = `${savingsChange}%`;
+            
+            // Update budget progress
+            updateBudgetProgress();
+            
+            // Update recent transactions
+            updateRecentTransactions();
+        }
+
+        function calculatePercentageChange(current, previous) {
+            if (previous === 0) return 0;
+            return Math.round(((current - previous) / previous) * 100);
+        }
+
+        function updateBudgetProgress() {
+            const budgetContainer = document.getElementById('budget-progress-container');
+            
+            if (!financialData.budgets || financialData.budgets.length === 0) {
+                budgetContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-chart-pie text-3xl mb-3 opacity-40"></i>
+                        <p>No budgets set yet</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const currency = localStorage.getItem('selectedCurrency') || 'PKR';
+            const currencyInfo = currencies[currency];
+            
+            budgetContainer.innerHTML = financialData.budgets.map(budget => {
+                const percentage = Math.min((budget.spent / budget.limit) * 100, 100);
+                return `
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-medium text-gray-700">${budget.category}</span>
+                            <span class="text-sm text-gray-500">${currencyInfo.symbol}${budget.spent} / ${currencyInfo.symbol}${budget.limit}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateRecentTransactions() {
+            const transactionsContainer = document.getElementById('recent-transactions-container');
+            
+            if (!financialData.transactions || financialData.transactions.length === 0) {
+                transactionsContainer.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-exchange-alt text-3xl mb-3 opacity-40"></i>
+                        <p>No recent transactions</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const currency = localStorage.getItem('selectedCurrency') || 'PKR';
+            const currencyInfo = currencies[currency];
+            
+            transactionsContainer.innerHTML = financialData.transactions.map(transaction => {
+                const isExpense = transaction.amount < 0;
+                const amountClass = isExpense ? 'text-red-500' : 'text-green-500';
+                const amountSign = isExpense ? '-' : '+';
+                const absoluteAmount = Math.abs(transaction.amount);
+                
+                const iconClass = {
+                    'Groceries': 'fas fa-shopping-basket text-green-600 bg-green-100',
+                    'Fuel': 'fas fa-gas-pump text-blue-600 bg-blue-100',
+                    'Dinner': 'fas fa-utensils text-purple-600 bg-purple-100',
+                    'Salary': 'fas fa-money-bill-wave text-green-600 bg-green-100'
+                }[transaction.description] || 'fas fa-money-bill-wave text-gray-600 bg-gray-100';
+                
+                return `
+                    <div class="transaction-item flex justify-between items-center p-3 rounded-lg border border-gray-100">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 ${iconClass.split(' ').slice(2).join(' ')} rounded-full flex items-center justify-center">
+                                <i class="${iconClass.split(' ').slice(0, 2).join(' ')}"></i>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-800">${transaction.description}</p>
+                                <p class="text-gray-500 text-xs">${transaction.category} • ${transaction.date}</p>
+                            </div>
+                        </div>
+                        <span class="${amountClass} font-bold">${amountSign}${currencyInfo.symbol}${absoluteAmount.toFixed(2)}</span>
+                    </div>
+                `;
+            }).join('');
         }
 
         function initializeSpendingChart() {
@@ -764,6 +894,24 @@
                     }
                 }
             });
+        }
+
+        function autoUpdateDashboard() {
+            // Simulate data updates
+            const updateIndicator = document.getElementById('auto-update-indicator');
+            updateIndicator.classList.add('animate-pulse');
+            
+            // In a real app, this would fetch updated data from a server or other pages
+            setTimeout(() => {
+                // Reload data from localStorage to get updates from other pages
+                loadFinancialData();
+                updateDashboard();
+                updateIndicator.classList.remove('animate-pulse');
+                
+                // Show a subtle notification that data was updated
+                const now = new Date();
+                showNotification(`Dashboard updated at ${now.toLocaleTimeString()}`, 'info');
+            }, 1000);
         }
 
         function showNotification(message, type = 'info') {
