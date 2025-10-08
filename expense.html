@@ -205,7 +205,7 @@
             <!-- Currency Selection Section -->
             <div class="card p-6 mb-8">
                 <h3 class="text-xl font-bold text-gray-800 mb-4">Select Display Currency</h3>
-                <p class="text-gray-600 mb-4">Choose your preferred currency for displaying expenses. No conversion will be applied.</p>
+                <p class="text-gray-600 mb-4">Choose your preferred currency for displaying expenses.</p>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="currency-option" data-currency="USD">
                         <div class="currency-flag bg-blue-600">US</div>
@@ -237,7 +237,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-600 text-sm font-medium">Today's Expenses</p>
-                            <h3 class="text-2xl font-bold text-gray-800" id="today-expenses">$0.00</h3>
+                            <h3 class="text-2xl font-bold text-gray-800" id="today-expenses">₨0</h3>
                         </div>
                         <i class="fas fa-calendar-day text-2xl text-red-500"></i>
                     </div>
@@ -247,7 +247,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-600 text-sm font-medium">This Week</p>
-                            <h3 class="text-2xl font-bold text-gray-800" id="week-expenses">$0.00</h3>
+                            <h3 class="text-2xl font-bold text-gray-800" id="week-expenses">₨0</h3>
                         </div>
                         <i class="fas fa-calendar-week text-2xl text-orange-500"></i>
                     </div>
@@ -257,7 +257,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-600 text-sm font-medium">This Month</p>
-                            <h3 class="text-2xl font-bold text-gray-800" id="month-expenses">$0.00</h3>
+                            <h3 class="text-2xl font-bold text-gray-800" id="month-expenses">₨0</h3>
                         </div>
                         <i class="fas fa-calendar-alt text-2xl text-purple-500"></i>
                     </div>
@@ -267,7 +267,7 @@
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-600 text-sm font-medium">Total Expenses</p>
-                            <h3 class="text-2xl font-bold text-gray-800" id="total-expenses">$0.00</h3>
+                            <h3 class="text-2xl font-bold text-gray-800" id="total-expenses">₨0</h3>
                         </div>
                         <i class="fas fa-chart-line text-2xl text-blue-500"></i>
                     </div>
@@ -276,7 +276,7 @@
 
             <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
                 <!-- Expense Trends Chart -->
-                <div class="bg-white rounded-2xl shadow-lg p-6">
+                <div class="card p-6">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-xl font-bold text-gray-800">Spending Trends</h3>
                         <select id="chart-period" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20">
@@ -291,13 +291,16 @@
                 </div>
 
                 <!-- Category Breakdown -->
-                <div class="bg-white rounded-2xl shadow-lg p-6">
+                <div class="card p-6">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-xl font-bold text-gray-800">Category Breakdown</h3>
                         <span class="text-sm text-gray-500">This Month</span>
                     </div>
                     <div class="space-y-4" id="category-breakdown">
-                        <!-- Categories will be populated here -->
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-chart-pie text-3xl mb-3 opacity-40"></i>
+                            <p>No expenses recorded</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -318,9 +321,9 @@
                         <i class="fas fa-chart-bar text-blue-600 text-2xl mb-2 group-hover:text-blue-700"></i>
                         <p class="font-semibold text-blue-800 text-sm">Spending Report</p>
                     </a>
-                    <a href="accounts.html" class="bg-purple-50 border border-purple-200 rounded-xl p-4 text-center hover:bg-purple-100 transition-colors group">
-                        <i class="fas fa-wallet text-purple-600 text-2xl mb-2 group-hover:text-purple-700"></i>
-                        <p class="font-semibold text-purple-800 text-sm">Accounts</p>
+                    <a href="index.html" class="bg-purple-50 border border-purple-200 rounded-xl p-4 text-center hover:bg-purple-100 transition-colors group">
+                        <i class="fas fa-home text-purple-600 text-2xl mb-2 group-hover:text-purple-700"></i>
+                        <p class="font-semibold text-purple-800 text-sm">Dashboard</p>
                     </a>
                 </div>
             </div>
@@ -419,15 +422,15 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
                     <div class="relative">
-                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" id="modal-currency-symbol">$</span>
+                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" id="modal-currency-symbol">₨</span>
                         <input type="number" id="expense-amount" step="0.01" min="0.01" placeholder="0.00" class="w-full border border-gray-300 rounded-lg pl-8 pr-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
                     </div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Currency</label>
                     <select id="expense-currency" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
-                        <option value="USD">US Dollar (USD)</option>
                         <option value="PKR">Pakistani Rupee (PKR)</option>
+                        <option value="USD">US Dollar (USD)</option>
                         <option value="INR">Indian Rupee (INR)</option>
                     </select>
                 </div>
@@ -448,9 +451,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Account</label>
-                    <select id="expense-account" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
-                        <option value="">Select Account</option>
-                    </select>
+                    <input type="text" id="expense-account" placeholder="Account name (e.g., Cash, Bank)" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
@@ -474,482 +475,485 @@
     </button>
 
     <script>
-        // Currency configuration
-        const currencies = {
-            'USD': { symbol: '$', name: 'US Dollar', flag: 'US' },
-            'PKR': { symbol: '₨', name: 'Pakistani Rupee', flag: 'PK' },
-            'INR': { symbol: '₹', name: 'Indian Rupee', flag: 'IN' }
-        };
-
-        // Initialize the page when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeExpensesPage();
-        });
-
-        let expenseChart = null;
-        let selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
-        let expenses = JSON.parse(localStorage.getItem('smartgrocer-expenses')) || [];
-
-        function initializeExpensesPage() {
-            setupSidebar();
-            setupEventListeners();
-            setupCurrencySelection();
-            updateAccountDropdowns();
-            renderExpenseTable();
-            updateExpenseOverview();
-            initializeExpenseChart();
-            updateCategoryBreakdown();
-        }
-
-        function setupSidebar() {
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const sidebar = document.getElementById('sidebar');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
-            
-            if (mobileMenuButton) {
-                mobileMenuButton.addEventListener('click', function() {
-                    sidebar.classList.toggle('-translate-x-full');
-                    sidebarOverlay.classList.toggle('hidden');
-                });
+        // SmartGrocer Data Manager Integration
+        class ExpenseManager {
+            constructor() {
+                this.dataManager = window.smartGrocerData;
+                this.selectedCurrency = localStorage.getItem('selectedCurrency') || 'PKR';
+                this.expenseChart = null;
+                this.init();
             }
-            
-            if (sidebarOverlay) {
-                sidebarOverlay.addEventListener('click', function() {
-                    sidebar.classList.add('-translate-x-full');
-                    sidebarOverlay.classList.add('hidden');
-                });
-            }
-        }
 
-        function setupCurrencySelection() {
-            const currencyOptions = document.querySelectorAll('.currency-option');
-            
-            // Initialize currency display
-            updateCurrencyDisplay(selectedCurrency);
-            
-            currencyOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    const currency = this.getAttribute('data-currency');
-                    selectedCurrency = currency;
-                    localStorage.setItem('selectedCurrency', currency);
-                    
-                    // Update UI
-                    updateCurrencyDisplay(currency);
-                    
-                    // Update selected state
-                    currencyOptions.forEach(opt => opt.classList.remove('selected'));
-                    this.classList.add('selected');
-                    
-                    showNotification(`Display currency set to ${currencies[currency].name}`, 'success');
+            init() {
+                this.setupEventListeners();
+                this.setupCurrencySelection();
+                this.checkUserAuth();
+                this.updateExpenseDisplay();
+            }
+
+            setupEventListeners() {
+                // Listen for data updates
+                window.addEventListener('smartgrocer-data-update', (event) => {
+                    this.updateExpenseDisplay();
                 });
+
+                // Mobile menu
+                const mobileMenuButton = document.getElementById('mobile-menu-button');
+                const sidebar = document.getElementById('sidebar');
+                const sidebarOverlay = document.getElementById('sidebar-overlay');
                 
-                // Set initial selected state
-                if (option.getAttribute('data-currency') === selectedCurrency) {
-                    option.classList.add('selected');
+                if (mobileMenuButton) {
+                    mobileMenuButton.addEventListener('click', function() {
+                        sidebar.classList.toggle('-translate-x-full');
+                        sidebarOverlay.classList.toggle('hidden');
+                    });
                 }
-            });
-        }
-
-        function setupEventListeners() {
-            // Quick add expense buttons
-            document.getElementById('quick-add-expense')?.addEventListener('click', openAddExpenseModal);
-            document.getElementById('add-first-expense')?.addEventListener('click', openAddExpenseModal);
-            document.getElementById('fab-add-expense')?.addEventListener('click', openAddExpenseModal);
-
-            // Modal controls
-            document.getElementById('close-expense-modal')?.addEventListener('click', closeAddExpenseModal);
-            document.getElementById('cancel-expense')?.addEventListener('click', closeAddExpenseModal);
-            document.getElementById('add-expense-form')?.addEventListener('submit', addNewExpense);
-
-            // Currency change in modal
-            document.getElementById('expense-currency')?.addEventListener('change', function() {
-                const currency = this.value;
-                document.getElementById('modal-currency-symbol').textContent = currencies[currency].symbol;
-            });
-
-            // Filters and search
-            document.getElementById('category-filter')?.addEventListener('change', renderExpenseTable);
-            document.getElementById('currency-filter')?.addEventListener('change', renderExpenseTable);
-            document.getElementById('time-filter')?.addEventListener('change', renderExpenseTable);
-            document.getElementById('search-expenses')?.addEventListener('input', renderExpenseTable);
-            document.getElementById('clear-filters')?.addEventListener('click', clearFilters);
-            document.getElementById('chart-period')?.addEventListener('change', updateExpenseChart);
-        }
-
-        function openAddExpenseModal() {
-            const modal = document.getElementById('add-expense-modal');
-            document.getElementById('expense-date').valueAsDate = new Date();
-            updateAccountDropdowns();
-            modal.classList.remove('hidden');
-        }
-
-        function closeAddExpenseModal() {
-            const modal = document.getElementById('add-expense-modal');
-            modal.classList.add('hidden');
-            document.getElementById('add-expense-form').reset();
-            // Reset modal currency symbol
-            document.getElementById('modal-currency-symbol').textContent = currencies['USD'].symbol;
-            document.getElementById('expense-currency').value = 'USD';
-        }
-
-        function updateAccountDropdowns() {
-            const accountSelect = document.getElementById('expense-account');
-            if (accountSelect) {
-                accountSelect.innerHTML = '<option value="">Select Account</option>';
-                // Add account options - this would come from your accounts data
-                const sampleAccounts = [
-                    { id: '1', name: 'Checking Account', currency: 'USD' },
-                    { id: '2', name: 'Savings Account', currency: 'USD' },
-                    { id: '3', name: 'Credit Card', currency: 'USD' },
-                    { id: '4', name: 'Cash', currency: 'USD' },
-                    { id: '5', name: 'PKR Savings', currency: 'PKR' },
-                    { id: '6', name: 'INR Account', currency: 'INR' }
-                ];
                 
-                sampleAccounts.forEach(account => {
-                    const option = document.createElement('option');
-                    option.value = account.id;
-                    option.textContent = `${account.name} (${account.currency})`;
-                    accountSelect.appendChild(option);
+                if (sidebarOverlay) {
+                    sidebarOverlay.addEventListener('click', function() {
+                        sidebar.classList.add('-translate-x-full');
+                        sidebarOverlay.classList.add('hidden');
+                    });
+                }
+
+                // Quick add expense buttons
+                document.getElementById('quick-add-expense')?.addEventListener('click', () => this.openAddExpenseModal());
+                document.getElementById('add-first-expense')?.addEventListener('click', () => this.openAddExpenseModal());
+                document.getElementById('fab-add-expense')?.addEventListener('click', () => this.openAddExpenseModal());
+
+                // Modal controls
+                document.getElementById('close-expense-modal')?.addEventListener('click', () => this.closeAddExpenseModal());
+                document.getElementById('cancel-expense')?.addEventListener('click', () => this.closeAddExpenseModal());
+                document.getElementById('add-expense-form')?.addEventListener('submit', (e) => this.addNewExpense(e));
+
+                // Currency change in modal
+                document.getElementById('expense-currency')?.addEventListener('change', (e) => {
+                    const currency = e.target.value;
+                    const symbol = this.dataManager.currencies[currency]?.symbol || '₨';
+                    document.getElementById('modal-currency-symbol').textContent = symbol;
+                });
+
+                // Filters and search
+                document.getElementById('category-filter')?.addEventListener('change', () => this.renderExpenseTable());
+                document.getElementById('currency-filter')?.addEventListener('change', () => this.renderExpenseTable());
+                document.getElementById('time-filter')?.addEventListener('change', () => this.renderExpenseTable());
+                document.getElementById('search-expenses')?.addEventListener('input', () => this.renderExpenseTable());
+                document.getElementById('clear-filters')?.addEventListener('click', () => this.clearFilters());
+            }
+
+            setupCurrencySelection() {
+                const currencyOptions = document.querySelectorAll('.currency-option');
+                
+                currencyOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const currency = option.getAttribute('data-currency');
+                        this.selectedCurrency = currency;
+                        localStorage.setItem('selectedCurrency', currency);
+                        this.dataManager.setCurrency(currency);
+                        
+                        currencyOptions.forEach(opt => opt.classList.remove('selected'));
+                        option.classList.add('selected');
+                        
+                        this.showNotification(`Display currency set to ${this.dataManager.currencies[currency].name}`, 'success');
+                    });
+                    
+                    if (option.getAttribute('data-currency') === this.selectedCurrency) {
+                        option.classList.add('selected');
+                    }
                 });
             }
-        }
 
-        function addNewExpense(e) {
-            e.preventDefault();
-            
-            const description = document.getElementById('expense-description').value.trim();
-            const amount = parseFloat(document.getElementById('expense-amount').value);
-            const currency = document.getElementById('expense-currency').value;
-            const category = document.getElementById('expense-category').value;
-            const accountId = document.getElementById('expense-account').value;
-            const date = document.getElementById('expense-date').value;
-
-            // Basic validation
-            if (!description || !amount || amount <= 0 || !accountId || !date) {
-                showNotification('Please fill all fields correctly', 'error');
-                return;
+            checkUserAuth() {
+                const userName = localStorage.getItem('smartgrocer-currentUser');
+                if (userName) {
+                    document.getElementById('welcome-user-text').textContent = `Welcome, ${userName}!`;
+                    document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
+                }
             }
 
-            // Create new expense
-            const newExpense = {
-                id: generateId(),
-                description,
-                amount,
-                currency,
-                category,
-                accountId,
-                date,
-                createdAt: new Date().toISOString()
-            };
-
-            expenses.push(newExpense);
-            saveExpenses();
-            
-            showNotification('Expense added successfully!', 'success');
-            closeAddExpenseModal();
-            renderExpenseTable();
-            updateExpenseOverview();
-            updateExpenseChart();
-            updateCategoryBreakdown();
-        }
-
-        function renderExpenseTable() {
-            const tableBody = document.getElementById('expense-table-body');
-            const noExpensesMessage = document.getElementById('no-expenses-message');
-            
-            // Filter expenses by selected currency
-            const currencyFilter = document.getElementById('currency-filter').value;
-            const filteredExpenses = expenses.filter(expense => 
-                !currencyFilter || expense.currency === currencyFilter
-            );
-
-            if (filteredExpenses.length === 0) {
-                tableBody.innerHTML = '';
-                noExpensesMessage.classList.remove('hidden');
-                return;
+            updateExpenseDisplay() {
+                this.updateExpenseOverview();
+                this.renderExpenseTable();
+                this.updateCategoryBreakdown();
+                this.updateExpenseChart();
             }
 
-            noExpensesMessage.classList.add('hidden');
-            
-            tableBody.innerHTML = filteredExpenses.map(expense => {
-                const currencyInfo = currencies[expense.currency];
-                const account = getAccountName(expense.accountId);
+            updateExpenseOverview() {
+                const transactions = this.dataManager.getTransactions();
+                const currencyInfo = this.dataManager.currencies[this.selectedCurrency];
                 
-                return `
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        <td class="py-3 px-4 text-gray-700 text-sm">${formatDate(expense.date)}</td>
-                        <td class="py-3 px-4">
-                            <div class="flex items-center space-x-2">
-                                <i class="${getExpenseIcon(expense.category)} text-gray-400"></i>
-                                <span class="font-medium">${expense.description}</span>
-                            </div>
-                        </td>
-                        <td class="py-3 px-4">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getCategoryColor(expense.category)}">
-                                ${expense.category}
-                            </span>
-                        </td>
-                        <td class="py-3 px-4 text-gray-600 text-sm">${account}</td>
-                        <td class="py-3 px-4">
-                            <span class="currency-badge">${expense.currency}</span>
-                        </td>
-                        <td class="py-3 px-4 text-right font-semibold text-red-600">
-                            -${currencyInfo.symbol}${expense.amount.toFixed(2)}
-                        </td>
-                        <td class="py-3 px-4 text-center">
-                            <button class="text-blue-600 hover:text-blue-800 transition-colors mr-3">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="text-red-600 hover:text-red-800 transition-colors" onclick="deleteExpense('${expense.id}')">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
+                // Filter expenses in selected currency
+                const currencyExpenses = transactions.filter(t => 
+                    t.type === 'expense' && t.currency === this.selectedCurrency
+                );
+                
+                const today = new Date().toDateString();
+                const todayExpenses = currencyExpenses
+                    .filter(expense => new Date(expense.date).toDateString() === today)
+                    .reduce((total, expense) => total + Math.abs(expense.amount), 0);
+                
+                const weekExpenses = currencyExpenses
+                    .filter(expense => this.isThisWeek(new Date(expense.date)))
+                    .reduce((total, expense) => total + Math.abs(expense.amount), 0);
+                
+                const monthExpenses = currencyExpenses
+                    .filter(expense => this.isThisMonth(new Date(expense.date)))
+                    .reduce((total, expense) => total + Math.abs(expense.amount), 0);
+                
+                const totalExpenses = currencyExpenses
+                    .reduce((total, expense) => total + Math.abs(expense.amount), 0);
 
-        function deleteExpense(expenseId) {
-            if (confirm('Are you sure you want to delete this expense?')) {
-                expenses = expenses.filter(expense => expense.id !== expenseId);
-                saveExpenses();
-                renderExpenseTable();
-                updateExpenseOverview();
-                updateExpenseChart();
-                updateCategoryBreakdown();
-                showNotification('Expense deleted successfully', 'success');
+                document.getElementById('today-expenses').textContent = `${currencyInfo.symbol}${todayExpenses.toLocaleString()}`;
+                document.getElementById('week-expenses').textContent = `${currencyInfo.symbol}${weekExpenses.toLocaleString()}`;
+                document.getElementById('month-expenses').textContent = `${currencyInfo.symbol}${monthExpenses.toLocaleString()}`;
+                document.getElementById('total-expenses').textContent = `${currencyInfo.symbol}${totalExpenses.toLocaleString()}`;
             }
-        }
 
-        function updateExpenseOverview() {
-            const selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
-            const currencyInfo = currencies[selectedCurrency];
-            
-            // Calculate expenses in selected currency
-            const currencyExpenses = expenses.filter(expense => expense.currency === selectedCurrency);
-            
-            const today = new Date().toDateString();
-            const todayExpenses = currencyExpenses
-                .filter(expense => new Date(expense.date).toDateString() === today)
-                .reduce((total, expense) => total + expense.amount, 0);
-            
-            const weekExpenses = currencyExpenses
-                .filter(expense => isThisWeek(new Date(expense.date)))
-                .reduce((total, expense) => total + expense.amount, 0);
-            
-            const monthExpenses = currencyExpenses
-                .filter(expense => isThisMonth(new Date(expense.date)))
-                .reduce((total, expense) => total + expense.amount, 0);
-            
-            const totalExpenses = currencyExpenses
-                .reduce((total, expense) => total + expense.amount, 0);
+            renderExpenseTable() {
+                const tableBody = document.getElementById('expense-table-body');
+                const noExpensesMessage = document.getElementById('no-expenses-message');
+                const transactions = this.dataManager.getTransactions();
+                
+                // Filter expenses only
+                const expenses = transactions.filter(t => t.type === 'expense');
+                
+                // Apply filters
+                const currencyFilter = document.getElementById('currency-filter').value;
+                const filteredExpenses = expenses.filter(expense => 
+                    !currencyFilter || expense.currency === currencyFilter
+                );
 
-            document.getElementById('today-expenses').textContent = `${currencyInfo.symbol}${todayExpenses.toFixed(2)}`;
-            document.getElementById('week-expenses').textContent = `${currencyInfo.symbol}${weekExpenses.toFixed(2)}`;
-            document.getElementById('month-expenses').textContent = `${currencyInfo.symbol}${monthExpenses.toFixed(2)}`;
-            document.getElementById('total-expenses').textContent = `${currencyInfo.symbol}${totalExpenses.toFixed(2)}`;
-        }
+                if (filteredExpenses.length === 0) {
+                    tableBody.innerHTML = '';
+                    noExpensesMessage.classList.remove('hidden');
+                    return;
+                }
 
-        function clearFilters() {
-            document.getElementById('category-filter').value = '';
-            document.getElementById('currency-filter').value = '';
-            document.getElementById('time-filter').value = 'all';
-            document.getElementById('search-expenses').value = '';
-            renderExpenseTable();
-        }
+                noExpensesMessage.classList.add('hidden');
+                
+                tableBody.innerHTML = filteredExpenses.map(expense => {
+                    const currencyInfo = this.dataManager.currencies[expense.currency];
+                    
+                    return `
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="py-3 px-4 text-gray-700 text-sm">${this.formatDate(expense.date)}</td>
+                            <td class="py-3 px-4">
+                                <div class="flex items-center space-x-2">
+                                    <i class="${this.getExpenseIcon(expense.category)} text-gray-400"></i>
+                                    <span class="font-medium">${expense.description}</span>
+                                </div>
+                            </td>
+                            <td class="py-3 px-4">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${this.getCategoryColor(expense.category)}">
+                                    ${expense.category}
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 text-gray-600 text-sm">${expense.account}</td>
+                            <td class="py-3 px-4">
+                                <span class="currency-badge">${expense.currency}</span>
+                            </td>
+                            <td class="py-3 px-4 text-right font-semibold text-red-600">
+                                -${currencyInfo.symbol}${Math.abs(expense.amount).toLocaleString()}
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <button class="text-red-600 hover:text-red-800 transition-colors" onclick="expenseManager.deleteExpense('${expense.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
 
-        function initializeExpenseChart() {
-            const ctx = document.getElementById('expenseChart').getContext('2d');
-            expenseChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                    datasets: [{
-                        label: 'Expenses',
-                        data: [850, 920, 780, 1100, 950, 1200],
-                        borderColor: '#EF4444',
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
+            updateCategoryBreakdown() {
+                const container = document.getElementById('category-breakdown');
+                const transactions = this.dataManager.getTransactions();
+                
+                // Filter expenses by selected currency and current month
+                const currentMonthExpenses = transactions.filter(expense => 
+                    expense.type === 'expense' &&
+                    expense.currency === this.selectedCurrency && 
+                    this.isThisMonth(new Date(expense.date))
+                );
+                
+                // Calculate category totals
+                const categoryTotals = {};
+                currentMonthExpenses.forEach(expense => {
+                    if (!categoryTotals[expense.category]) {
+                        categoryTotals[expense.category] = 0;
+                    }
+                    categoryTotals[expense.category] += Math.abs(expense.amount);
+                });
+                
+                const totalAmount = Object.values(categoryTotals).reduce((sum, amount) => sum + amount, 0);
+                
+                if (Object.keys(categoryTotals).length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-chart-pie text-3xl mb-3 opacity-40"></i>
+                            <p>No expenses recorded</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = Object.entries(categoryTotals).map(([category, amount]) => {
+                    const percentage = totalAmount > 0 ? (amount / totalAmount) * 100 : 0;
+                    const currencySymbol = this.dataManager.currencies[this.selectedCurrency].symbol;
+                    
+                    return `
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                                    <i class="${this.getExpenseIcon(category)} text-gray-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800 text-sm">${category}</p>
+                                    <p class="text-gray-500 text-xs">${currencySymbol}${amount.toLocaleString()}</p>
+                                </div>
+                            </div>
+                            <div class="w-24 bg-gray-200 rounded-full h-2">
+                                <div class="h-2 rounded-full ${this.getCategoryColor(category, true)}" style="width: ${percentage}%"></div>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700 w-8 text-right">${percentage.toFixed(0)}%</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            updateExpenseChart() {
+                const ctx = document.getElementById('expenseChart');
+                if (!ctx) return;
+
+                const transactions = this.dataManager.getTransactions();
+                const currentDate = new Date();
+                const months = [];
+                const expenseData = [];
+
+                // Last 6 months data for selected currency
+                for (let i = 5; i >= 0; i--) {
+                    const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+                    const monthName = date.toLocaleString('default', { month: 'short' });
+                    months.push(monthName);
+
+                    const monthExpenses = transactions
+                        .filter(t => {
+                            try {
+                                const transactionDate = new Date(t.date);
+                                return t.type === 'expense' &&
+                                       t.currency === this.selectedCurrency &&
+                                       transactionDate.getMonth() === date.getMonth() &&
+                                       transactionDate.getFullYear() === date.getFullYear();
+                            } catch (error) {
+                                return false;
+                            }
+                        })
+                        .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
+
+                    expenseData.push(monthExpenses);
+                }
+
+                if (this.expenseChart) {
+                    this.expenseChart.destroy();
+                }
+
+                const currencySymbol = this.dataManager.currencies[this.selectedCurrency].symbol;
+
+                this.expenseChart = new Chart(ctx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: months,
+                        datasets: [{
+                            label: 'Expenses',
+                            data: expenseData,
+                            borderColor: '#EF4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.1)'
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => {
+                                        return `Expenses: ${currencySymbol}${context.raw.toLocaleString()}`;
+                                    }
+                                }
                             }
                         },
-                        x: {
-                            grid: {
-                                display: false
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    callback: (value) => `${currencySymbol}${value.toLocaleString()}`
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
                             }
                         }
                     }
-                }
-            });
-        }
+                });
+            }
 
-        function updateExpenseChart() {
-            // Update chart based on selected period
-            if (expenseChart) {
-                // Add chart update logic here
+            openAddExpenseModal() {
+                const modal = document.getElementById('add-expense-modal');
+                document.getElementById('expense-date').valueAsDate = new Date();
+                document.getElementById('expense-currency').value = this.selectedCurrency;
+                const symbol = this.dataManager.currencies[this.selectedCurrency]?.symbol || '₨';
+                document.getElementById('modal-currency-symbol').textContent = symbol;
+                modal.classList.remove('hidden');
+            }
+
+            closeAddExpenseModal() {
+                const modal = document.getElementById('add-expense-modal');
+                modal.classList.add('hidden');
+                document.getElementById('add-expense-form').reset();
+            }
+
+            addNewExpense(e) {
+                e.preventDefault();
+                
+                const description = document.getElementById('expense-description').value.trim();
+                const amount = parseFloat(document.getElementById('expense-amount').value);
+                const currency = document.getElementById('expense-currency').value;
+                const category = document.getElementById('expense-category').value;
+                const account = document.getElementById('expense-account').value.trim();
+                const date = document.getElementById('expense-date').value;
+
+                if (!description || !amount || amount <= 0 || !account || !date) {
+                    this.showNotification('Please fill all fields correctly', 'error');
+                    return;
+                }
+
+                const newExpense = {
+                    type: 'expense',
+                    description,
+                    amount: -Math.abs(amount), // Ensure negative for expenses
+                    currency,
+                    category,
+                    account,
+                    date,
+                    createdAt: new Date().toISOString()
+                };
+
+                this.dataManager.addTransaction(newExpense);
+                this.showNotification('Expense added successfully!', 'success');
+                this.closeAddExpenseModal();
+            }
+
+            deleteExpense(expenseId) {
+                if (confirm('Are you sure you want to delete this expense?')) {
+                    this.dataManager.deleteTransaction(expenseId);
+                    this.showNotification('Expense deleted successfully', 'success');
+                }
+            }
+
+            clearFilters() {
+                document.getElementById('category-filter').value = '';
+                document.getElementById('currency-filter').value = '';
+                document.getElementById('time-filter').value = 'all';
+                document.getElementById('search-expenses').value = '';
+                this.renderExpenseTable();
+            }
+
+            // Utility functions
+            getExpenseIcon(category) {
+                const icons = {
+                    'Food & Dining': 'fas fa-utensils',
+                    'Transportation': 'fas fa-car',
+                    'Shopping': 'fas fa-shopping-bag',
+                    'Entertainment': 'fas fa-film',
+                    'Bills & Utilities': 'fas fa-file-invoice-dollar',
+                    'Healthcare': 'fas fa-heartbeat',
+                    'Education': 'fas fa-graduation-cap',
+                    'Travel': 'fas fa-plane',
+                    'Personal Care': 'fas fa-spa',
+                    'Other': 'fas fa-receipt'
+                };
+                return icons[category] || icons.Other;
+            }
+
+            getCategoryColor(category, isProgress = false) {
+                const colors = {
+                    'Food & Dining': isProgress ? 'bg-red-500' : 'bg-red-100 text-red-800',
+                    'Transportation': isProgress ? 'bg-orange-500' : 'bg-orange-100 text-orange-800',
+                    'Shopping': isProgress ? 'bg-blue-500' : 'bg-blue-100 text-blue-800',
+                    'Entertainment': isProgress ? 'bg-purple-500' : 'bg-purple-100 text-purple-800',
+                    'Bills & Utilities': isProgress ? 'bg-green-500' : 'bg-green-100 text-green-800',
+                    'Healthcare': isProgress ? 'bg-pink-500' : 'bg-pink-100 text-pink-800',
+                    'Education': isProgress ? 'bg-indigo-500' : 'bg-indigo-100 text-indigo-800',
+                    'Travel': isProgress ? 'bg-yellow-500' : 'bg-yellow-100 text-yellow-800',
+                    'Personal Care': isProgress ? 'bg-teal-500' : 'bg-teal-100 text-teal-800'
+                };
+                return colors[category] || (isProgress ? 'bg-gray-500' : 'bg-gray-100 text-gray-800');
+            }
+
+            formatDate(dateString) {
+                return new Date(dateString).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            }
+
+            isThisWeek(date) {
+                const today = new Date();
+                const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
+                const endOfWeek = new Date(today.setDate(today.getDate() + 6));
+                return date >= startOfWeek && date <= endOfWeek;
+            }
+
+            isThisMonth(date) {
+                const today = new Date();
+                return date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
+            }
+
+            showNotification(message, type = 'info') {
+                const notification = document.getElementById('notification');
+                const bgColor = type === 'success' ? 'bg-green-500' :
+                               type === 'error' ? 'bg-red-500' :
+                               'bg-blue-500';
+                
+                notification.innerHTML = `
+                    <div class="${bgColor} text-white p-4 rounded-lg flex items-center justify-between">
+                        <div class="flex items-center">
+                            <i class="fas ${type === 'success' ? 'fa-check-circle' : 
+                                         type === 'error' ? 'fa-exclamation-circle' : 
+                                         'fa-info-circle'} mr-3"></i>
+                            <span>${message}</span>
+                        </div>
+                        <button onclick="this.parentElement.parentElement.classList.add('hidden')" class="ml-4 text-white hover:text-gray-200">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                
+                notification.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    notification.classList.add('hidden');
+                }, 3000);
             }
         }
 
-        function updateCategoryBreakdown() {
-            const container = document.getElementById('category-breakdown');
-            const selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
-            
-            // Filter expenses by selected currency and current month
-            const currentMonthExpenses = expenses.filter(expense => 
-                expense.currency === selectedCurrency && 
-                isThisMonth(new Date(expense.date))
-            );
-            
-            // Calculate category totals
-            const categoryTotals = {};
-            currentMonthExpenses.forEach(expense => {
-                if (!categoryTotals[expense.category]) {
-                    categoryTotals[expense.category] = 0;
-                }
-                categoryTotals[expense.category] += expense.amount;
-            });
-            
-            const totalAmount = Object.values(categoryTotals).reduce((sum, amount) => sum + amount, 0);
-            
-            container.innerHTML = Object.entries(categoryTotals).map(([category, amount]) => {
-                const percentage = totalAmount > 0 ? (amount / totalAmount) * 100 : 0;
-                
-                return `
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
-                                <i class="${getExpenseIcon(category)} text-gray-600 text-sm"></i>
-                            </div>
-                            <div>
-                                <p class="font-medium text-gray-800 text-sm">${category}</p>
-                                <p class="text-gray-500 text-xs">${currencies[selectedCurrency].symbol}${amount.toFixed(2)}</p>
-                            </div>
-                        </div>
-                        <div class="w-24 bg-gray-200 rounded-full h-2">
-                            <div class="h-2 rounded-full ${getCategoryColor(category, true)}" style="width: ${percentage}%"></div>
-                        </div>
-                        <span class="text-sm font-medium text-gray-700 w-8 text-right">${percentage.toFixed(0)}%</span>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function updateCurrencyDisplay(currency) {
-            const currencyInfo = currencies[currency];
-            
-            // Update expense overview with new currency
-            updateExpenseOverview();
-            
-            // Re-render expense table to show updated currency symbols
-            renderExpenseTable();
-            
-            // Update category breakdown
-            updateCategoryBreakdown();
-        }
-
-        // Utility functions
-        function getExpenseIcon(category) {
-            const icons = {
-                'Food & Dining': 'fas fa-utensils',
-                'Transportation': 'fas fa-car',
-                'Shopping': 'fas fa-shopping-bag',
-                'Entertainment': 'fas fa-film',
-                'Bills & Utilities': 'fas fa-file-invoice-dollar',
-                'Healthcare': 'fas fa-heartbeat',
-                'Education': 'fas fa-graduation-cap',
-                'Travel': 'fas fa-plane',
-                'Personal Care': 'fas fa-spa',
-                'Other': 'fas fa-receipt'
-            };
-            return icons[category] || icons.Other;
-        }
-
-        function getCategoryColor(category, isProgress = false) {
-            const colors = {
-                'Food & Dining': isProgress ? 'bg-red-500' : 'bg-red-100 text-red-800',
-                'Transportation': isProgress ? 'bg-orange-500' : 'bg-orange-100 text-orange-800',
-                'Shopping': isProgress ? 'bg-blue-500' : 'bg-blue-100 text-blue-800',
-                'Entertainment': isProgress ? 'bg-purple-500' : 'bg-purple-100 text-purple-800',
-                'Bills & Utilities': isProgress ? 'bg-green-500' : 'bg-green-100 text-green-800',
-                'Healthcare': isProgress ? 'bg-pink-500' : 'bg-pink-100 text-pink-800',
-                'Education': isProgress ? 'bg-indigo-500' : 'bg-indigo-100 text-indigo-800',
-                'Travel': isProgress ? 'bg-yellow-500' : 'bg-yellow-100 text-yellow-800',
-                'Personal Care': isProgress ? 'bg-teal-500' : 'bg-teal-100 text-teal-800'
-            };
-            return colors[category] || (isProgress ? 'bg-gray-500' : 'bg-gray-100 text-gray-800');
-        }
-
-        function formatDate(dateString) {
-            return new Date(dateString).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-        }
-
-        function isThisWeek(date) {
-            const today = new Date();
-            const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
-            const endOfWeek = new Date(today.setDate(today.getDate() + 6));
-            return date >= startOfWeek && date <= endOfWeek;
-        }
-
-        function isThisMonth(date) {
-            const today = new Date();
-            return date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
-        }
-
-        function getAccountName(accountId) {
-            const accounts = {
-                '1': 'Checking Account',
-                '2': 'Savings Account',
-                '3': 'Credit Card',
-                '4': 'Cash',
-                '5': 'PKR Savings',
-                '6': 'INR Account'
-            };
-            return accounts[accountId] || 'Unknown Account';
-        }
-
-        function generateId() {
-            return '_' + Math.random().toString(36).substr(2, 9);
-        }
-
-        function saveExpenses() {
-            localStorage.setItem('smartgrocer-expenses', JSON.stringify(expenses));
-        }
-
-        function showNotification(message, type = 'info') {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification fixed top-4 right-4 z-50 max-w-sm p-4 rounded-lg shadow-lg ${
-                type === 'success' ? 'bg-green-500 text-white' :
-                type === 'error' ? 'bg-red-500 text-white' :
-                'bg-blue-500 text-white'
-            }`;
-            notification.classList.remove('hidden');
-            
-            setTimeout(() => {
-                notification.classList.add('hidden');
-            }, 3000);
-        }
+        // Initialize expense manager when DOM is loaded
+        let expenseManager;
+        document.addEventListener('DOMContentLoaded', function() {
+            expenseManager = new ExpenseManager();
+        });
     </script>
 </body>
 </html>
