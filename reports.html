@@ -286,7 +286,7 @@
             border: 1px solid #F59E0B;
             border-radius: 8px;
             padding: 12px 16px;
-            margin-bottom: 16px;
+            margin: 16px;
             display: flex;
             align-items: center;
         }
@@ -372,16 +372,16 @@
             </div>
         </header>
 
-        <main class="p-4 md:p-6">
-            <!-- Data Status Indicator -->
-            <div id="data-status" class="data-status hidden">
-                <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
-                <span class="text-yellow-700 text-sm flex-1" id="status-message"></span>
-                <button onclick="initializeSampleData(); updateReports();" class="refresh-btn">
-                    <i class="fas fa-bolt mr-1"></i>Fix Now
-                </button>
-            </div>
+        <!-- Data Status Indicator -->
+        <div id="data-status" class="data-status hidden">
+            <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
+            <span class="text-yellow-700 text-sm flex-1" id="status-message"></span>
+            <button onclick="initializeSampleData(); updateReports();" class="refresh-btn">
+                <i class="fas fa-bolt mr-1"></i>Fix Now
+            </button>
+        </div>
 
+        <main class="p-4 md:p-6">
             <div id="reports" class="page active">
                 <div class="max-w-7xl mx-auto">
                     <!-- Currency Section Only -->
@@ -523,738 +523,291 @@
     <div id="modal-container"></div>
     <button id="fab-add-transaction"><i class="fas fa-plus"></i></button>
 
+    <!-- Data Manager Script -->
+    <script src="data-manager.js"></script>
+
     <script>
-        // Currency configuration
-        const currencies = {
-            'USD': { symbol: '$', name: 'US Dollar', flag: 'US' },
-            'PKR': { symbol: '₨', name: 'Pakistani Rupee', flag: 'PK' },
-            'INR': { symbol: '₹', name: 'Indian Rupee', flag: 'IN' }
-        };
+        // Reports Page Auto-Sync Manager
+        class ReportsManager {
+            constructor() {
+                this.dataManager = window.smartGrocerData;
+                this.charts = {};
+                this.init();
+            }
 
-        // Global variables
-        let selectedCurrency = 'PKR';
-        let incomeExpenseChart = null;
-        let categoryChart = null;
-        let autoUpdateInterval = null;
+            init() {
+                this.setupEventListeners();
+                this.setupCurrencySelection();
+                this.checkUserAuth();
+            }
 
-        // DOM elements
-        const signinOverlay = document.getElementById('signin-overlay');
-        const signinForm = document.getElementById('signin-form');
-        const signinName = document.getElementById('signin-name');
-        const welcomeUserText = document.getElementById('welcome-user-text');
-        const userInitial = document.getElementById('user-initial');
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebar-overlay');
-        const notification = document.getElementById('notification');
-        const refreshReportsBtn = document.getElementById('refresh-reports');
-        
-        // Currency elements
-        const currencyOptions = document.querySelectorAll('.currency-option');
-        
-        // Initialize the page when DOM is loaded
+            setupEventListeners() {
+                // Listen for data updates from other pages
+                window.addEventListener('smartgrocer-data-update', (event) => {
+                    console.log('📈 Reports received data update');
+                    this.updateReports();
+                });
+
+                // Mobile menu
+                const mobileMenuButton = document.getElementById('mobile-menu-button');
+                const sidebar = document.getElementById('sidebar');
+                const sidebarOverlay = document.getElementById('sidebar-overlay');
+                
+                if (mobileMenuButton) {
+                    mobileMenuButton.addEventListener('click', function() {
+                        sidebar.classList.toggle('show');
+                        sidebarOverlay.style.display = sidebar.classList.contains('show') ? 'block' : 'none';
+                    });
+                }
+                
+                if (sidebarOverlay) {
+                    sidebarOverlay.addEventListener('click', function() {
+                        sidebar.classList.remove('show');
+                        sidebarOverlay.style.display = 'none';
+                    });
+                }
+
+                // Sign in form
+                const signinForm = document.getElementById('signin-form');
+                if (signinForm) {
+                    signinForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        this.handleSignIn();
+                    });
+                }
+
+                // Manual refresh
+                const refreshBtn = document.getElementById('refresh-reports');
+                if (refreshBtn) {
+                    refreshBtn.addEventListener('click', () => {
+                        this.updateReports();
+                        this.showNotification('Reports data refreshed', 'info');
+                    });
+                }
+            }
+
+            setupCurrencySelection() {
+                const currencyOptions = document.querySelectorAll('.currency-option');
+                currencyOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const currency = option.getAttribute('data-currency');
+                        this.dataManager.setCurrency(currency);
+                        this.updateCurrencyDisplay(currency);
+                        this.updateReports();
+                    });
+                });
+            }
+
+            checkUserAuth() {
+                const userName = localStorage.getItem('smartgrocer-currentUser');
+                const defaultCurrency = localStorage.getItem('selectedCurrency') || 'PKR';
+                
+                if (userName) {
+                    this.showMainApp(userName);
+                    this.updateCurrencyDisplay(defaultCurrency);
+                    this.dataManager.initializeSampleData();
+                    this.updateReports();
+                }
+            }
+
+            handleSignIn() {
+                const userName = document.getElementById('signin-name').value.trim();
+                const selectedCurrency = document.querySelector('.currency-option.selected')?.getAttribute('data-currency') || 'PKR';
+                
+                if (userName) {
+                    localStorage.setItem('smartgrocer-currentUser', userName);
+                    localStorage.setItem('selectedCurrency', selectedCurrency);
+                    this.dataManager.setCurrency(selectedCurrency);
+                    this.showMainApp(userName);
+                    this.dataManager.initializeSampleData();
+                    this.updateReports();
+                    this.showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
+                }
+            }
+
+            showMainApp(userName) {
+                document.getElementById('signin-overlay').style.display = 'none';
+                
+                document.getElementById('welcome-user-text').textContent = `Welcome, ${userName}!`;
+                document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
+            }
+
+            updateCurrencyDisplay(currency) {
+                const currencyOptions = document.querySelectorAll('.currency-option');
+                currencyOptions.forEach(option => option.classList.remove('selected'));
+                document.querySelector(`.currency-option[data-currency="${currency}"]`).classList.add('selected');
+            }
+
+            updateReports() {
+                console.log('Updating reports...');
+                const financialData = this.dataManager.calculateFinancialOverview();
+                const chartData = this.dataManager.calculateChartData();
+
+                this.updateFinancialOverview(financialData);
+                this.updateCharts(chartData);
+            }
+
+            updateFinancialOverview(data) {
+                document.getElementById('total-balance').textContent = `${data.symbol} ${data.totalBalance.toLocaleString()}`;
+                document.getElementById('total-income').textContent = `${data.symbol} ${data.totalIncome.toLocaleString()}`;
+                document.getElementById('total-expenses').textContent = `${data.symbol} ${data.totalExpenses.toLocaleString()}`;
+                document.getElementById('savings-rate').textContent = `${data.savingsRate}%`;
+            }
+
+            updateCharts(chartData) {
+                this.updateIncomeExpenseChart(chartData.incomeExpense);
+                this.updateCategoryChart(chartData.categories);
+            }
+
+            updateIncomeExpenseChart(data) {
+                const ctx = document.getElementById('incomeExpenseChart');
+                if (!ctx) return;
+
+                if (this.charts.incomeExpense) {
+                    this.charts.incomeExpense.destroy();
+                }
+
+                const currencySymbol = this.dataManager.getCurrencySymbol();
+
+                this.charts.incomeExpense = new Chart(ctx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: data.labels,
+                        datasets: [
+                            {
+                                label: 'Income',
+                                data: data.income,
+                                backgroundColor: '#10B981',
+                                borderRadius: 4
+                            },
+                            {
+                                label: 'Expenses',
+                                data: data.expenses,
+                                backgroundColor: '#EF4444',
+                                borderRadius: 4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => {
+                                        return `${context.dataset.label}: ${currencySymbol}${context.raw.toLocaleString()}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    callback: (value) => `${currencySymbol}${value.toLocaleString()}`
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            updateCategoryChart(data) {
+                const ctx = document.getElementById('categoryChart');
+                if (!ctx) return;
+
+                if (this.charts.category) {
+                    this.charts.category.destroy();
+                }
+
+                const backgroundColors = [
+                    '#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', '#6B7280',
+                    '#EC4899', '#14B8A6', '#F97316', '#84CC16', '#6366F1', '#8B5CF6'
+                ];
+
+                const currencySymbol = this.dataManager.getCurrencySymbol();
+
+                this.charts.category = new Chart(ctx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            data: data.data,
+                            backgroundColor: backgroundColors.slice(0, data.labels.length),
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => {
+                                        const label = context.label || '';
+                                        const value = context.raw;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = Math.round((value / total) * 100);
+                                        return `${label}: ${currencySymbol}${value.toLocaleString()} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        },
+                        cutout: '70%'
+                    }
+                });
+            }
+
+            showNotification(message, type = 'info') {
+                const notification = document.getElementById('notification');
+                const bgColor = type === 'success' ? 'success' :
+                               type === 'error' ? 'error' : 'info';
+                
+                notification.textContent = message;
+                notification.className = `notification ${bgColor}`;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 5000);
+            }
+        }
+
+        // Initialize reports when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            initializeReports();
+            new ReportsManager();
         });
 
-        function initializeReports() {
-            console.log('📊 Initializing Reports...');
-            
-            setupSignIn();
-            setupSidebar();
-            setupCurrencySelection();
-            
-            // Check if user is already signed in
-            const userName = localStorage.getItem('smartgrocer-currentUser');
-            selectedCurrency = localStorage.getItem('selectedCurrency') || 'PKR';
-            
-            if (userName) {
-                showMainApp(userName, selectedCurrency);
-                
-                // Run synchronization test
-                const testResults = testDataSynchronization();
-                console.log('🧪 Sync Test Results:', testResults);
-                
-                // Initialize sample data if needed
-                if (!testResults.hasTransactions && !testResults.hasAccounts) {
-                    initializeSampleData();
-                }
-                
-                // Update reports with real data
-                updateReports();
-                
-                // Set up auto-update interval
-                autoUpdateInterval = setInterval(autoUpdateReports, 15000); // Update every 15 seconds
-            }
-        }
-
-        function setupSignIn() {
-            signinForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const name = signinName.value.trim();
-                if (name) {
-                    localStorage.setItem('smartgrocer-currentUser', name);
-                    showMainApp(name, selectedCurrency);
-                    
-                    // Initialize sample data for new users
-                    initializeSampleData();
-                    updateReports();
-                    showNotification(`Welcome to SmartGrocer, ${name}!`, 'success');
-                    
-                    // Set up auto-update interval
-                    autoUpdateInterval = setInterval(autoUpdateReports, 15000);
-                }
-            });
-        }
-
-        function setupSidebar() {
-            mobileMenuButton.addEventListener('click', function() {
-                sidebar.classList.toggle('show');
-                if (sidebarOverlay.classList.contains('hidden')) {
-                    sidebarOverlay.classList.remove('hidden');
-                } else {
-                    sidebarOverlay.classList.add('hidden');
-                }
-            });
-            
-            sidebarOverlay.addEventListener('click', function() {
-                sidebar.classList.remove('show');
-                sidebarOverlay.classList.add('hidden');
-            });
-        }
-
-        function setupCurrencySelection() {
-            currencyOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    const currency = this.getAttribute('data-currency');
-                    
-                    // Update selected state
-                    currencyOptions.forEach(opt => opt.classList.remove('selected'));
-                    this.classList.add('selected');
-                    
-                    // Update currency display
-                    localStorage.setItem('selectedCurrency', currency);
-                    selectedCurrency = currency;
-                    updateCurrencyDisplay(currency);
-                    updateReports();
-                    showNotification(`Display currency set to ${currencies[currency].name}`, 'success');
-                });
-            });
-            
-            // Set default currency
-            const defaultCurrency = localStorage.getItem('selectedCurrency') || 'PKR';
-            document.querySelector(`.currency-option[data-currency="${defaultCurrency}"]`).classList.add('selected');
-            updateCurrencyDisplay(defaultCurrency);
-        }
-
-        function showMainApp(userName, currency) {
-            signinOverlay.style.display = 'none';
-            
-            // Update user info
-            welcomeUserText.textContent = `Welcome, ${userName}!`;
-            userInitial.textContent = userName.charAt(0).toUpperCase();
-            
-            // Update currency display
-            updateCurrencyDisplay(currency);
-            
-            // Setup refresh button
-            refreshReportsBtn.addEventListener('click', function() {
-                console.log('🔄 Manual refresh triggered');
-                updateReports();
-                showNotification('Reports data refreshed', 'info');
-            });
-        }
-
-        function updateCurrencyDisplay(currency) {
-            const currencyInfo = currencies[currency];
-            
-            // Update all currency symbols in the UI
-            document.querySelectorAll('[data-currency-symbol]').forEach(el => {
-                el.textContent = currencyInfo.symbol;
-            });
-        }
-
-        // Enhanced updateReports function with data synchronization
-        function updateReports() {
-            console.log('=== REPORTS UPDATE STARTED ===');
-            
-            try {
-                // Load all data from localStorage
-                const accounts = safeParseJSON(localStorage.getItem('smartgrocer-accounts') || '[]');
-                const transactions = safeParseJSON(localStorage.getItem('smartgrocer-transactions') || '[]');
-                const budgets = safeParseJSON(localStorage.getItem('smartgrocer-budgets') || '[]');
-                
-                console.log('📊 Loaded Data for Reports:', {
-                    accounts: accounts.length,
-                    transactions: transactions.length,
-                    budgets: budgets.length
-                });
-                
-                // Check if we have any data at all
-                if (accounts.length === 0 && transactions.length === 0) {
-                    console.warn('⚠️ No financial data found in localStorage');
-                    showDataStatus('No financial data found. Add income or expenses to see reports.');
-                } else {
-                    hideDataStatus();
-                }
-                
-                // Calculate financial data from actual data
-                const financialData = calculateFinancialData(accounts, transactions, budgets);
-                console.log('💰 Calculated Financial Data:', financialData);
-                
-                // Update reports with real data
-                updateFinancialOverview(financialData);
-                updateCharts(transactions);
-                
-                // Show appropriate notification
-                if (accounts.length > 0 || transactions.length > 0) {
-                    showNotification(`Reports updated with ${transactions.length} transactions`, 'success');
-                }
-                
-            } catch (error) {
-                console.error('❌ Error updating reports:', error);
-                showNotification('Error loading reports data', 'error');
-                // Load sample data for demonstration
-                loadSampleCharts();
-            }
-            
-            console.log('=== REPORTS UPDATE COMPLETED ===');
-        }
-
-        // Safe JSON parsing with better error handling
-        function safeParseJSON(jsonString) {
-            if (!jsonString || jsonString === 'undefined' || jsonString === 'null') {
-                return [];
-            }
-            
-            try {
-                const parsed = JSON.parse(jsonString);
-                return Array.isArray(parsed) ? parsed : [];
-            } catch (error) {
-                console.error('❌ JSON parsing error:', error, 'Input:', jsonString);
-                return [];
-            }
-        }
-
-        // Test function to verify data flow
-        function testDataSynchronization() {
-            console.log('🧪 TESTING DATA SYNCHRONIZATION FOR REPORTS');
-            
-            // Check current data structure
-            const accounts = JSON.parse(localStorage.getItem('smartgrocer-accounts') || '[]');
-            const transactions = JSON.parse(localStorage.getItem('smartgrocer-transactions') || '[]');
-            const budgets = JSON.parse(localStorage.getItem('smartgrocer-budgets') || '[]');
-            
-            console.log('📊 Current Data Counts:', {
-                accounts: accounts.length,
-                transactions: transactions.length,
-                budgets: budgets.length
-            });
-            
-            return {
-                hasAccounts: accounts.length > 0,
-                hasTransactions: transactions.length > 0,
-                hasBudgets: budgets.length > 0
-            };
-        }
-
-        // Initialize with sample data if no data exists
+        // Global functions for HTML onclick handlers
         function initializeSampleData() {
-            console.log('🔄 Initializing sample data for reports...');
-            
-            const sampleTransactions = [
-                {
-                    id: Date.now(),
-                    type: 'income',
-                    amount: 75000,
-                    currency: selectedCurrency,
-                    category: 'Salary',
-                    description: 'Monthly Salary',
-                    date: new Date().toISOString().split('T')[0],
-                    account: 'Primary Account'
-                },
-                {
-                    id: Date.now() + 1,
-                    type: 'expense',
-                    amount: 4500,
-                    currency: selectedCurrency,
-                    category: 'Food & Dining',
-                    description: 'Grocery Shopping',
-                    date: new Date().toISOString().split('T')[0],
-                    account: 'Primary Account'
-                },
-                {
-                    id: Date.now() + 2,
-                    type: 'expense',
-                    amount: 2500,
-                    currency: selectedCurrency,
-                    category: 'Transportation',
-                    description: 'Fuel',
-                    date: new Date(Date.now() - 86400000).toISOString().split('T')[0],
-                    account: 'Primary Account'
-                },
-                {
-                    id: Date.now() + 3,
-                    type: 'expense',
-                    amount: 3500,
-                    currency: selectedCurrency,
-                    category: 'Shopping',
-                    description: 'Clothing',
-                    date: new Date(Date.now() - 172800000).toISOString().split('T')[0],
-                    account: 'Primary Account'
-                }
-            ];
-            
-            const sampleAccounts = [
-                {
-                    id: 1,
-                    name: 'Primary Account',
-                    type: 'bank',
-                    balance: 70000,
-                    currency: selectedCurrency
-                }
-            ];
-            
-            // Only set sample data if no data exists
-            const currentTransactions = JSON.parse(localStorage.getItem('smartgrocer-transactions') || '[]');
-            const currentAccounts = JSON.parse(localStorage.getItem('smartgrocer-accounts') || '[]');
-            
-            if (currentTransactions.length === 0) {
-                localStorage.setItem('smartgrocer-transactions', JSON.stringify(sampleTransactions));
-                console.log('✅ Sample transactions initialized for reports');
-            }
-            
-            if (currentAccounts.length === 0) {
-                localStorage.setItem('smartgrocer-accounts', JSON.stringify(sampleAccounts));
-                console.log('✅ Sample accounts initialized for reports');
-            }
+            window.smartGrocerData.initializeSampleData();
         }
 
-        function calculateFinancialData(accounts, transactions, budgets) {
-            const currencyInfo = currencies[selectedCurrency];
-            const currentMonth = new Date().getMonth();
-            const currentYear = new Date().getFullYear();
-            const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-            const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
-
-            // Validate and calculate total balance from accounts
-            const validAccounts = Array.isArray(accounts) ? accounts : [];
-            const totalBalance = validAccounts
-                .filter(account => account && account.currency === selectedCurrency)
-                .reduce((total, account) => {
-                    const balance = parseFloat(account.balance) || 0;
-                    return total + balance;
-                }, 0);
-
-            // Validate and filter transactions
-            const validTransactions = Array.isArray(transactions) ? transactions : [];
-            
-            // Calculate income and expenses for current month
-            const currentMonthTransactions = validTransactions.filter(transaction => {
-                if (!transaction || !transaction.date) return false;
-                
-                try {
-                    const transactionDate = new Date(transaction.date);
-                    return transactionDate.getMonth() === currentMonth && 
-                           transactionDate.getFullYear() === currentYear;
-                } catch (error) {
-                    console.error('Date parsing error:', error);
-                    return false;
-                }
-            });
-
-            const totalIncome = currentMonthTransactions
-                .filter(t => t && t.type === 'income' && t.currency === selectedCurrency)
-                .reduce((total, t) => {
-                    const amount = parseFloat(t.amount) || 0;
-                    return total + amount;
-                }, 0);
-
-            const totalExpenses = currentMonthTransactions
-                .filter(t => t && t.type === 'expense' && t.currency === selectedCurrency)
-                .reduce((total, t) => {
-                    const amount = Math.abs(parseFloat(t.amount) || 0);
-                    return total + amount;
-                }, 0);
-
-            // Calculate savings rate
-            const savingsRate = totalIncome > 0 ? Math.round(((totalIncome - totalExpenses) / totalIncome) * 100) : 0;
-
-            // Calculate last month data for comparison
-            const lastMonthTransactions = validTransactions.filter(transaction => {
-                if (!transaction || !transaction.date) return false;
-                
-                try {
-                    const transactionDate = new Date(transaction.date);
-                    return transactionDate.getMonth() === lastMonth && 
-                           transactionDate.getFullYear() === lastMonthYear;
-                } catch (error) {
-                    console.error('Date parsing error:', error);
-                    return false;
-                }
-            });
-
-            const lastMonthIncome = lastMonthTransactions
-                .filter(t => t && t.type === 'income' && t.currency === selectedCurrency)
-                .reduce((total, t) => {
-                    const amount = parseFloat(t.amount) || 0;
-                    return total + amount;
-                }, 0);
-
-            const lastMonthExpenses = lastMonthTransactions
-                .filter(t => t && t.type === 'expense' && t.currency === selectedCurrency)
-                .reduce((total, t) => {
-                    const amount = Math.abs(parseFloat(t.amount) || 0);
-                    return total + amount;
-                }, 0);
-
-            const lastMonthSavingsRate = lastMonthIncome > 0 ? 
-                Math.round(((lastMonthIncome - lastMonthExpenses) / lastMonthIncome) * 100) : 0;
-
-            return {
-                totalBalance,
-                totalIncome,
-                totalExpenses,
-                savingsRate,
-                lastMonthData: {
-                    totalIncome: lastMonthIncome,
-                    totalExpenses: lastMonthExpenses,
-                    savingsRate: lastMonthSavingsRate
-                }
-            };
-        }
-
-        function updateFinancialOverview(financialData) {
-            const currencyInfo = currencies[selectedCurrency];
-            
-            // Update financial overview cards with actual data
-            document.getElementById('total-balance').textContent = 
-                `${currencyInfo.symbol} ${financialData.totalBalance.toLocaleString()}`;
-            document.getElementById('total-income').textContent = 
-                `${currencyInfo.symbol} ${financialData.totalIncome.toLocaleString()}`;
-            document.getElementById('total-expenses').textContent = 
-                `${currencyInfo.symbol} ${financialData.totalExpenses.toLocaleString()}`;
-            document.getElementById('savings-rate').textContent = 
-                `${Math.max(financialData.savingsRate, 0)}%`;
-            
-            // Calculate and display percentage changes
-            const incomeChange = calculatePercentageChange(financialData.totalIncome, financialData.lastMonthData.totalIncome);
-            const expensesChange = calculatePercentageChange(financialData.totalExpenses, financialData.lastMonthData.totalExpenses);
-            const savingsChange = calculatePercentageChange(financialData.savingsRate, financialData.lastMonthData.savingsRate);
-            
-            document.getElementById('income-change').textContent = `${incomeChange}%`;
-            document.getElementById('expenses-change').textContent = `${expensesChange}%`;
-            document.getElementById('savings-change').textContent = `${savingsChange}%`;
-        }
-
-        function calculatePercentageChange(current, previous) {
-            if (previous === 0) return current === 0 ? 0 : 100;
-            return Math.round(((current - previous) / previous) * 100);
-        }
-
-        function updateCharts(transactions) {
-            // Destroy existing charts if they exist
-            if (incomeExpenseChart) {
-                incomeExpenseChart.destroy();
-            }
-            if (categoryChart) {
-                categoryChart.destroy();
-            }
-            
-            // Calculate chart data from actual transactions
-            const incomeExpenseData = calculateIncomeExpenseData(transactions);
-            const categoryData = calculateCategoryData(transactions);
-            
-            // Initialize charts with real data
-            initializeIncomeExpenseChart(incomeExpenseData);
-            initializeCategoryChart(categoryData);
-        }
-
-        function calculateIncomeExpenseData(transactions) {
-            const months = [];
-            const incomeData = [];
-            const expenseData = [];
-            const currentDate = new Date();
-            
-            // Get last 6 months
-            for (let i = 5; i >= 0; i--) {
-                const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-                const monthName = date.toLocaleString('default', { month: 'short' });
-                months.push(monthName);
-                
-                // Calculate income and expenses for this month in selected currency
-                const monthIncome = transactions
-                    .filter(transaction => {
-                        if (!transaction || !transaction.date) return false;
-                        
-                        try {
-                            const transactionDate = new Date(transaction.date);
-                            return transaction.type === 'income' &&
-                                   transaction.currency === selectedCurrency &&
-                                   transactionDate.getMonth() === date.getMonth() &&
-                                   transactionDate.getFullYear() === date.getFullYear();
-                        } catch (error) {
-                            console.error('Date parsing error:', error);
-                            return false;
-                        }
-                    })
-                    .reduce((total, transaction) => {
-                        const amount = parseFloat(transaction.amount) || 0;
-                        return total + amount;
-                    }, 0);
-                
-                const monthExpenses = transactions
-                    .filter(transaction => {
-                        if (!transaction || !transaction.date) return false;
-                        
-                        try {
-                            const transactionDate = new Date(transaction.date);
-                            return transaction.type === 'expense' &&
-                                   transaction.currency === selectedCurrency &&
-                                   transactionDate.getMonth() === date.getMonth() &&
-                                   transactionDate.getFullYear() === date.getFullYear();
-                        } catch (error) {
-                            console.error('Date parsing error:', error);
-                            return false;
-                        }
-                    })
-                    .reduce((total, transaction) => {
-                        const amount = Math.abs(parseFloat(transaction.amount) || 0);
-                        return total + amount;
-                    }, 0);
-                
-                incomeData.push(monthIncome);
-                expenseData.push(monthExpenses);
-            }
-            
-            return {
-                labels: months,
-                income: incomeData,
-                expenses: expenseData
-            };
-        }
-
-        function calculateCategoryData(transactions) {
-            const categoryMap = {};
-            const currentMonth = new Date().getMonth();
-            const currentYear = new Date().getFullYear();
-            
-            // Calculate spending by category for current month
-            transactions
-                .filter(transaction => {
-                    if (!transaction || !transaction.date) return false;
-                    
-                    try {
-                        const transactionDate = new Date(transaction.date);
-                        return transaction.type === 'expense' &&
-                               transaction.currency === selectedCurrency &&
-                               transactionDate.getMonth() === currentMonth &&
-                               transactionDate.getFullYear() === currentYear;
-                    } catch (error) {
-                        console.error('Date parsing error:', error);
-                        return false;
-                    }
-                })
-                .forEach(transaction => {
-                    const category = transaction.category || 'Uncategorized';
-                    const amount = Math.abs(parseFloat(transaction.amount) || 0);
-                    
-                    if (categoryMap[category]) {
-                        categoryMap[category] += amount;
-                    } else {
-                        categoryMap[category] = amount;
-                    }
-                });
-            
-            // Convert to chart data format
-            const labels = Object.keys(categoryMap);
-            const data = Object.values(categoryMap);
-            
-            return {
-                labels,
-                data
-            };
-        }
-
-        function initializeIncomeExpenseChart(chartData) {
-            const ctx = document.getElementById('incomeExpenseChart');
-            if (!ctx) return;
-            
-            incomeExpenseChart = new Chart(ctx.getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: chartData.labels,
-                    datasets: [
-                        {
-                            label: 'Income',
-                            data: chartData.income,
-                            backgroundColor: '#10B981',
-                            borderRadius: 4
-                        },
-                        {
-                            label: 'Expenses',
-                            data: chartData.expenses,
-                            backgroundColor: '#EF4444',
-                            borderRadius: 4
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.dataset.label || '';
-                                    const value = context.raw;
-                                    const currencyInfo = currencies[selectedCurrency];
-                                    return `${label}: ${currencyInfo.symbol}${value.toLocaleString()}`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                drawBorder: false
-                            },
-                            ticks: {
-                                callback: function(value) {
-                                    const currencyInfo = currencies[selectedCurrency];
-                                    return `${currencyInfo.symbol}${value.toLocaleString()}`;
-                                }
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        function initializeCategoryChart(chartData) {
-            const ctx = document.getElementById('categoryChart');
-            if (!ctx) return;
-            
-            // Use predefined colors or generate them
-            const backgroundColors = [
-                '#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', '#6B7280',
-                '#EC4899', '#14B8A6', '#F97316', '#84CC16', '#6366F1', '#8B5CF6'
-            ];
-            
-            categoryChart = new Chart(ctx.getContext('2d'), {
-                type: 'doughnut',
-                data: {
-                    labels: chartData.labels,
-                    datasets: [{
-                        data: chartData.data,
-                        backgroundColor: backgroundColors.slice(0, chartData.labels.length),
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom'
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.raw;
-                                    const currencyInfo = currencies[selectedCurrency];
-                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                    const percentage = Math.round((value / total) * 100);
-                                    return `${label}: ${currencyInfo.symbol}${value.toLocaleString()} (${percentage}%)`;
-                                }
-                            }
-                        }
-                    },
-                    cutout: '70%'
-                }
-            });
-        }
-
-        function loadSampleCharts() {
-            // Fallback to sample chart data if real data is not available
-            const sampleIncomeExpenseData = {
-                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-                income: [12000, 19000, 15000, 18000, 22000, 25000],
-                expenses: [8000, 12000, 10000, 11000, 15000, 14000]
-            };
-            
-            const sampleCategoryData = {
-                labels: ['Food & Dining', 'Shopping', 'Transportation', 'Entertainment', 'Bills & Utilities', 'Others'],
-                data: [30, 25, 15, 10, 12, 8]
-            };
-            
-            initializeIncomeExpenseChart(sampleIncomeExpenseData);
-            initializeCategoryChart(sampleCategoryData);
-        }
-
-        function autoUpdateReports() {
-            const updateIndicator = document.getElementById('auto-update-indicator');
-            if (updateIndicator) {
-                updateIndicator.classList.add('animate-pulse');
-            }
-            
-            console.log('🔄 Auto-updating reports...');
-            
-            setTimeout(() => {
-                updateReports();
-                if (updateIndicator) {
-                    updateIndicator.classList.remove('animate-pulse');
-                }
-            }, 1000);
-        }
-
-        function showDataStatus(message) {
-            const statusElement = document.getElementById('data-status');
-            const messageElement = document.getElementById('status-message');
-            
-            messageElement.textContent = message;
-            statusElement.classList.remove('hidden');
-        }
-
-        function hideDataStatus() {
-            const statusElement = document.getElementById('data-status');
-            statusElement.classList.add('hidden');
-        }
-
-        // Show notification function
-        function showNotification(message, type) {
-            notification.textContent = message;
-            notification.className = 'notification ' + type;
-            notification.classList.add('show');
-            
-            setTimeout(function() {
-                notification.classList.remove('show');
-            }, 5000);
+        function updateReports() {
+            // This will be called by the ReportsManager instance
+            console.log('Manual reports update triggered');
         }
 
         // Handle window resize
         window.addEventListener('resize', function() {
             if (window.innerWidth >= 768) {
-                sidebar.classList.add('show');
+                document.getElementById('sidebar').classList.add('show');
             } else {
-                sidebar.classList.remove('show');
-            }
-        });
-
-        // Clean up interval when page is unloaded
-        window.addEventListener('beforeunload', function() {
-            if (autoUpdateInterval) {
-                clearInterval(autoUpdateInterval);
+                document.getElementById('sidebar').classList.remove('show');
             }
         });
     </script>
