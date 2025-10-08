@@ -60,6 +60,35 @@
             }
         }
 
+        /* Sidebar Styles */
+        #sidebar {
+            transition: transform 0.3s ease;
+        }
+        
+        #sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 40;
+        }
+        
+        .nav-link.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        @media (min-width: 1024px) {
+            #sidebar {
+                transform: translateX(0);
+            }
+            #main-app-container {
+                margin-left: 16rem;
+            }
+        }
+
         .budget-card {
             position: relative;
             overflow: hidden;
@@ -88,6 +117,7 @@
             transition: width 0.5s ease;
         }
 
+        /* Currency Styles */
         .currency-option {
             display: flex;
             align-items: center;
@@ -158,12 +188,61 @@
         </div>
     </div>
 
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="hidden lg:hidden"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transform -translate-x-full lg:translate-x-0 bg-white border-r">
+        <div class="h-full flex flex-col">
+            <div class="h-20 flex items-center justify-center border-b">
+                <h1 class="text-2xl font-bold text-green-600">SmartGrocer</h1>
+            </div>
+            <nav class="flex-1 px-4 py-6 space-y-2">
+                <a href="index.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-home w-6 h-6 mr-3"></i>Dashboard
+                </a>
+                <a href="income.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-money-bill-wave w-6 h-6 mr-3"></i>Income
+                </a>
+                <a href="expense.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-credit-card w-6 h-6 mr-3"></i>Expenses
+                </a>
+                <a href="accounts.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-wallet w-6 h-6 mr-3"></i>Accounts
+                </a>
+                <a href="budget.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600 active">
+                    <i class="fas fa-chart-pie w-6 h-6 mr-3"></i>Budgets
+                </a>
+                <a href="reports.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-chart-line w-6 h-6 mr-3"></i>Reports
+                </a>
+                <a href="blogs.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-blog w-6 h-6 mr-3"></i>Blog
+                </a>
+                <a href="contact.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-envelope w-6 h-6 mr-3"></i>Contact Us
+                </a>
+                <a href="settings.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
+                    <i class="fas fa-cog w-6 h-6 mr-3"></i>Settings
+                </a>
+            </nav>
+            <div class="px-4 py-4 border-t">
+                <a href="#privacy" class="nav-link text-sm text-gray-500 hover:text-green-600 block">Privacy Policy</a>
+                <a href="#terms" class="nav-link text-sm text-gray-500 hover:text-green-600 block mt-1">Terms & Conditions</a>
+                <a href="#disclaimers" class="nav-link text-sm text-gray-500 hover:text-green-600 block mt-1">Disclaimers</a>
+            </div>
+        </div>
+    </aside>
+
     <!-- Main App Container -->
-    <div id="main-app-container" class="min-h-screen bg-gray-50 hidden">
+    <div id="main-app-container" class="min-h-screen bg-gray-50 hidden lg:ml-64">
         <!-- Header -->
         <header class="bg-white shadow-sm border-b">
             <div class="flex justify-between items-center px-4 py-4">
                 <div class="flex items-center">
+                    <button id="mobile-menu-button" class="text-gray-600 mr-4 focus:outline-none lg:hidden">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
                     <h1 class="text-2xl font-bold text-gray-900">Budgets</h1>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -475,6 +554,21 @@
                     document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
                     showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
                 }
+            });
+
+            // Mobile menu functionality
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+            mobileMenuButton.addEventListener('click', function() {
+                sidebar.classList.toggle('-translate-x-full');
+                sidebarOverlay.classList.toggle('hidden');
+            });
+
+            sidebarOverlay.addEventListener('click', function() {
+                sidebar.classList.add('-translate-x-full');
+                sidebarOverlay.classList.add('hidden');
             });
 
             // Currency selection
