@@ -60,35 +60,6 @@
             }
         }
 
-        /* Sidebar Styles */
-        #sidebar {
-            transition: transform 0.3s ease;
-        }
-        
-        #sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 40;
-        }
-        
-        .nav-link.active {
-            background-color: var(--primary-light);
-            color: var(--primary);
-        }
-        
-        @media (min-width: 1024px) {
-            #sidebar {
-                transform: translateX(0);
-            }
-            #main-app-container {
-                margin-left: 16rem;
-            }
-        }
-
         .budget-card {
             position: relative;
             overflow: hidden;
@@ -117,7 +88,6 @@
             transition: width 0.5s ease;
         }
 
-        /* Currency Styles */
         .currency-option {
             display: flex;
             align-items: center;
@@ -188,61 +158,12 @@
         </div>
     </div>
 
-    <!-- Sidebar Overlay -->
-    <div id="sidebar-overlay" class="hidden lg:hidden"></div>
-
-    <!-- Sidebar -->
-    <aside id="sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transform -translate-x-full lg:translate-x-0 bg-white border-r">
-        <div class="h-full flex flex-col">
-            <div class="h-20 flex items-center justify-center border-b">
-                <h1 class="text-2xl font-bold text-green-600">SmartGrocer</h1>
-            </div>
-            <nav class="flex-1 px-4 py-6 space-y-2">
-                <a href="index.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
-                    <i class="fas fa-home w-6 h-6 mr-3"></i>Dashboard
-                </a>
-                <a href="income.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
-                    <i class="fas fa-money-bill-wave w-6 h-6 mr-3"></i>Income
-                </a>
-                <a href="expense.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
-                    <i class="fas fa-credit-card w-6 h-6 mr-3"></i>Expenses
-                </a>
-                <a href="accounts.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
-                    <i class="fas fa-wallet w-6 h-6 mr-3"></i>Accounts
-                </a>
-                <a href="budget.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600 active">
-                    <i class="fas fa-chart-pie w-6 h-6 mr-3"></i>Budgets
-                </a>
-                <a href="reports.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
-                    <i class="fas fa-chart-line w-6 h-6 mr-3"></i>Reports
-                </a>
-                <a href="blogs.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
-                    <i class="fas fa-blog w-6 h-6 mr-3"></i>Blog
-                </a>
-                <a href="contact.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
-                    <i class="fas fa-envelope w-6 h-6 mr-3"></i>Contact Us
-                </a>
-                <a href="settings.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-green-600">
-                    <i class="fas fa-cog w-6 h-6 mr-3"></i>Settings
-                </a>
-            </nav>
-            <div class="px-4 py-4 border-t">
-                <a href="#privacy" class="nav-link text-sm text-gray-500 hover:text-green-600 block">Privacy Policy</a>
-                <a href="#terms" class="nav-link text-sm text-gray-500 hover:text-green-600 block mt-1">Terms & Conditions</a>
-                <a href="#disclaimers" class="nav-link text-sm text-gray-500 hover:text-green-600 block mt-1">Disclaimers</a>
-            </div>
-        </div>
-    </aside>
-
     <!-- Main App Container -->
-    <div id="main-app-container" class="min-h-screen bg-gray-50 hidden lg:ml-64">
+    <div id="main-app-container" class="min-h-screen bg-gray-50 hidden">
         <!-- Header -->
         <header class="bg-white shadow-sm border-b">
             <div class="flex justify-between items-center px-4 py-4">
                 <div class="flex items-center">
-                    <button id="mobile-menu-button" class="text-gray-600 mr-4 focus:outline-none lg:hidden">
-                        <i class="fas fa-bars text-xl"></i>
-                    </button>
                     <h1 class="text-2xl font-bold text-gray-900">Budgets</h1>
                 </div>
                 <div class="flex items-center space-x-4">
@@ -257,7 +178,7 @@
             <!-- Currency Selection Section -->
             <div class="card p-6 mb-8">
                 <h3 class="text-xl font-bold text-gray-900 mb-4">Select Display Currency</h3>
-                <p class="text-gray-600 mb-4">Choose your preferred currency for displaying budget amounts. No conversion will be applied.</p>
+                <p class="text-gray-600 mb-4">Choose your preferred currency for displaying budget amounts.</p>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="currency-option" data-currency="USD">
                         <div class="currency-flag bg-blue-600">US</div>
@@ -283,9 +204,8 @@
                 </div>
             </div>
 
-            <!-- Summary Cards - Fixed Grid Layout -->
+            <!-- Summary Cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <!-- Total Budget Card -->
                 <div class="card p-6 gradient-bg text-white">
                     <div class="flex justify-between items-start">
                         <div>
@@ -297,7 +217,6 @@
                     <p class="text-xs mt-3 opacity-80">Across all categories</p>
                 </div>
                 
-                <!-- Total Spent Card -->
                 <div class="card p-6">
                     <div class="flex justify-between items-start">
                         <div>
@@ -309,7 +228,6 @@
                     <p class="text-xs text-gray-500 mt-3">This month</p>
                 </div>
                 
-                <!-- Remaining Card -->
                 <div class="card p-6">
                     <div class="flex justify-between items-start">
                         <div>
@@ -326,7 +244,6 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Left Column - Budgets List -->
                 <div class="lg:col-span-2 space-y-8">
-                    <!-- Budgets Section -->
                     <div class="card p-6">
                         <div class="flex justify-between items-center mb-6">
                             <h2 class="text-xl font-bold text-gray-900">Your Budgets</h2>
@@ -335,19 +252,16 @@
                             </button>
                         </div>
                         
-                        <!-- Search Bar -->
                         <div class="mb-6">
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-search text-gray-400"></i>
                                 </div>
-                                <input type="text" placeholder="Type here to search budgets..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20">
+                                <input type="text" id="search-budgets" placeholder="Type here to search budgets..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20">
                             </div>
                         </div>
                         
-                        <!-- Budgets Grid -->
                         <div id="budgets-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Budgets will be populated here -->
                             <div class="col-span-2 text-center py-12">
                                 <i class="fas fa-chart-pie text-6xl text-gray-300 mb-4"></i>
                                 <h3 class="text-xl font-semibold text-gray-600 mb-2">No Budgets Yet</h3>
@@ -357,52 +271,18 @@
                     </div>
                 </div>
                 
-                <!-- Right Column - Budget Insights & Actions -->
+                <!-- Right Column -->
                 <div class="lg:col-span-1 space-y-8">
-                    <!-- Budget Progress -->
                     <div class="card p-6">
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">Budget Progress</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <div class="flex justify-between text-sm text-gray-600 mb-1">
-                                    <span>Food & Dining</span>
-                                    <span>75%</span>
-                                </div>
-                                <div class="progress-bar">
-                                    <div class="progress-fill bg-green-500" style="width: 75%"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between text-sm text-gray-600 mb-1">
-                                    <span>Transportation</span>
-                                    <span>45%</span>
-                                </div>
-                                <div class="progress-bar">
-                                    <div class="progress-fill bg-blue-500" style="width: 45%"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between text-sm text-gray-600 mb-1">
-                                    <span>Entertainment</span>
-                                    <span>90%</span>
-                                </div>
-                                <div class="progress-bar">
-                                    <div class="progress-fill bg-yellow-500" style="width: 90%"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between text-sm text-gray-600 mb-1">
-                                    <span>Shopping</span>
-                                    <span>30%</span>
-                                </div>
-                                <div class="progress-bar">
-                                    <div class="progress-fill bg-purple-500" style="width: 30%"></div>
-                                </div>
+                        <div id="budget-progress-container" class="space-y-4">
+                            <div class="text-center py-4 text-gray-500">
+                                <i class="fas fa-chart-pie text-2xl mb-2 opacity-40"></i>
+                                <p class="text-sm">No budget data</p>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Quick Actions -->
                     <div class="card p-6">
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
                         <div class="space-y-3">
@@ -561,34 +441,22 @@
     <script>
         // Currency configuration
         const currencies = {
-            'USD': { symbol: '$', name: 'US Dollar', flag: 'US' },
-            'PKR': { symbol: '₨', name: 'Pakistani Rupee', flag: 'PK' },
-            'INR': { symbol: '₹', name: 'Indian Rupee', flag: 'IN' }
+            'USD': { symbol: '$', name: 'US Dollar' },
+            'PKR': { symbol: '₨', name: 'Pakistani Rupee' },
+            'INR': { symbol: '₹', name: 'Indian Rupee' }
         };
 
-        // Sample data for demonstration
-        let budgets = JSON.parse(localStorage.getItem('smartgrocer-budgets')) || [];
-        let transactions = JSON.parse(localStorage.getItem('smartgrocer-transactions')) || [];
-        let selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+        // Global variables
+        let budgets = [];
+        let selectedCurrency = 'USD';
 
-        // Initialize the page
+        // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
-            // Mobile menu functionality
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const sidebar = document.getElementById('sidebar');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            initializeApp();
+        });
 
-            mobileMenuButton.addEventListener('click', function() {
-                sidebar.classList.toggle('-translate-x-full');
-                sidebarOverlay.classList.toggle('hidden');
-            });
-
-            sidebarOverlay.addEventListener('click', function() {
-                sidebar.classList.add('-translate-x-full');
-                sidebarOverlay.classList.add('hidden');
-            });
-
-            // Check if user is already signed in
+        function initializeApp() {
+            // Check if user is signed in
             const currentUser = localStorage.getItem('smartgrocer-currentUser');
             if (currentUser) {
                 hideSignInOverlay();
@@ -596,7 +464,7 @@
                 document.getElementById('user-initial').textContent = currentUser.charAt(0).toUpperCase();
             }
 
-            // Initialize sign-in form
+            // Sign-in form
             document.getElementById('signin-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const userName = document.getElementById('signin-name').value.trim();
@@ -610,10 +478,19 @@
             });
 
             // Currency selection
-            const currencyOptions = document.querySelectorAll('.currency-option');
+            setupCurrencySelection();
             
-            // Initialize currency display
-            updateCurrencyDisplay(selectedCurrency);
+            // Budget functionality
+            setupBudgetFunctionality();
+            
+            // Load initial data
+            loadBudgets();
+            updateUI();
+        }
+
+        function setupCurrencySelection() {
+            const currencyOptions = document.querySelectorAll('.currency-option');
+            selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
             
             currencyOptions.forEach(option => {
                 option.addEventListener('click', function() {
@@ -621,13 +498,12 @@
                     selectedCurrency = currency;
                     localStorage.setItem('selectedCurrency', currency);
                     
-                    // Update UI
-                    updateCurrencyDisplay(currency);
-                    
                     // Update selected state
                     currencyOptions.forEach(opt => opt.classList.remove('selected'));
                     this.classList.add('selected');
                     
+                    // Update UI
+                    updateUI();
                     showNotification(`Display currency set to ${currencies[currency].name}`, 'success');
                 });
                 
@@ -636,25 +512,10 @@
                     option.classList.add('selected');
                 }
             });
+        }
 
-            // Budget currency change handlers
-            document.getElementById('budget-currency').addEventListener('change', function() {
-                const currency = this.value;
-                document.getElementById('modal-currency-symbol').textContent = currencies[currency].symbol;
-            });
-
-            document.getElementById('edit-budget-currency').addEventListener('change', function() {
-                const currency = this.value;
-                document.getElementById('edit-modal-currency-symbol').textContent = currencies[currency].symbol;
-            });
-
-            // Initialize budget modals
-            setupBudgetModals();
-            renderBudgets();
-            updateBudgetOverview();
-        });
-
-        function setupBudgetModals() {
+        function setupBudgetFunctionality() {
+            // Modal elements
             const addBudgetBtn = document.getElementById('add-budget-btn');
             const addModal = document.getElementById('add-budget-modal');
             const editModal = document.getElementById('edit-budget-modal');
@@ -665,15 +526,27 @@
             const editForm = document.getElementById('edit-budget-form');
             const deleteBtn = document.getElementById('delete-budget');
 
+            // Add budget modal
             addBudgetBtn.addEventListener('click', () => {
                 addModal.classList.remove('hidden');
                 addModal.classList.add('flex');
             });
 
+            // Close modals
             closeAddBtn.addEventListener('click', closeAddModal);
             cancelAddBtn.addEventListener('click', closeAddModal);
             closeEditBtn.addEventListener('click', closeEditModal);
 
+            // Currency symbol updates
+            document.getElementById('budget-currency').addEventListener('change', function() {
+                document.getElementById('modal-currency-symbol').textContent = currencies[this.value].symbol;
+            });
+
+            document.getElementById('edit-budget-currency').addEventListener('change', function() {
+                document.getElementById('edit-modal-currency-symbol').textContent = currencies[this.value].symbol;
+            });
+
+            // Form submissions
             addForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 addNewBudget();
@@ -684,23 +557,16 @@
                 updateBudget();
             });
 
+            // Delete budget
             deleteBtn.addEventListener('click', function() {
                 deleteBudget();
             });
 
-            function closeAddModal() {
-                addModal.classList.add('hidden');
-                addModal.classList.remove('flex');
-                addForm.reset();
-                // Reset modal currency symbol
-                document.getElementById('modal-currency-symbol').textContent = currencies['USD'].symbol;
-                document.getElementById('budget-currency').value = 'USD';
-            }
-
-            function closeEditModal() {
-                editModal.classList.add('hidden');
-                editModal.classList.remove('flex');
-            }
+            // Search functionality
+            document.getElementById('search-budgets').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                filterBudgets(searchTerm);
+            });
         }
 
         function addNewBudget() {
@@ -710,44 +576,35 @@
             const amount = parseFloat(document.getElementById('budget-amount').value);
             const period = document.getElementById('budget-period').value;
 
-            if (!name) {
-                showNotification('Please enter a budget name', 'error');
-                return;
-            }
-
-            if (!category) {
-                showNotification('Please select a category', 'error');
-                return;
-            }
-
-            if (!amount || amount <= 0) {
-                showNotification('Please enter a valid budget amount', 'error');
+            // Validation
+            if (!name || !category || !amount || amount <= 0) {
+                showNotification('Please fill all fields correctly', 'error');
                 return;
             }
 
             const newBudget = {
-                id: generateId(),
+                id: Date.now().toString(),
                 name,
                 category,
                 currency,
                 amount,
                 period,
+                spent: 0,
                 createdAt: new Date().toISOString()
             };
 
             budgets.push(newBudget);
             saveBudgets();
-
             closeAddModal();
-            renderBudgets();
-            updateBudgetOverview();
-            showNotification('Budget created successfully', 'success');
+            updateUI();
+            showNotification('Budget created successfully!', 'success');
         }
 
         function editBudget(budgetId) {
             const budget = budgets.find(b => b.id === budgetId);
             if (!budget) return;
 
+            // Populate form
             document.getElementById('edit-budget-id').value = budget.id;
             document.getElementById('edit-budget-name').value = budget.name;
             document.getElementById('edit-budget-category').value = budget.category;
@@ -755,12 +612,12 @@
             document.getElementById('edit-budget-amount').value = budget.amount;
             document.getElementById('edit-budget-period').value = budget.period;
 
-            // Update modal currency symbol
+            // Update currency symbol
             document.getElementById('edit-modal-currency-symbol').textContent = currencies[budget.currency].symbol;
 
-            const modal = document.getElementById('edit-budget-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            // Show modal
+            document.getElementById('edit-budget-modal').classList.remove('hidden');
+            document.getElementById('edit-budget-modal').classList.add('flex');
         }
 
         function updateBudget() {
@@ -772,7 +629,10 @@
             const period = document.getElementById('edit-budget-period').value;
 
             const budgetIndex = budgets.findIndex(b => b.id === budgetId);
-            if (budgetIndex === -1) return;
+            if (budgetIndex === -1) {
+                showNotification('Budget not found', 'error');
+                return;
+            }
 
             if (!name || !category || !amount || amount <= 0) {
                 showNotification('Please fill all fields correctly', 'error');
@@ -790,66 +650,50 @@
 
             saveBudgets();
             closeEditModal();
-            renderBudgets();
-            updateBudgetOverview();
-            showNotification('Budget updated successfully', 'success');
+            updateUI();
+            showNotification('Budget updated successfully!', 'success');
         }
 
         function deleteBudget() {
             const budgetId = document.getElementById('edit-budget-id').value;
-            const budgetIndex = budgets.findIndex(b => b.id === budgetId);
             
-            if (budgetIndex === -1) return;
+            if (!budgetId) {
+                showNotification('Error: Could not find budget to delete', 'error');
+                return;
+            }
 
             if (confirm('Are you sure you want to delete this budget?')) {
-                budgets.splice(budgetIndex, 1);
+                budgets = budgets.filter(b => b.id !== budgetId);
                 saveBudgets();
                 closeEditModal();
-                renderBudgets();
-                updateBudgetOverview();
-                showNotification('Budget deleted successfully', 'success');
+                updateUI();
+                showNotification('Budget deleted successfully!', 'success');
             }
         }
 
-        function calculateBudgetSpent(category) {
-            const currentMonth = new Date().getMonth();
-            const currentYear = new Date().getFullYear();
-            
-            return transactions
-                .filter(transaction => 
-                    transaction.type === 'expense' && 
-                    transaction.category === category &&
-                    new Date(transaction.date).getMonth() === currentMonth &&
-                    new Date(transaction.date).getFullYear() === currentYear
-                )
-                .reduce((total, transaction) => total + transaction.amount, 0);
+        function closeAddModal() {
+            const modal = document.getElementById('add-budget-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.getElementById('add-budget-form').reset();
+            document.getElementById('modal-currency-symbol').textContent = '$';
+            document.getElementById('budget-currency').value = 'USD';
         }
 
-        function updateBudgetOverview() {
-            const selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
-            const currencyInfo = currencies[selectedCurrency];
-            
-            // Calculate totals in selected currency
-            const totalBudget = budgets
-                .filter(budget => budget.currency === selectedCurrency)
-                .reduce((total, budget) => total + budget.amount, 0);
-                
-            const totalSpent = budgets
-                .filter(budget => budget.currency === selectedCurrency)
-                .reduce((total, budget) => total + calculateBudgetSpent(budget.category), 0);
-                
-            const totalRemaining = totalBudget - totalSpent;
+        function closeEditModal() {
+            const modal = document.getElementById('edit-budget-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
 
-            document.getElementById('total-budget-display').textContent = `${currencyInfo.symbol}${totalBudget.toFixed(2)}`;
-            document.getElementById('total-spent-display').textContent = `${currencyInfo.symbol}${totalSpent.toFixed(2)}`;
-            document.getElementById('total-remaining-display').textContent = `${currencyInfo.symbol}${totalRemaining.toFixed(2)}`;
+        function updateUI() {
+            renderBudgets();
+            updateBudgetOverview();
+            updateBudgetProgress();
         }
 
         function renderBudgets() {
             const container = document.getElementById('budgets-container');
-            if (!container) return;
-
-            const selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
             const currencyInfo = currencies[selectedCurrency];
 
             // Filter budgets by selected currency
@@ -860,14 +704,14 @@
                     <div class="col-span-2 text-center py-12">
                         <i class="fas fa-chart-pie text-6xl text-gray-300 mb-4"></i>
                         <h3 class="text-xl font-semibold text-gray-600 mb-2">No Budgets in ${currencyInfo.name}</h3>
-                        <p class="text-gray-500">Create your first ${selectedCurrency} budget to start tracking your spending limits.</p>
+                        <p class="text-gray-500">Create your first ${selectedCurrency} budget to start tracking your spending.</p>
                     </div>
                 `;
                 return;
             }
 
             container.innerHTML = filteredBudgets.map(budget => {
-                const spent = calculateBudgetSpent(budget.category);
+                const spent = budget.spent || 0;
                 const remaining = budget.amount - spent;
                 const percentage = Math.min((spent / budget.amount) * 100, 100);
                 const isOverBudget = spent > budget.amount;
@@ -907,7 +751,7 @@
                         
                         <div class="text-center">
                             <p class="text-lg font-bold ${isOverBudget ? 'text-red-600' : 'text-green-600'}">
-                                <span class="currency-symbol">${currencyInfo.symbol}</span>${Math.abs(remaining).toFixed(2)} ${isOverBudget ? 'Over' : 'Remaining'}
+                                ${currencyInfo.symbol}${Math.abs(remaining).toFixed(2)} ${isOverBudget ? 'Over' : 'Remaining'}
                             </p>
                             <p class="text-sm text-gray-500 mt-1">${percentage.toFixed(1)}% of budget used</p>
                         </div>
@@ -916,14 +760,143 @@
             }).join('');
         }
 
-        function updateCurrencyDisplay(currency) {
-            const currencyInfo = currencies[currency];
+        function filterBudgets(searchTerm) {
+            if (!searchTerm) {
+                renderBudgets();
+                return;
+            }
+
+            const container = document.getElementById('budgets-container');
+            const currencyInfo = currencies[selectedCurrency];
+
+            const filteredBudgets = budgets.filter(budget => 
+                budget.currency === selectedCurrency &&
+                (budget.name.toLowerCase().includes(searchTerm) || 
+                 budget.category.toLowerCase().includes(searchTerm))
+            );
+
+            if (filteredBudgets.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-2 text-center py-12">
+                        <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-600 mb-2">No Budgets Found</h3>
+                        <p class="text-gray-500">Try adjusting your search terms.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Re-render with filtered budgets
+            container.innerHTML = filteredBudgets.map(budget => {
+                const spent = budget.spent || 0;
+                const remaining = budget.amount - spent;
+                const percentage = Math.min((spent / budget.amount) * 100, 100);
+                const isOverBudget = spent > budget.amount;
+                
+                const progressColor = isOverBudget ? 'bg-red-500' : 
+                                   percentage > 80 ? 'bg-yellow-500' : 'bg-green-500';
+                
+                const icon = getBudgetIcon(budget.category);
+                const periodText = getPeriodText(budget.period);
+
+                return `
+                    <div class="budget-card bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-all duration-200">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="${icon} text-green-600 text-lg"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">${budget.name}</h4>
+                                    <p class="text-sm text-gray-600">${budget.category} • ${periodText}</p>
+                                </div>
+                            </div>
+                            <button onclick="editBudget('${budget.id}')" class="text-gray-400 hover:text-green-600 transition-colors">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="flex justify-between text-sm text-gray-600 mb-2">
+                                <span>Spent: <span class="currency-symbol">${currencyInfo.symbol}</span>${spent.toFixed(2)}</span>
+                                <span>Budget: <span class="currency-symbol">${currencyInfo.symbol}</span>${budget.amount.toFixed(2)}</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill ${progressColor}" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center">
+                            <p class="text-lg font-bold ${isOverBudget ? 'text-red-600' : 'text-green-600'}">
+                                ${currencyInfo.symbol}${Math.abs(remaining).toFixed(2)} ${isOverBudget ? 'Over' : 'Remaining'}
+                            </p>
+                            <p class="text-sm text-gray-500 mt-1">${percentage.toFixed(1)}% of budget used</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateBudgetOverview() {
+            const currencyInfo = currencies[selectedCurrency];
             
-            // Update budget overview with new currency
-            updateBudgetOverview();
-            
-            // Re-render budgets to show updated currency symbols
-            renderBudgets();
+            const totalBudget = budgets
+                .filter(budget => budget.currency === selectedCurrency)
+                .reduce((total, budget) => total + budget.amount, 0);
+                
+            const totalSpent = budgets
+                .filter(budget => budget.currency === selectedCurrency)
+                .reduce((total, budget) => total + (budget.spent || 0), 0);
+                
+            const totalRemaining = totalBudget - totalSpent;
+
+            document.getElementById('total-budget-display').textContent = `${currencyInfo.symbol}${totalBudget.toFixed(2)}`;
+            document.getElementById('total-spent-display').textContent = `${currencyInfo.symbol}${totalSpent.toFixed(2)}`;
+            document.getElementById('total-remaining-display').textContent = `${currencyInfo.symbol}${Math.max(totalRemaining, 0).toFixed(2)}`;
+        }
+
+        function updateBudgetProgress() {
+            const container = document.getElementById('budget-progress-container');
+            const filteredBudgets = budgets.filter(budget => budget.currency === selectedCurrency);
+
+            if (filteredBudgets.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-4 text-gray-500">
+                        <i class="fas fa-chart-pie text-2xl mb-2 opacity-40"></i>
+                        <p class="text-sm">No budget data</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredBudgets.map(budget => {
+                const spent = budget.spent || 0;
+                const percentage = Math.min((spent / budget.amount) * 100, 100);
+                const progressColor = percentage > 80 ? 'bg-yellow-500' : 'bg-green-500';
+                
+                return `
+                    <div>
+                        <div class="flex justify-between text-sm text-gray-600 mb-1">
+                            <span>${budget.name}</span>
+                            <span>${percentage.toFixed(1)}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${progressColor}" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadBudgets() {
+            const storedBudgets = localStorage.getItem('smartgrocer-budgets');
+            if (storedBudgets) {
+                budgets = JSON.parse(storedBudgets);
+            }
+        }
+
+        function saveBudgets() {
+            localStorage.setItem('smartgrocer-budgets', JSON.stringify(budgets));
         }
 
         function getBudgetIcon(category) {
@@ -949,14 +922,6 @@
                 'yearly': 'Yearly'
             };
             return periods[period] || 'Monthly';
-        }
-
-        function generateId() {
-            return '_' + Math.random().toString(36).substr(2, 9);
-        }
-
-        function saveBudgets() {
-            localStorage.setItem('smartgrocer-budgets', JSON.stringify(budgets));
         }
 
         function hideSignInOverlay() {
@@ -985,6 +950,9 @@
                 notification.classList.add('hidden');
             }, 3000);
         }
+
+        // Make functions globally available for onclick handlers
+        window.editBudget = editBudget;
     </script>
 </body>
 </html>
