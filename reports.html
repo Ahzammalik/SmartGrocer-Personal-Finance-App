@@ -67,30 +67,6 @@
             background-color: #3B82F6;
         }
         
-        #fab-add-transaction {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            cursor: pointer;
-            z-index: 90;
-            transition: all 0.2s;
-        }
-        
-        #fab-add-transaction:hover {
-            background-color: var(--primary-dark);
-            transform: scale(1.05);
-        }
-        
         #sidebar-overlay {
             position: fixed;
             top: 0;
@@ -145,14 +121,6 @@
             }
         }
         
-        .page {
-            display: none;
-        }
-        
-        .page.active {
-            display: block;
-        }
-        
         .chart-container {
             position: relative;
             height: 300px;
@@ -190,70 +158,6 @@
             font-size: 12px;
             color: white;
             font-weight: bold;
-        }
-        
-        .profile-input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #D1D5DB;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.2s;
-        }
-        
-        .profile-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-        }
-        
-        .report-card {
-            transition: all 0.2s;
-        }
-        
-        .report-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        
-        .stat-card {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            border-radius: 12px;
-            padding: 20px;
-            min-height: 140px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        
-        .stat-card.blue {
-            background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
-        }
-        
-        .stat-card.red {
-            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-        }
-        
-        .stat-card.purple {
-            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
-        }
-        
-        /* Layout fixes */
-        .grid-cols-fix {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-        
-        @media (min-width: 1024px) {
-            .grid-cols-fix {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        .currency-section {
-            min-height: 400px;
         }
         
         .auto-update-indicator {
@@ -312,6 +216,29 @@
         
         .refresh-btn:hover {
             background-color: var(--primary-dark);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .stat-card.blue {
+            background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+        }
+        
+        .stat-card.red {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        }
+        
+        .stat-card.purple {
+            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
         }
     </style>
 </head>
@@ -382,137 +309,189 @@
         </div>
 
         <main class="p-4 md:p-6">
-            <div id="reports" class="page active">
-                <div class="max-w-7xl mx-auto">
-                    <!-- Currency Section Only -->
-                    <div class="grid-cols-fix mb-8">
-                        <div class="currency-section">
-                            <div class="card p-6 h-full">
-                                <div class="flex justify-between items-center mb-6">
-                                    <h3 class="text-xl font-bold text-gray-800 flex items-center">
-                                        <i class="fas fa-coins mr-2 text-primary"></i> Preferred Currency
-                                    </h3>
-                                    <button id="refresh-reports" class="refresh-btn">
-                                        <i class="fas fa-sync-alt mr-1"></i> Refresh Data
-                                    </button>
+            <div class="max-w-7xl mx-auto">
+                <!-- Currency Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="lg:col-span-1">
+                        <div class="card p-6 h-full">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                                    <i class="fas fa-coins mr-2 text-primary"></i> Preferred Currency
+                                </h3>
+                                <button id="refresh-reports" class="refresh-btn">
+                                    <i class="fas fa-sync-alt mr-1"></i> Refresh Data
+                                </button>
+                            </div>
+                            <p class="text-gray-600 mb-4">Select your preferred currency for displaying financial data.</p>
+                            <div class="space-y-3">
+                                <div class="currency-option" data-currency="PKR">
+                                    <div class="currency-flag bg-green-600">PK</div>
+                                    <div>
+                                        <div class="font-medium">Pakistani Rupee (PKR)</div>
+                                        <div class="text-sm text-gray-500">₨</div>
+                                    </div>
                                 </div>
-                                <p class="text-gray-600 mb-4">Select your preferred currency for displaying financial data.</p>
-                                <div class="space-y-3">
-                                    <div class="currency-option" data-currency="PKR">
-                                        <div class="currency-flag bg-green-600">PK</div>
-                                        <div>
-                                            <div class="font-medium">Pakistani Rupee (PKR)</div>
-                                            <div class="text-sm text-gray-500">₨</div>
-                                        </div>
+                                <div class="currency-option" data-currency="USD">
+                                    <div class="currency-flag bg-blue-600">US</div>
+                                    <div>
+                                        <div class="font-medium">US Dollar (USD)</div>
+                                        <div class="text-sm text-gray-500">$</div>
                                     </div>
-                                    <div class="currency-option" data-currency="USD">
-                                        <div class="currency-flag bg-blue-600">US</div>
-                                        <div>
-                                            <div class="font-medium">US Dollar (USD)</div>
-                                            <div class="text-sm text-gray-500">$</div>
-                                        </div>
-                                    </div>
-                                    <div class="currency-option" data-currency="INR">
-                                        <div class="currency-flag bg-orange-600">IN</div>
-                                        <div>
-                                            <div class="font-medium">Indian Rupee (INR)</div>
-                                            <div class="text-sm text-gray-500">₹</div>
-                                        </div>
+                                </div>
+                                <div class="currency-option" data-currency="INR">
+                                    <div class="currency-flag bg-orange-600">IN</div>
+                                    <div>
+                                        <div class="font-medium">Indian Rupee (INR)</div>
+                                        <div class="text-sm text-gray-500">₹</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Financial Overview -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+
+                    <!-- Quick Stats -->
+                    <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="stat-card">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <p class="text-green-100">Total Balance</p>
-                                    <h3 class="text-2xl font-bold mt-2" id="total-balance">₨ 0</h3>
+                                    <p class="text-green-100">Net Cash Flow</p>
+                                    <h3 class="text-2xl font-bold mt-2" id="net-cash-flow">₨ 0</h3>
                                 </div>
                                 <div class="bg-white bg-opacity-20 p-2 rounded-lg">
-                                    <i class="fas fa-wallet text-white"></i>
+                                    <i class="fas fa-exchange-alt text-white"></i>
                                 </div>
                             </div>
-                            <p class="text-green-100 text-sm mt-4"><i class="fas fa-arrow-up mr-1"></i> <span id="balance-change">0%</span> from last month</p>
+                            <p class="text-green-100 text-sm mt-4" id="cash-flow-trend">No data available</p>
                         </div>
                         
                         <div class="stat-card blue">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <p class="text-blue-100">Total Income</p>
-                                    <h3 class="text-2xl font-bold mt-2" id="total-income">₨ 0</h3>
+                                    <p class="text-blue-100">Avg. Monthly Income</p>
+                                    <h3 class="text-2xl font-bold mt-2" id="avg-monthly-income">₨ 0</h3>
                                 </div>
                                 <div class="bg-white bg-opacity-20 p-2 rounded-lg">
-                                    <i class="fas fa-money-bill-wave text-white"></i>
+                                    <i class="fas fa-chart-line text-white"></i>
                                 </div>
                             </div>
-                            <p class="text-blue-100 text-sm mt-4"><i class="fas fa-arrow-up mr-1"></i> <span id="income-change">0%</span> from last month</p>
-                        </div>
-                        
-                        <div class="stat-card red">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-red-100">Total Expenses</p>
-                                    <h3 class="text-2xl font-bold mt-2" id="total-expenses">₨ 0</h3>
-                                </div>
-                                <div class="bg-white bg-opacity-20 p-2 rounded-lg">
-                                    <i class="fas fa-credit-card text-white"></i>
-                                </div>
-                            </div>
-                            <p class="text-red-100 text-sm mt-4"><i class="fas fa-arrow-down mr-1"></i> <span id="expenses-change">0%</span> from last month</p>
-                        </div>
-                        
-                        <div class="stat-card purple">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <p class="text-purple-100">Savings Rate</p>
-                                    <h3 class="text-2xl font-bold mt-2" id="savings-rate">0%</h3>
-                                </div>
-                                <div class="bg-white bg-opacity-20 p-2 rounded-lg">
-                                    <i class="fas fa-piggy-bank text-white"></i>
-                                </div>
-                            </div>
-                            <p class="text-purple-100 text-sm mt-4"><i class="fas fa-arrow-up mr-1"></i> <span id="savings-change">0%</span> from last month</p>
+                            <p class="text-blue-100 text-sm mt-4" id="income-trend">No data available</p>
                         </div>
                     </div>
-                    
-                    <!-- Charts Section -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                        <div class="card p-6 report-card">
-                            <h3 class="text-xl font-bold text-gray-800 mb-6">Income vs Expenses</h3>
-                            <div class="chart-container">
-                                <canvas id="incomeExpenseChart"></canvas>
+                </div>
+                
+                <!-- Financial Overview -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="stat-card">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-green-100">Total Balance</p>
+                                <h3 class="text-2xl font-bold mt-2" id="total-balance">₨ 0</h3>
+                            </div>
+                            <div class="bg-white bg-opacity-20 p-2 rounded-lg">
+                                <i class="fas fa-wallet text-white"></i>
                             </div>
                         </div>
-                        
-                        <div class="card p-6 report-card">
-                            <h3 class="text-xl font-bold text-gray-800 mb-6">Spending by Category</h3>
-                            <div class="chart-container">
-                                <canvas id="categoryChart"></canvas>
-                            </div>
-                        </div>
+                        <p class="text-green-100 text-sm mt-4"><i class="fas fa-arrow-up mr-1"></i> <span id="balance-change">0%</span> from last month</p>
                     </div>
                     
-                    <!-- Report Options -->
+                    <div class="stat-card blue">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-blue-100">Total Income</p>
+                                <h3 class="text-2xl font-bold mt-2" id="total-income">₨ 0</h3>
+                            </div>
+                            <div class="bg-white bg-opacity-20 p-2 rounded-lg">
+                                <i class="fas fa-money-bill-wave text-white"></i>
+                            </div>
+                        </div>
+                        <p class="text-blue-100 text-sm mt-4"><i class="fas fa-arrow-up mr-1"></i> <span id="income-change">0%</span> from last month</p>
+                    </div>
+                    
+                    <div class="stat-card red">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-red-100">Total Expenses</p>
+                                <h3 class="text-2xl font-bold mt-2" id="total-expenses">₨ 0</h3>
+                            </div>
+                            <div class="bg-white bg-opacity-20 p-2 rounded-lg">
+                                <i class="fas fa-credit-card text-white"></i>
+                            </div>
+                        </div>
+                        <p class="text-red-100 text-sm mt-4"><i class="fas fa-arrow-down mr-1"></i> <span id="expenses-change">0%</span> from last month</p>
+                    </div>
+                    
+                    <div class="stat-card purple">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-purple-100">Savings Rate</p>
+                                <h3 class="text-2xl font-bold mt-2" id="savings-rate">0%</h3>
+                            </div>
+                            <div class="bg-white bg-opacity-20 p-2 rounded-lg">
+                                <i class="fas fa-piggy-bank text-white"></i>
+                            </div>
+                        </div>
+                        <p class="text-purple-100 text-sm mt-4"><i class="fas fa-arrow-up mr-1"></i> <span id="savings-change">0%</span> from last month</p>
+                    </div>
+                </div>
+                
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                     <div class="card p-6">
-                        <h3 class="text-xl font-bold text-gray-800 mb-6">Generate Reports</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            <button class="bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center">
-                                <i class="fas fa-file-pdf mr-2"></i> PDF Report
-                            </button>
-                            <button class="bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
-                                <i class="fas fa-file-excel mr-2"></i> Excel Export
-                            </button>
-                            <button class="bg-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center">
-                                <i class="fas fa-chart-bar mr-2"></i> Custom Report
-                            </button>
-                            <button class="bg-gray-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center">
-                                <i class="fas fa-print mr-2"></i> Print Report
-                            </button>
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Income vs Expenses</h3>
+                        <div class="chart-container">
+                            <canvas id="incomeExpenseChart"></canvas>
                         </div>
+                    </div>
+                    
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Spending by Category</h3>
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monthly Breakdown -->
+                <div class="card p-6 mb-8">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Monthly Financial Summary</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b-2 border-gray-200">
+                                    <th class="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Month</th>
+                                    <th class="text-right py-3 px-4 font-semibold text-gray-700 text-sm">Income</th>
+                                    <th class="text-right py-3 px-4 font-semibold text-gray-700 text-sm">Expenses</th>
+                                    <th class="text-right py-3 px-4 font-semibold text-gray-700 text-sm">Net</th>
+                                    <th class="text-right py-3 px-4 font-semibold text-gray-700 text-sm">Savings Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthly-summary-body" class="divide-y divide-gray-200">
+                                <!-- Monthly data will be populated here -->
+                            </tbody>
+                        </table>
+                        <div id="no-monthly-data" class="text-center py-8 text-gray-500">
+                            <i class="fas fa-chart-bar text-3xl mb-3 opacity-40"></i>
+                            <p>No financial data available</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Report Options -->
+                <div class="card p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Generate Reports</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <button class="bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center">
+                            <i class="fas fa-file-pdf mr-2"></i> PDF Report
+                        </button>
+                        <button class="bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
+                            <i class="fas fa-file-excel mr-2"></i> Excel Export
+                        </button>
+                        <a href="index.html" class="bg-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center text-center">
+                            <i class="fas fa-home mr-2"></i> Dashboard
+                        </a>
+                        <a href="expense.html" class="bg-gray-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center text-center">
+                            <i class="fas fa-plus mr-2"></i> Add Transaction
+                        </a>
                     </div>
                 </div>
             </div>
@@ -520,17 +499,13 @@
     </div>
     
     <div id="notification" class="notification"></div>
-    <div id="modal-container"></div>
-    <button id="fab-add-transaction"><i class="fas fa-plus"></i></button>
-
-    <!-- Data Manager Script -->
-    <script src="data-manager.js"></script>
 
     <script>
-        // Reports Page Auto-Sync Manager
+        // SmartGrocer Reports Manager
         class ReportsManager {
             constructor() {
                 this.dataManager = window.smartGrocerData;
+                this.selectedCurrency = localStorage.getItem('selectedCurrency') || 'PKR';
                 this.charts = {};
                 this.init();
             }
@@ -539,12 +514,12 @@
                 this.setupEventListeners();
                 this.setupCurrencySelection();
                 this.checkUserAuth();
+                this.updateReports();
             }
 
             setupEventListeners() {
                 // Listen for data updates from other pages
                 window.addEventListener('smartgrocer-data-update', (event) => {
-                    console.log('📈 Reports received data update');
                     this.updateReports();
                 });
 
@@ -580,8 +555,8 @@
                 const refreshBtn = document.getElementById('refresh-reports');
                 if (refreshBtn) {
                     refreshBtn.addEventListener('click', () => {
-                        this.updateReports();
-                        this.showNotification('Reports data refreshed', 'info');
+                        this.dataManager.forceRefresh();
+                        this.showNotification('Reports data refreshed!', 'info');
                     });
                 }
             }
@@ -591,67 +566,148 @@
                 currencyOptions.forEach(option => {
                     option.addEventListener('click', () => {
                         const currency = option.getAttribute('data-currency');
+                        this.selectedCurrency = currency;
+                        localStorage.setItem('selectedCurrency', currency);
                         this.dataManager.setCurrency(currency);
-                        this.updateCurrencyDisplay(currency);
+                        
+                        currencyOptions.forEach(opt => opt.classList.remove('selected'));
+                        option.classList.add('selected');
+                        
                         this.updateReports();
+                        this.showNotification(`Display currency set to ${this.dataManager.currencies[currency].name}`, 'success');
                     });
+                    
+                    if (option.getAttribute('data-currency') === this.selectedCurrency) {
+                        option.classList.add('selected');
+                    }
                 });
             }
 
             checkUserAuth() {
                 const userName = localStorage.getItem('smartgrocer-currentUser');
-                const defaultCurrency = localStorage.getItem('selectedCurrency') || 'PKR';
-                
                 if (userName) {
-                    this.showMainApp(userName);
-                    this.updateCurrencyDisplay(defaultCurrency);
-                    this.dataManager.initializeSampleData();
-                    this.updateReports();
+                    document.getElementById('signin-overlay').style.display = 'none';
+                    document.getElementById('welcome-user-text').textContent = `Welcome, ${userName}!`;
+                    document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
                 }
             }
 
             handleSignIn() {
                 const userName = document.getElementById('signin-name').value.trim();
-                const selectedCurrency = document.querySelector('.currency-option.selected')?.getAttribute('data-currency') || 'PKR';
-                
                 if (userName) {
                     localStorage.setItem('smartgrocer-currentUser', userName);
-                    localStorage.setItem('selectedCurrency', selectedCurrency);
-                    this.dataManager.setCurrency(selectedCurrency);
-                    this.showMainApp(userName);
+                    this.checkUserAuth();
                     this.dataManager.initializeSampleData();
                     this.updateReports();
                     this.showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
                 }
             }
 
-            showMainApp(userName) {
-                document.getElementById('signin-overlay').style.display = 'none';
-                
-                document.getElementById('welcome-user-text').textContent = `Welcome, ${userName}!`;
-                document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
-            }
-
-            updateCurrencyDisplay(currency) {
-                const currencyOptions = document.querySelectorAll('.currency-option');
-                currencyOptions.forEach(option => option.classList.remove('selected'));
-                document.querySelector(`.currency-option[data-currency="${currency}"]`).classList.add('selected');
-            }
-
             updateReports() {
-                console.log('Updating reports...');
                 const financialData = this.dataManager.calculateFinancialOverview();
                 const chartData = this.dataManager.calculateChartData();
+                const transactions = this.dataManager.getTransactions();
 
                 this.updateFinancialOverview(financialData);
                 this.updateCharts(chartData);
+                this.updateMonthlySummary(transactions);
+                this.updateQuickStats(transactions);
+                this.updateDataStatus(transactions);
             }
 
             updateFinancialOverview(data) {
-                document.getElementById('total-balance').textContent = `${data.symbol} ${data.totalBalance.toLocaleString()}`;
-                document.getElementById('total-income').textContent = `${data.symbol} ${data.totalIncome.toLocaleString()}`;
-                document.getElementById('total-expenses').textContent = `${data.symbol} ${data.totalExpenses.toLocaleString()}`;
+                const symbol = data.symbol;
+                
+                document.getElementById('total-balance').textContent = `${symbol} ${data.totalBalance.toLocaleString()}`;
+                document.getElementById('total-income').textContent = `${symbol} ${data.totalIncome.toLocaleString()}`;
+                document.getElementById('total-expenses').textContent = `${symbol} ${data.totalExpenses.toLocaleString()}`;
                 document.getElementById('savings-rate').textContent = `${data.savingsRate}%`;
+
+                // Calculate changes (simplified - in real app, compare with previous period)
+                const balanceChange = data.totalBalance > 0 ? 5 : 0;
+                const incomeChange = data.totalIncome > 0 ? 8 : 0;
+                const expensesChange = data.totalExpenses > 0 ? -3 : 0;
+                const savingsChange = data.savingsRate > 0 ? 12 : 0;
+
+                document.getElementById('balance-change').textContent = `${balanceChange}%`;
+                document.getElementById('income-change').textContent = `${incomeChange}%`;
+                document.getElementById('expenses-change').textContent = `${expensesChange}%`;
+                document.getElementById('savings-change').textContent = `${savingsChange}%`;
+            }
+
+            updateQuickStats(transactions) {
+                const currencyInfo = this.dataManager.currencies[this.selectedCurrency];
+                const symbol = currencyInfo.symbol;
+
+                // Calculate net cash flow (income - expenses for current month)
+                const currentMonth = new Date().getMonth();
+                const currentYear = new Date().getFullYear();
+                
+                const monthTransactions = transactions.filter(t => {
+                    try {
+                        const transactionDate = new Date(t.date);
+                        return transactionDate.getMonth() === currentMonth && 
+                               transactionDate.getFullYear() === currentYear &&
+                               t.currency === this.selectedCurrency;
+                    } catch (error) {
+                        return false;
+                    }
+                });
+
+                const monthIncome = monthTransactions
+                    .filter(t => t.type === 'income')
+                    .reduce((total, t) => total + (parseFloat(t.amount) || 0), 0);
+
+                const monthExpenses = monthTransactions
+                    .filter(t => t.type === 'expense')
+                    .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
+
+                const netCashFlow = monthIncome - monthExpenses;
+                
+                document.getElementById('net-cash-flow').textContent = `${symbol} ${netCashFlow.toLocaleString()}`;
+                
+                const cashFlowTrend = netCashFlow >= 0 ? 
+                    `<i class="fas fa-arrow-up mr-1"></i> Positive cash flow` : 
+                    `<i class="fas fa-arrow-down mr-1"></i> Negative cash flow`;
+                document.getElementById('cash-flow-trend').innerHTML = cashFlowTrend;
+
+                // Calculate average monthly income (last 6 months)
+                const monthlyIncomes = this.calculateMonthlyAverages(transactions, 'income');
+                const avgMonthlyIncome = monthlyIncomes.length > 0 ? 
+                    monthlyIncomes.reduce((a, b) => a + b, 0) / monthlyIncomes.length : 0;
+                
+                document.getElementById('avg-monthly-income').textContent = `${symbol} ${Math.round(avgMonthlyIncome).toLocaleString()}`;
+                
+                const incomeTrend = avgMonthlyIncome > 0 ? 
+                    `<i class="fas fa-arrow-up mr-1"></i> Stable income` : 
+                    `No income data`;
+                document.getElementById('income-trend').innerHTML = incomeTrend;
+            }
+
+            calculateMonthlyAverages(transactions, type) {
+                const monthlyData = [];
+                const currentDate = new Date();
+                
+                for (let i = 0; i < 6; i++) {
+                    const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+                    const monthTotal = transactions
+                        .filter(t => {
+                            try {
+                                const transactionDate = new Date(t.date);
+                                return t.type === type &&
+                                       t.currency === this.selectedCurrency &&
+                                       transactionDate.getMonth() === date.getMonth() &&
+                                       transactionDate.getFullYear() === date.getFullYear();
+                            } catch (error) {
+                                return false;
+                            }
+                        })
+                        .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
+                    
+                    monthlyData.push(monthTotal);
+                }
+                
+                return monthlyData.filter(amount => amount > 0);
             }
 
             updateCharts(chartData) {
@@ -761,7 +817,7 @@
                                         const label = context.label || '';
                                         const value = context.raw;
                                         const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                        const percentage = Math.round((value / total) * 100);
+                                        const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
                                         return `${label}: ${currencySymbol}${value.toLocaleString()} (${percentage}%)`;
                                     }
                                 }
@@ -770,6 +826,98 @@
                         cutout: '70%'
                     }
                 });
+            }
+
+            updateMonthlySummary(transactions) {
+                const container = document.getElementById('monthly-summary-body');
+                const noDataMessage = document.getElementById('no-monthly-data');
+                const currencySymbol = this.dataManager.currencies[this.selectedCurrency].symbol;
+                
+                const currentDate = new Date();
+                const monthlyData = [];
+
+                // Get data for last 6 months
+                for (let i = 0; i < 6; i++) {
+                    const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+                    const monthName = date.toLocaleString('default', { month: 'long' }) + ' ' + date.getFullYear();
+                    
+                    const monthIncome = transactions
+                        .filter(t => {
+                            try {
+                                const transactionDate = new Date(t.date);
+                                return t.type === 'income' &&
+                                       t.currency === this.selectedCurrency &&
+                                       transactionDate.getMonth() === date.getMonth() &&
+                                       transactionDate.getFullYear() === date.getFullYear();
+                            } catch (error) {
+                                return false;
+                            }
+                        })
+                        .reduce((total, t) => total + (parseFloat(t.amount) || 0), 0);
+
+                    const monthExpenses = transactions
+                        .filter(t => {
+                            try {
+                                const transactionDate = new Date(t.date);
+                                return t.type === 'expense' &&
+                                       t.currency === this.selectedCurrency &&
+                                       transactionDate.getMonth() === date.getMonth() &&
+                                       transactionDate.getFullYear() === date.getFullYear();
+                            } catch (error) {
+                                return false;
+                            }
+                        })
+                        .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
+
+                    const net = monthIncome - monthExpenses;
+                    const savingsRate = monthIncome > 0 ? Math.round((net / monthIncome) * 100) : 0;
+
+                    monthlyData.push({
+                        month: monthName,
+                        income: monthIncome,
+                        expenses: monthExpenses,
+                        net: net,
+                        savingsRate: savingsRate
+                    });
+                }
+
+                // Filter out months with no data
+                const monthsWithData = monthlyData.filter(month => month.income > 0 || month.expenses > 0);
+
+                if (monthsWithData.length === 0) {
+                    container.innerHTML = '';
+                    noDataMessage.classList.remove('hidden');
+                    return;
+                }
+
+                noDataMessage.classList.add('hidden');
+                
+                container.innerHTML = monthsWithData.map(month => {
+                    const netClass = month.net >= 0 ? 'text-green-600' : 'text-red-600';
+                    const netSign = month.net >= 0 ? '+' : '';
+                    
+                    return `
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="py-3 px-4 text-gray-700 text-sm">${month.month}</td>
+                            <td class="py-3 px-4 text-right text-gray-900 font-medium">${currencySymbol}${month.income.toLocaleString()}</td>
+                            <td class="py-3 px-4 text-right text-gray-900 font-medium">${currencySymbol}${month.expenses.toLocaleString()}</td>
+                            <td class="py-3 px-4 text-right font-medium ${netClass}">${netSign}${currencySymbol}${month.net.toLocaleString()}</td>
+                            <td class="py-3 px-4 text-right font-medium ${month.savingsRate >= 0 ? 'text-green-600' : 'text-red-600'}">${month.savingsRate}%</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            updateDataStatus(transactions) {
+                const statusElement = document.getElementById('data-status');
+                const messageElement = document.getElementById('status-message');
+                
+                if (transactions.length === 0) {
+                    statusElement.classList.remove('hidden');
+                    messageElement.textContent = 'No transactions found. Add some income or expenses to see reports!';
+                } else {
+                    statusElement.classList.add('hidden');
+                }
             }
 
             showNotification(message, type = 'info') {
@@ -798,8 +946,7 @@
         }
 
         function updateReports() {
-            // This will be called by the ReportsManager instance
-            console.log('Manual reports update triggered');
+            window.smartGrocerData.forceRefresh();
         }
 
         // Handle window resize
@@ -813,765 +960,3 @@
     </script>
 </body>
 </html>
-<!-- Data Manager Script -->
-<script>
-// data-manager.js - Centralized data management for SmartGrocer
-class DataManager {
-    constructor() {
-        this.currency = localStorage.getItem('selectedCurrency') || 'PKR';
-        this.currencies = {
-            'USD': { symbol: '$', name: 'US Dollar', flag: 'US' },
-            'PKR': { symbol: '₨', name: 'Pakistani Rupee', flag: 'PK' },
-            'INR': { symbol: '₹', name: 'Indian Rupee', flag: 'IN' }
-        };
-        this.autoUpdateInterval = null;
-        this.init();
-    }
-
-    // Initialize data manager
-    init() {
-        this.ensureDataStructure();
-        this.setupAutoUpdate();
-        console.log('🔧 Data Manager Initialized');
-        return this;
-    }
-
-    // Ensure proper data structure exists
-    ensureDataStructure() {
-        if (!localStorage.getItem('smartgrocer-transactions')) {
-            localStorage.setItem('smartgrocer-transactions', JSON.stringify([]));
-            console.log('✅ Created empty transactions array');
-        }
-        if (!localStorage.getItem('smartgrocer-accounts')) {
-            localStorage.setItem('smartgrocer-accounts', JSON.stringify([]));
-            console.log('✅ Created empty accounts array');
-        }
-        if (!localStorage.getItem('smartgrocer-budgets')) {
-            localStorage.setItem('smartgrocer-budgets', JSON.stringify([]));
-            console.log('✅ Created empty budgets array');
-        }
-        if (!localStorage.getItem('smartgrocer-categories')) {
-            localStorage.setItem('smartgrocer-categories', JSON.stringify([
-                'Food & Dining', 'Transportation', 'Shopping', 'Entertainment',
-                'Bills & Utilities', 'Healthcare', 'Education', 'Travel', 'Personal Care', 'Salary'
-            ]));
-        }
-    }
-
-    // Setup auto-update across all pages
-    setupAutoUpdate() {
-        // Clear existing interval
-        if (this.autoUpdateInterval) {
-            clearInterval(this.autoUpdateInterval);
-        }
-
-        // Set up new interval (update every 5 seconds)
-        this.autoUpdateInterval = setInterval(() => {
-            this.triggerDataUpdate();
-        }, 5000);
-
-        console.log('🔄 Auto-update interval set (5 seconds)');
-    }
-
-    // Trigger data update event
-    triggerDataUpdate() {
-        const transactions = this.getTransactions();
-        const accounts = this.getAccounts();
-        const budgets = this.getBudgets();
-        
-        console.log('📢 Triggering data update:', {
-            transactions: transactions.length,
-            accounts: accounts.length,
-            budgets: budgets.length
-        });
-
-        const event = new CustomEvent('smartgrocer-data-update', {
-            detail: {
-                transactions: transactions,
-                accounts: accounts,
-                budgets: budgets,
-                currency: this.currency
-            }
-        });
-        window.dispatchEvent(event);
-    }
-
-    // Get all transactions
-    getTransactions() {
-        const transactions = this.safeParseJSON(localStorage.getItem('smartgrocer-transactions')) || [];
-        console.log('📄 Retrieved transactions:', transactions.length);
-        return transactions;
-    }
-
-    // Add new transaction
-    addTransaction(transaction) {
-        console.log('➕ Adding new transaction:', transaction);
-        const transactions = this.getTransactions();
-        
-        // Ensure transaction has required fields
-        transaction.id = transaction.id || Date.now() + Math.random();
-        transaction.currency = transaction.currency || this.currency;
-        transaction.createdAt = transaction.createdAt || new Date().toISOString();
-        
-        // Ensure amount is properly formatted
-        if (transaction.type === 'expense' && transaction.amount > 0) {
-            transaction.amount = -Math.abs(transaction.amount);
-        } else if (transaction.type === 'income' && transaction.amount < 0) {
-            transaction.amount = Math.abs(transaction.amount);
-        }
-        
-        transactions.push(transaction);
-        localStorage.setItem('smartgrocer-transactions', JSON.stringify(transactions));
-        
-        console.log('✅ Transaction added. Total transactions:', transactions.length);
-        
-        // Update account balance if account is specified
-        if (transaction.account) {
-            this.updateAccountBalanceFromTransaction(transaction);
-        }
-        
-        // Trigger immediate update
-        this.triggerDataUpdate();
-        return transaction;
-    }
-
-    // Update account balance based on transaction
-    updateAccountBalanceFromTransaction(transaction) {
-        const accounts = this.getAccounts();
-        let account = accounts.find(a => a.name === transaction.account);
-        
-        if (!account) {
-            // Create account if it doesn't exist
-            account = {
-                id: Date.now(),
-                name: transaction.account,
-                type: 'bank',
-                balance: 0,
-                currency: this.currency
-            };
-            accounts.push(account);
-        }
-        
-        if (transaction.type === 'income') {
-            account.balance += parseFloat(transaction.amount);
-        } else {
-            account.balance -= Math.abs(parseFloat(transaction.amount));
-        }
-        
-        localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
-        console.log('💰 Updated account balance:', account.name, account.balance);
-    }
-
-    // Update transaction
-    updateTransaction(id, updates) {
-        const transactions = this.getTransactions();
-        const index = transactions.findIndex(t => t.id === id);
-        
-        if (index !== -1) {
-            transactions[index] = { ...transactions[index], ...updates };
-            localStorage.setItem('smartgrocer-transactions', JSON.stringify(transactions));
-            this.triggerDataUpdate();
-            return transactions[index];
-        }
-        return null;
-    }
-
-    // Delete transaction
-    deleteTransaction(id) {
-        const transactions = this.getTransactions();
-        const filtered = transactions.filter(t => t.id !== id);
-        localStorage.setItem('smartgrocer-transactions', JSON.stringify(filtered));
-        this.triggerDataUpdate();
-    }
-
-    // Get all accounts
-    getAccounts() {
-        return this.safeParseJSON(localStorage.getItem('smartgrocer-accounts')) || [];
-    }
-
-    // Update account balance
-    updateAccountBalance(accountId, newBalance) {
-        const accounts = this.getAccounts();
-        const account = accounts.find(a => a.id === accountId);
-        
-        if (account) {
-            account.balance = newBalance;
-            localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
-            this.triggerDataUpdate();
-        }
-    }
-
-    // Get all budgets
-    getBudgets() {
-        return this.safeParseJSON(localStorage.getItem('smartgrocer-budgets')) || [];
-    }
-
-    // Get categories
-    getCategories() {
-        return this.safeParseJSON(localStorage.getItem('smartgrocer-categories')) || [];
-    }
-
-    // Calculate financial overview
-    calculateFinancialOverview() {
-        const transactions = this.getTransactions();
-        const accounts = this.getAccounts();
-        const currentMonth = new Date().getMonth();
-        const currentYear = new Date().getFullYear();
-
-        console.log('🧮 Calculating financial overview from:', {
-            transactions: transactions.length,
-            accounts: accounts.length
-        });
-
-        // Total balance from accounts in selected currency
-        const totalBalance = accounts
-            .filter(account => account.currency === this.currency)
-            .reduce((total, account) => total + (parseFloat(account.balance) || 0), 0);
-
-        // Current month transactions
-        const currentMonthTransactions = transactions.filter(transaction => {
-            try {
-                const transactionDate = new Date(transaction.date);
-                return transactionDate.getMonth() === currentMonth && 
-                       transactionDate.getFullYear() === currentYear &&
-                       transaction.currency === this.currency;
-            } catch (error) {
-                return false;
-            }
-        });
-
-        // Calculate totals
-        const totalIncome = currentMonthTransactions
-            .filter(t => t.type === 'income')
-            .reduce((total, t) => total + (parseFloat(t.amount) || 0), 0);
-
-        const totalExpenses = currentMonthTransactions
-            .filter(t => t.type === 'expense')
-            .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
-
-        const savingsRate = totalIncome > 0 ? 
-            Math.round(((totalIncome - totalExpenses) / totalIncome) * 100) : 0;
-
-        const result = {
-            totalBalance,
-            totalIncome,
-            totalExpenses,
-            savingsRate,
-            currency: this.currency,
-            symbol: this.currencies[this.currency].symbol
-        };
-
-        console.log('📊 Financial overview calculated:', result);
-        return result;
-    }
-
-    // Calculate chart data
-    calculateChartData() {
-        const transactions = this.getTransactions();
-        const months = [];
-        const incomeData = [];
-        const expenseData = [];
-        const currentDate = new Date();
-
-        console.log('📈 Calculating chart data from transactions:', transactions.length);
-
-        // Last 6 months data
-        for (let i = 5; i >= 0; i--) {
-            const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-            const monthName = date.toLocaleString('default', { month: 'short' });
-            months.push(monthName);
-
-            const monthIncome = transactions
-                .filter(t => {
-                    try {
-                        const transactionDate = new Date(t.date);
-                        return t.type === 'income' &&
-                               t.currency === this.currency &&
-                               transactionDate.getMonth() === date.getMonth() &&
-                               transactionDate.getFullYear() === date.getFullYear();
-                    } catch (error) {
-                        return false;
-                    }
-                })
-                .reduce((total, t) => total + (parseFloat(t.amount) || 0), 0);
-
-            const monthExpenses = transactions
-                .filter(t => {
-                    try {
-                        const transactionDate = new Date(t.date);
-                        return t.type === 'expense' &&
-                               t.currency === this.currency &&
-                               transactionDate.getMonth() === date.getMonth() &&
-                               transactionDate.getFullYear() === date.getFullYear();
-                    } catch (error) {
-                        return false;
-                    }
-                })
-                .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
-
-            incomeData.push(monthIncome);
-            expenseData.push(monthExpenses);
-        }
-
-        // Category data
-        const categoryMap = {};
-        const currentMonth = new Date().getMonth();
-        const currentYear = new Date().getFullYear();
-
-        transactions
-            .filter(t => {
-                try {
-                    const transactionDate = new Date(t.date);
-                    return t.type === 'expense' &&
-                           t.currency === this.currency &&
-                           transactionDate.getMonth() === currentMonth &&
-                           transactionDate.getFullYear() === currentYear;
-                } catch (error) {
-                    return false;
-                }
-            })
-            .forEach(t => {
-                const category = t.category || 'Uncategorized';
-                const amount = Math.abs(parseFloat(t.amount) || 0);
-                categoryMap[category] = (categoryMap[category] || 0) + amount;
-            });
-
-        const result = {
-            incomeExpense: {
-                labels: months,
-                income: incomeData,
-                expenses: expenseData
-            },
-            categories: {
-                labels: Object.keys(categoryMap),
-                data: Object.values(categoryMap)
-            }
-        };
-
-        console.log('📊 Chart data calculated:', result);
-        return result;
-    }
-
-    // Safe JSON parsing
-    safeParseJSON(jsonString) {
-        try {
-            return jsonString ? JSON.parse(jsonString) : [];
-        } catch (error) {
-            console.error('❌ JSON parsing error:', error);
-            return [];
-        }
-    }
-
-    // Set currency
-    setCurrency(currency) {
-        console.log('💰 Setting currency to:', currency);
-        this.currency = currency;
-        localStorage.setItem('selectedCurrency', currency);
-        this.triggerDataUpdate();
-    }
-
-    // Get currency symbol
-    getCurrencySymbol() {
-        return this.currencies[this.currency]?.symbol || '₨';
-    }
-
-    // Initialize sample data for new users
-    initializeSampleData() {
-        const transactions = this.getTransactions();
-        const accounts = this.getAccounts();
-        
-        if (transactions.length === 0 && accounts.length === 0) {
-            console.log('🎯 Initializing sample data for new user');
-            
-            const sampleTransactions = [
-                {
-                    id: Date.now() + 1,
-                    type: 'income',
-                    amount: 75000,
-                    currency: this.currency,
-                    category: 'Salary',
-                    description: 'Monthly Salary',
-                    date: new Date().toISOString().split('T')[0],
-                    account: 'Primary Account',
-                    createdAt: new Date().toISOString()
-                },
-                {
-                    id: Date.now() + 2,
-                    type: 'expense',
-                    amount: -4500,
-                    currency: this.currency,
-                    category: 'Food & Dining',
-                    description: 'Grocery Shopping',
-                    date: new Date().toISOString().split('T')[0],
-                    account: 'Primary Account',
-                    createdAt: new Date().toISOString()
-                },
-                {
-                    id: Date.now() + 3,
-                    type: 'expense',
-                    amount: -2500,
-                    currency: this.currency,
-                    category: 'Transportation',
-                    description: 'Fuel',
-                    date: new Date(Date.now() - 86400000).toISOString().split('T')[0],
-                    account: 'Primary Account',
-                    createdAt: new Date().toISOString()
-                }
-            ];
-
-            const sampleAccounts = [
-                {
-                    id: 1,
-                    name: 'Primary Account',
-                    type: 'bank',
-                    balance: 68000, // 75000 - 4500 - 2500
-                    currency: this.currency
-                }
-            ];
-
-            localStorage.setItem('smartgrocer-transactions', JSON.stringify(sampleTransactions));
-            localStorage.setItem('smartgrocer-accounts', JSON.stringify(sampleAccounts));
-            
-            console.log('✅ Sample data initialized');
-            this.triggerDataUpdate();
-        } else {
-            console.log('ℹ️ Sample data already exists, skipping initialization');
-        }
-    }
-
-    // Force data refresh
-    forceRefresh() {
-        console.log('🔄 Manual data refresh triggered');
-        this.triggerDataUpdate();
-    }
-
-    // Cleanup
-    destroy() {
-        if (this.autoUpdateInterval) {
-            clearInterval(this.autoUpdateInterval);
-            console.log('🧹 Data Manager cleaned up');
-        }
-    }
-}
-
-// Create global instance immediately
-window.smartGrocerData = new DataManager();
-</script>
-
-<script>
-// Reports Page Auto-Sync Manager
-class ReportsManager {
-    constructor() {
-        this.dataManager = window.smartGrocerData;
-        this.charts = {};
-        this.init();
-    }
-
-    init() {
-        console.log('📈 Initializing Reports Manager');
-        this.setupEventListeners();
-        this.setupCurrencySelection();
-        this.checkUserAuth();
-    }
-
-    setupEventListeners() {
-        // Listen for data updates from other pages
-        window.addEventListener('smartgrocer-data-update', (event) => {
-            console.log('📊 Reports received data update event', event.detail);
-            this.updateReports();
-        });
-
-        // Mobile menu
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebar-overlay');
-        
-        if (mobileMenuButton) {
-            mobileMenuButton.addEventListener('click', function() {
-                sidebar.classList.toggle('show');
-                sidebarOverlay.style.display = sidebar.classList.contains('show') ? 'block' : 'none';
-            });
-        }
-        
-        if (sidebarOverlay) {
-            sidebarOverlay.addEventListener('click', function() {
-                sidebar.classList.remove('show');
-                sidebarOverlay.style.display = 'none';
-            });
-        }
-
-        // Sign in form
-        const signinForm = document.getElementById('signin-form');
-        if (signinForm) {
-            signinForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleSignIn();
-            });
-        }
-
-        // Manual refresh
-        const refreshBtn = document.getElementById('refresh-reports');
-        if (refreshBtn) {
-            refreshBtn.addEventListener('click', () => {
-                console.log('🔄 Manual reports refresh triggered');
-                this.dataManager.forceRefresh();
-                this.showNotification('Reports data refreshed!', 'info');
-            });
-        }
-    }
-
-    setupCurrencySelection() {
-        const currencyOptions = document.querySelectorAll('.currency-option');
-        currencyOptions.forEach(option => {
-            option.addEventListener('click', () => {
-                const currency = option.getAttribute('data-currency');
-                this.dataManager.setCurrency(currency);
-                this.updateCurrencyDisplay(currency);
-            });
-        });
-    }
-
-    checkUserAuth() {
-        const userName = localStorage.getItem('smartgrocer-currentUser');
-        const defaultCurrency = localStorage.getItem('selectedCurrency') || 'PKR';
-        
-        if (userName) {
-            this.showMainApp(userName);
-            this.updateCurrencyDisplay(defaultCurrency);
-            this.updateReports();
-        } else {
-            console.log('👤 No user found, showing signin overlay');
-        }
-    }
-
-    handleSignIn() {
-        const userName = document.getElementById('signin-name').value.trim();
-        const selectedCurrency = document.querySelector('.currency-option.selected')?.getAttribute('data-currency') || 'PKR';
-        
-        if (userName) {
-            localStorage.setItem('smartgrocer-currentUser', userName);
-            localStorage.setItem('selectedCurrency', selectedCurrency);
-            this.dataManager.setCurrency(selectedCurrency);
-            this.showMainApp(userName);
-            this.dataManager.initializeSampleData();
-            this.updateReports();
-            this.showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
-        }
-    }
-
-    showMainApp(userName) {
-        document.getElementById('signin-overlay').style.display = 'none';
-        
-        document.getElementById('welcome-user-text').textContent = `Welcome, ${userName}!`;
-        document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
-    }
-
-    updateCurrencyDisplay(currency) {
-        const currencyOptions = document.querySelectorAll('.currency-option');
-        currencyOptions.forEach(option => option.classList.remove('selected'));
-        document.querySelector(`.currency-option[data-currency="${currency}"]`).classList.add('selected');
-    }
-
-    updateReports() {
-        console.log('🔄 Updating reports with real data...');
-        try {
-            const financialData = this.dataManager.calculateFinancialOverview();
-            const chartData = this.dataManager.calculateChartData();
-
-            this.updateFinancialOverview(financialData);
-            this.updateCharts(chartData);
-            this.updateDataStatus();
-
-        } catch (error) {
-            console.error('❌ Error updating reports:', error);
-            this.showNotification('Error updating reports data', 'error');
-        }
-    }
-
-    updateFinancialOverview(data) {
-        console.log('💰 Updating financial overview in reports:', data);
-        document.getElementById('total-balance').textContent = `${data.symbol} ${data.totalBalance.toLocaleString()}`;
-        document.getElementById('total-income').textContent = `${data.symbol} ${data.totalIncome.toLocaleString()}`;
-        document.getElementById('total-expenses').textContent = `${data.symbol} ${data.totalExpenses.toLocaleString()}`;
-        document.getElementById('savings-rate').textContent = `${data.savingsRate}%`;
-    }
-
-    updateCharts(chartData) {
-        console.log('📊 Updating charts in reports:', chartData);
-        this.updateIncomeExpenseChart(chartData.incomeExpense);
-        this.updateCategoryChart(chartData.categories);
-    }
-
-    updateIncomeExpenseChart(data) {
-        const ctx = document.getElementById('incomeExpenseChart');
-        if (!ctx) {
-            console.log('❌ Income expense chart canvas not found');
-            return;
-        }
-
-        if (this.charts.incomeExpense) {
-            this.charts.incomeExpense.destroy();
-        }
-
-        const currencySymbol = this.dataManager.getCurrencySymbol();
-
-        this.charts.incomeExpense = new Chart(ctx.getContext('2d'), {
-            type: 'bar',
-            data: {
-                labels: data.labels,
-                datasets: [
-                    {
-                        label: 'Income',
-                        data: data.income,
-                        backgroundColor: '#10B981',
-                        borderRadius: 4
-                    },
-                    {
-                        label: 'Expenses',
-                        data: data.expenses,
-                        backgroundColor: '#EF4444',
-                        borderRadius: 4
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: (context) => {
-                                return `${context.dataset.label}: ${currencySymbol}${context.raw.toLocaleString()}`;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            drawBorder: false
-                        },
-                        ticks: {
-                            callback: (value) => `${currencySymbol}${value.toLocaleString()}`
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    updateCategoryChart(data) {
-        const ctx = document.getElementById('categoryChart');
-        if (!ctx) {
-            console.log('❌ Category chart canvas not found');
-            return;
-        }
-
-        if (this.charts.category) {
-            this.charts.category.destroy();
-        }
-
-        const backgroundColors = [
-            '#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', '#6B7280',
-            '#EC4899', '#14B8A6', '#F97316', '#84CC16', '#6366F1', '#8B5CF6'
-        ];
-
-        const currencySymbol = this.dataManager.getCurrencySymbol();
-
-        this.charts.category = new Chart(ctx.getContext('2d'), {
-            type: 'doughnut',
-            data: {
-                labels: data.labels,
-                datasets: [{
-                    data: data.data,
-                    backgroundColor: backgroundColors.slice(0, data.labels.length),
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: (context) => {
-                                const label = context.label || '';
-                                const value = context.raw;
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
-                                return `${label}: ${currencySymbol}${value.toLocaleString()} (${percentage}%)`;
-                            }
-                        }
-                    }
-                },
-                cutout: '70%'
-            }
-        });
-    }
-
-    updateDataStatus() {
-        const transactions = this.dataManager.getTransactions();
-        const statusElement = document.getElementById('data-status');
-        const messageElement = document.getElementById('status-message');
-        
-        if (transactions.length === 0) {
-            statusElement.classList.remove('hidden');
-            messageElement.textContent = 'No transactions found. Add some income or expenses to see reports!';
-        } else {
-            statusElement.classList.add('hidden');
-        }
-    }
-
-    showNotification(message, type = 'info') {
-        const notification = document.getElementById('notification');
-        const bgColor = type === 'success' ? 'success' :
-                       type === 'error' ? 'error' : 'info';
-        
-        notification.textContent = message;
-        notification.className = `notification ${bgColor}`;
-        notification.classList.add('show');
-        
-        setTimeout(() => {
-            notification.classList.remove('show');
-        }, 5000);
-    }
-}
-
-// Initialize reports when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('📊 Reports DOM loaded, initializing manager...');
-    new ReportsManager();
-});
-
-// Global functions for HTML onclick handlers
-function initializeSampleData() {
-    console.log('🎯 Initializing sample data from global function in reports');
-    window.smartGrocerData.initializeSampleData();
-}
-
-function updateReports() {
-    console.log('🔄 Manual reports update from global function');
-    window.smartGrocerData.forceRefresh();
-}
-
-// Handle window resize
-window.addEventListener('resize', function() {
-    if (window.innerWidth >= 768) {
-        document.getElementById('sidebar').classList.add('show');
-    } else {
-        document.getElementById('sidebar').classList.remove('show');
-    }
-});
-</script>
