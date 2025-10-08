@@ -543,21 +543,9 @@
             'INR': { symbol: '₹', name: 'Indian Rupee', flag: 'IN' }
         };
 
-        // Sample data for the dashboard
-        let financialData = {
-            totalBalance: 0,
-            totalIncome: 0,
-            totalExpenses: 0,
-            savingsRate: 0,
-            budgets: [],
-            transactions: [],
-            lastMonthData: {
-                totalBalance: 0,
-                totalIncome: 0,
-                totalExpenses: 0,
-                savingsRate: 0
-            }
-        };
+        // Global variables
+        let selectedCurrency = 'PKR';
+        let spendingChart = null;
 
         // Initialize the page when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
@@ -568,25 +556,22 @@
             setupSignIn();
             setupSidebar();
             setupCurrencySelection();
-            initializeSpendingChart();
             
             // Check if user is already signed in
-            const userName = localStorage.getItem('userName');
-            const selectedCurrency = localStorage.getItem('selectedCurrency') || 'PKR';
+            const userName = localStorage.getItem('smartgrocer-currentUser');
+            selectedCurrency = localStorage.getItem('selectedCurrency') || 'PKR';
             
             if (userName) {
                 showMainApp(userName, selectedCurrency);
-                loadFinancialData();
                 updateDashboard();
                 
                 // Set up auto-update interval
-                setInterval(autoUpdateDashboard, 30000); // Update every 30 seconds
+                setInterval(autoUpdateDashboard, 10000); // Update every 10 seconds
             }
         }
 
         function setupSignIn() {
             const signinForm = document.getElementById('signin-form');
-            const signinOverlay = document.getElementById('signin-overlay');
             
             signinForm.addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -595,16 +580,15 @@
                 const selectedCurrency = document.querySelector('.currency-option.selected')?.getAttribute('data-currency') || 'PKR';
                 
                 if (userName) {
-                    localStorage.setItem('userName', userName);
+                    localStorage.setItem('smartgrocer-currentUser', userName);
                     localStorage.setItem('selectedCurrency', selectedCurrency);
                     
                     showMainApp(userName, selectedCurrency);
-                    loadFinancialData();
                     updateDashboard();
                     showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
                     
                     // Set up auto-update interval
-                    setInterval(autoUpdateDashboard, 30000); // Update every 30 seconds
+                    setInterval(autoUpdateDashboard, 10000); // Update every 10 seconds
                 }
             });
             
@@ -644,9 +628,10 @@
                     this.classList.add('selected');
                     
                     // If user is signed in, update currency display
-                    const userName = localStorage.getItem('userName');
+                    const userName = localStorage.getItem('smartgrocer-currentUser');
                     if (userName) {
                         localStorage.setItem('selectedCurrency', currency);
+                        selectedCurrency = currency;
                         updateCurrencyDisplay(currency);
                         updateDashboard();
                         showNotification(`Display currency set to ${currencies[currency].name}`, 'success');
@@ -675,76 +660,86 @@
             document.getElementById('currency-symbol').textContent = currencyInfo.symbol;
         }
 
-        function loadFinancialData() {
-            // Try to load data from localStorage
-            const storedData = localStorage.getItem('smartgrocer-financialData');
-            if (storedData) {
-                financialData = JSON.parse(storedData);
-            } else {
-                // Initialize with sample data if no data exists
-                initializeSampleData();
-            }
+        function updateDashboard() {
+            // Load all data from localStorage
+            const accounts = JSON.parse(localStorage.getItem('smartgrocer-accounts') || '[]');
+            const transactions = JSON.parse(localStorage.getItem('smartgrocer-transactions') || '[]');
+            const budgets = JSON.parse(localStorage.getItem('smartgrocer-budgets') || '[]');
             
-            // Load accounts data
-            const accountsData = localStorage.getItem('smartgrocer-accounts');
-            if (accountsData) {
-                const accounts = JSON.parse(accountsData);
-                updateFinancialDataFromAccounts(accounts);
-            }
+            // Calculate financial data from actual data
+            const financialData = calculateFinancialData(accounts, transactions, budgets);
+            
+            // Update dashboard with real data
+            updateFinancialOverview(financialData);
+            updateBudgetProgress(budgets, transactions);
+            updateRecentTransactions(transactions);
+            updateSpendingChart(transactions);
         }
 
-        function initializeSampleData() {
-            // Sample data in PKR
-            financialData = {
-                totalBalance: 154300,
-                totalIncome: 82500,
-                totalExpenses: 28200,
-                savingsRate: 65,
-                budgets: [
-                    { category: 'Groceries', spent: 320, limit: 400 },
-                    { category: 'Entertainment', spent: 75, limit: 150 },
-                    { category: 'Transportation', spent: 120, limit: 200 },
-                    { category: 'Dining Out', spent: 90, limit: 120 }
-                ],
-                transactions: [
-                    { description: 'Groceries', category: 'Supermarket', amount: -85.30, date: 'Today', type: 'expense' },
-                    { description: 'Fuel', category: 'Gas Station', amount: -45.00, date: 'Yesterday', type: 'expense' },
-                    { description: 'Dinner', category: 'Restaurant', amount: -62.50, date: '2 days ago', type: 'expense' },
-                    { description: 'Salary', category: 'Employer', amount: 2500, date: '3 days ago', type: 'income' }
-                ],
+        function calculateFinancialData(accounts, transactions, budgets) {
+            const currencyInfo = currencies[selectedCurrency];
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+            const lastMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+            // Calculate total balance from accounts in selected currency
+            const totalBalance = accounts
+                .filter(account => account.currency === selectedCurrency)
+                .reduce((total, account) => total + (account.balance || 0), 0);
+
+            // Calculate income and expenses for current month
+            const currentMonthTransactions = transactions.filter(transaction => {
+                const transactionDate = new Date(transaction.date);
+                return transactionDate.getMonth() === currentMonth && 
+                       transactionDate.getFullYear() === currentYear;
+            });
+
+            const totalIncome = currentMonthTransactions
+                .filter(t => t.type === 'income' && t.currency === selectedCurrency)
+                .reduce((total, t) => total + (t.amount || 0), 0);
+
+            const totalExpenses = currentMonthTransactions
+                .filter(t => t.type === 'expense' && t.currency === selectedCurrency)
+                .reduce((total, t) => total + Math.abs(t.amount || 0), 0);
+
+            // Calculate savings rate
+            const savingsRate = totalIncome > 0 ? Math.round(((totalIncome - totalExpenses) / totalIncome) * 100) : 0;
+
+            // Calculate last month data for comparison
+            const lastMonthTransactions = transactions.filter(transaction => {
+                const transactionDate = new Date(transaction.date);
+                return transactionDate.getMonth() === lastMonth && 
+                       transactionDate.getFullYear() === lastMonthYear;
+            });
+
+            const lastMonthIncome = lastMonthTransactions
+                .filter(t => t.type === 'income' && t.currency === selectedCurrency)
+                .reduce((total, t) => total + (t.amount || 0), 0);
+
+            const lastMonthExpenses = lastMonthTransactions
+                .filter(t => t.type === 'expense' && t.currency === selectedCurrency)
+                .reduce((total, t) => total + Math.abs(t.amount || 0), 0);
+
+            const lastMonthSavingsRate = lastMonthIncome > 0 ? Math.round(((lastMonthIncome - lastMonthExpenses) / lastMonthIncome) * 100) : 0;
+
+            return {
+                totalBalance,
+                totalIncome,
+                totalExpenses,
+                savingsRate,
                 lastMonthData: {
-                    totalBalance: 138000,
-                    totalIncome: 78000,
-                    totalExpenses: 30000,
-                    savingsRate: 62
+                    totalIncome: lastMonthIncome,
+                    totalExpenses: lastMonthExpenses,
+                    savingsRate: lastMonthSavingsRate
                 }
             };
-            
-            saveFinancialData();
         }
 
-        function updateFinancialDataFromAccounts(accounts) {
-            if (!accounts || accounts.length === 0) return;
+        function updateFinancialOverview(financialData) {
+            const currencyInfo = currencies[selectedCurrency];
             
-            // Calculate total balance from accounts
-            let totalBalance = 0;
-            accounts.forEach(account => {
-                totalBalance += account.balance;
-            });
-            
-            financialData.totalBalance = totalBalance;
-            saveFinancialData();
-        }
-
-        function saveFinancialData() {
-            localStorage.setItem('smartgrocer-financialData', JSON.stringify(financialData));
-        }
-
-        function updateDashboard() {
-            const currency = localStorage.getItem('selectedCurrency') || 'PKR';
-            const currencyInfo = currencies[currency];
-            
-            // Update financial overview cards
+            // Update financial overview cards with actual data
             document.getElementById('total-balance').textContent = 
                 `${currencyInfo.symbol}${financialData.totalBalance.toLocaleString()}`;
             document.getElementById('total-income').textContent = 
@@ -752,36 +747,33 @@
             document.getElementById('total-expenses').textContent = 
                 `${currencyInfo.symbol}${financialData.totalExpenses.toLocaleString()}`;
             document.getElementById('savings-rate').textContent = 
-                `${financialData.savingsRate}%`;
+                `${Math.max(financialData.savingsRate, 0)}%`;
             
             // Calculate and display percentage changes
-            const balanceChange = calculatePercentageChange(financialData.totalBalance, financialData.lastMonthData.totalBalance);
             const incomeChange = calculatePercentageChange(financialData.totalIncome, financialData.lastMonthData.totalIncome);
             const expensesChange = calculatePercentageChange(financialData.totalExpenses, financialData.lastMonthData.totalExpenses);
             const savingsChange = calculatePercentageChange(financialData.savingsRate, financialData.lastMonthData.savingsRate);
             
-            document.getElementById('balance-change').textContent = `${balanceChange}%`;
             document.getElementById('income-change').textContent = `${incomeChange}%`;
             document.getElementById('expenses-change').textContent = `${expensesChange}%`;
             document.getElementById('savings-change').textContent = `${savingsChange}%`;
-            
-            // Update budget progress
-            updateBudgetProgress();
-            
-            // Update recent transactions
-            updateRecentTransactions();
         }
 
         function calculatePercentageChange(current, previous) {
-            if (previous === 0) return 0;
+            if (previous === 0) return current === 0 ? 0 : 100;
             return Math.round(((current - previous) / previous) * 100);
         }
 
-        function updateBudgetProgress() {
-            const budgetContainer = document.getElementById('budget-progress-container');
+        function updateBudgetProgress(budgets, transactions) {
+            const container = document.getElementById('budget-progress-container');
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
             
-            if (!financialData.budgets || financialData.budgets.length === 0) {
-                budgetContainer.innerHTML = `
+            // Filter budgets by selected currency
+            const filteredBudgets = budgets.filter(budget => budget.currency === selectedCurrency);
+            
+            if (filteredBudgets.length === 0) {
+                container.innerHTML = `
                     <div class="text-center py-8 text-gray-500">
                         <i class="fas fa-chart-pie text-3xl mb-3 opacity-40"></i>
                         <p>No budgets set yet</p>
@@ -790,30 +782,57 @@
                 return;
             }
             
-            const currency = localStorage.getItem('selectedCurrency') || 'PKR';
-            const currencyInfo = currencies[currency];
+            const currencyInfo = currencies[selectedCurrency];
             
-            budgetContainer.innerHTML = financialData.budgets.map(budget => {
-                const percentage = Math.min((budget.spent / budget.limit) * 100, 100);
+            container.innerHTML = filteredBudgets.map(budget => {
+                // Calculate spent amount for this budget category in current month
+                const spent = transactions
+                    .filter(transaction => {
+                        const transactionDate = new Date(transaction.date);
+                        return transaction.type === 'expense' && 
+                               transaction.category === budget.category &&
+                               transaction.currency === selectedCurrency &&
+                               transactionDate.getMonth() === currentMonth &&
+                               transactionDate.getFullYear() === currentYear;
+                    })
+                    .reduce((total, transaction) => total + Math.abs(transaction.amount || 0), 0);
+                
+                const percentage = Math.min((spent / budget.amount) * 100, 100);
+                const progressColor = percentage > 90 ? 'bg-red-500' : 
+                                   percentage > 75 ? 'bg-yellow-500' : 'bg-green-500';
+                
                 return `
                     <div>
                         <div class="flex justify-between items-center mb-2">
-                            <span class="font-medium text-gray-700">${budget.category}</span>
-                            <span class="text-sm text-gray-500">${currencyInfo.symbol}${budget.spent} / ${currencyInfo.symbol}${budget.limit}</span>
+                            <span class="font-medium text-gray-700">${budget.name}</span>
+                            <span class="text-sm text-gray-500">${currencyInfo.symbol}${spent.toFixed(0)} / ${currencyInfo.symbol}${budget.amount}</span>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${percentage}%"></div>
+                            <div class="progress-fill ${progressColor}" style="width: ${percentage}%"></div>
                         </div>
                     </div>
                 `;
             }).join('');
         }
 
-        function updateRecentTransactions() {
-            const transactionsContainer = document.getElementById('recent-transactions-container');
+        function updateRecentTransactions(transactions) {
+            const container = document.getElementById('recent-transactions-container');
             
-            if (!financialData.transactions || financialData.transactions.length === 0) {
-                transactionsContainer.innerHTML = `
+            // Get last 7 days transactions in selected currency, sorted by date
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            
+            const recentTransactions = transactions
+                .filter(transaction => {
+                    const transactionDate = new Date(transaction.date);
+                    return transactionDate >= oneWeekAgo && 
+                           transaction.currency === selectedCurrency;
+                })
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5); // Show only 5 most recent
+
+            if (recentTransactions.length === 0) {
+                container.innerHTML = `
                     <div class="text-center py-8 text-gray-500">
                         <i class="fas fa-exchange-alt text-3xl mb-3 opacity-40"></i>
                         <p>No recent transactions</p>
@@ -822,31 +841,26 @@
                 return;
             }
             
-            const currency = localStorage.getItem('selectedCurrency') || 'PKR';
-            const currencyInfo = currencies[currency];
+            const currencyInfo = currencies[selectedCurrency];
             
-            transactionsContainer.innerHTML = financialData.transactions.map(transaction => {
-                const isExpense = transaction.amount < 0;
+            container.innerHTML = recentTransactions.map(transaction => {
+                const isExpense = transaction.type === 'expense';
                 const amountClass = isExpense ? 'text-red-500' : 'text-green-500';
                 const amountSign = isExpense ? '-' : '+';
-                const absoluteAmount = Math.abs(transaction.amount);
+                const absoluteAmount = Math.abs(transaction.amount || 0);
                 
-                const iconClass = {
-                    'Groceries': 'fas fa-shopping-basket text-green-600 bg-green-100',
-                    'Fuel': 'fas fa-gas-pump text-blue-600 bg-blue-100',
-                    'Dinner': 'fas fa-utensils text-purple-600 bg-purple-100',
-                    'Salary': 'fas fa-money-bill-wave text-green-600 bg-green-100'
-                }[transaction.description] || 'fas fa-money-bill-wave text-gray-600 bg-gray-100';
+                const iconClass = getTransactionIcon(transaction.category);
+                const timeAgo = getTimeAgo(new Date(transaction.date));
                 
                 return `
                     <div class="transaction-item flex justify-between items-center p-3 rounded-lg border border-gray-100">
                         <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 ${iconClass.split(' ').slice(2).join(' ')} rounded-full flex items-center justify-center">
-                                <i class="${iconClass.split(' ').slice(0, 2).join(' ')}"></i>
+                            <div class="w-10 h-10 ${iconClass.bg} rounded-full flex items-center justify-center">
+                                <i class="${iconClass.icon} ${iconClass.color}"></i>
                             </div>
                             <div>
-                                <p class="font-semibold text-gray-800">${transaction.description}</p>
-                                <p class="text-gray-500 text-xs">${transaction.category} • ${transaction.date}</p>
+                                <p class="font-semibold text-gray-800">${transaction.description || transaction.category}</p>
+                                <p class="text-gray-500 text-xs">${transaction.category} • ${timeAgo}</p>
                             </div>
                         </div>
                         <span class="${amountClass} font-bold">${amountSign}${currencyInfo.symbol}${absoluteAmount.toFixed(2)}</span>
@@ -855,15 +869,24 @@
             }).join('');
         }
 
-        function initializeSpendingChart() {
+        function updateSpendingChart(transactions) {
             const ctx = document.getElementById('spendingChart').getContext('2d');
-            const spendingChart = new Chart(ctx, {
+            
+            // Destroy existing chart if it exists
+            if (spendingChart) {
+                spendingChart.destroy();
+            }
+            
+            // Calculate monthly spending for the last 6 months
+            const monthlySpending = calculateMonthlySpending(transactions);
+            
+            spendingChart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    labels: monthlySpending.labels,
                     datasets: [{
                         label: 'Spending',
-                        data: [1200, 1900, 1500, 1800, 2200, 1700, 2000],
+                        data: monthlySpending.data,
                         borderColor: '#10B981',
                         backgroundColor: 'rgba(16, 185, 129, 0.1)',
                         borderWidth: 3,
@@ -896,32 +919,97 @@
             });
         }
 
+        function calculateMonthlySpending(transactions) {
+            const months = [];
+            const spending = [];
+            const currentDate = new Date();
+            
+            // Get last 6 months
+            for (let i = 5; i >= 0; i--) {
+                const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+                const monthName = date.toLocaleString('default', { month: 'short' });
+                months.push(monthName);
+                
+                // Calculate spending for this month in selected currency
+                const monthSpending = transactions
+                    .filter(transaction => {
+                        const transactionDate = new Date(transaction.date);
+                        return transaction.type === 'expense' &&
+                               transaction.currency === selectedCurrency &&
+                               transactionDate.getMonth() === date.getMonth() &&
+                               transactionDate.getFullYear() === date.getFullYear();
+                    })
+                    .reduce((total, transaction) => total + Math.abs(transaction.amount || 0), 0);
+                
+                spending.push(monthSpending);
+            }
+            
+            return {
+                labels: months,
+                data: spending
+            };
+        }
+
+        function getTransactionIcon(category) {
+            const icons = {
+                'Food & Dining': { icon: 'fas fa-utensils', color: 'text-green-600', bg: 'bg-green-100' },
+                'Transportation': { icon: 'fas fa-car', color: 'text-blue-600', bg: 'bg-blue-100' },
+                'Shopping': { icon: 'fas fa-shopping-bag', color: 'text-purple-600', bg: 'bg-purple-100' },
+                'Entertainment': { icon: 'fas fa-film', color: 'text-yellow-600', bg: 'bg-yellow-100' },
+                'Bills & Utilities': { icon: 'fas fa-file-invoice-dollar', color: 'text-red-600', bg: 'bg-red-100' },
+                'Healthcare': { icon: 'fas fa-heartbeat', color: 'text-pink-600', bg: 'bg-pink-100' },
+                'Education': { icon: 'fas fa-graduation-cap', color: 'text-indigo-600', bg: 'bg-indigo-100' },
+                'Travel': { icon: 'fas fa-plane', color: 'text-teal-600', bg: 'bg-teal-100' },
+                'Personal Care': { icon: 'fas fa-spa', color: 'text-orange-600', bg: 'bg-orange-100' }
+            };
+            
+            return icons[category] || { icon: 'fas fa-wallet', color: 'text-gray-600', bg: 'bg-gray-100' };
+        }
+
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffInMs = now - date;
+            const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+            const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+            
+            if (diffInHours < 1) {
+                return 'Just now';
+            } else if (diffInHours < 24) {
+                return `${diffInHours}h ago`;
+            } else if (diffInDays === 1) {
+                return 'Yesterday';
+            } else if (diffInDays < 7) {
+                return `${diffInDays}d ago`;
+            } else {
+                return date.toLocaleDateString();
+            }
+        }
+
         function autoUpdateDashboard() {
-            // Simulate data updates
             const updateIndicator = document.getElementById('auto-update-indicator');
             updateIndicator.classList.add('animate-pulse');
             
-            // In a real app, this would fetch updated data from a server or other pages
             setTimeout(() => {
-                // Reload data from localStorage to get updates from other pages
-                loadFinancialData();
                 updateDashboard();
                 updateIndicator.classList.remove('animate-pulse');
-                
-                // Show a subtle notification that data was updated
-                const now = new Date();
-                showNotification(`Dashboard updated at ${now.toLocaleTimeString()}`, 'info');
             }, 1000);
         }
 
         function showNotification(message, type = 'info') {
             const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = `notification fixed top-4 right-4 z-50 max-w-sm p-4 rounded-lg shadow-lg ${
-                type === 'success' ? 'bg-green-500 text-white' :
-                type === 'error' ? 'bg-red-500 text-white' :
-                'bg-blue-500 text-white'
-            }`;
+            const bgColor = type === 'success' ? 'bg-green-500' :
+                           type === 'error' ? 'bg-red-500' :
+                           type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500';
+            
+            notification.innerHTML = `
+                <div class="${bgColor} text-white p-4 rounded-lg flex items-center">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : 
+                                 type === 'error' ? 'fa-exclamation-circle' : 
+                                 type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'} mr-3"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
             notification.classList.remove('hidden');
             
             setTimeout(() => {
