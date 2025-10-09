@@ -475,9 +475,10 @@
     </button>
 
     <script>
-        // SmartGrocer Data Manager Integration
+        // SmartGrocer Expense Manager - Uses Shared Data Manager
         class ExpenseManager {
             constructor() {
+                // Use the shared Data Manager instance
                 this.dataManager = window.smartGrocerData;
                 this.selectedCurrency = localStorage.getItem('selectedCurrency') || 'PKR';
                 this.expenseChart = null;
@@ -485,6 +486,7 @@
             }
 
             init() {
+                console.log('💰 Expense Manager Initialized - Using Shared Data');
                 this.setupEventListeners();
                 this.setupCurrencySelection();
                 this.checkUserAuth();
@@ -492,8 +494,12 @@
             }
 
             setupEventListeners() {
-                // Listen for data updates
+                // Listen for data updates from ALL pages
                 window.addEventListener('smartgrocer-data-update', (event) => {
+                    console.log('💰 Expenses received data update', {
+                        transactions: event.detail.transactions.length,
+                        time: event.detail.timestamp
+                    });
                     this.updateExpenseDisplay();
                 });
 
@@ -572,6 +578,7 @@
             }
 
             updateExpenseDisplay() {
+                console.log('🔄 Updating expense display with latest data');
                 this.updateExpenseOverview();
                 this.renderExpenseTable();
                 this.updateCategoryBreakdown();
@@ -952,6 +959,7 @@
         // Initialize expense manager when DOM is loaded
         let expenseManager;
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('💰 Expense page loaded, initializing manager...');
             expenseManager = new ExpenseManager();
         });
     </script>
