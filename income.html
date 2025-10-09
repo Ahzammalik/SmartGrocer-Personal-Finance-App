@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Income - SmartGrocer</title>
+    <title>Reports - SmartGrocer</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,90 +11,130 @@
     
     <style>
         :root {
-            --primary: #10b981;
+            --primary: #10B981;
             --primary-dark: #059669;
-            --primary-light: #d1fae5;
+            --primary-light: #D1FAE5;
+            --secondary: #3B82F6;
+            --dark: #1F2937;
+            --light: #F9FAFB;
         }
         
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background-color: #f9fafb;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #F3F4F6;
+            overflow-x: hidden;
         }
         
         .card {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
         }
         
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-            transition: all 0.2s ease;
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
+        .nav-link.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
         }
         
         .notification {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
             border-radius: 8px;
-            padding: 12px 16px;
-            animation: slideIn 0.3s ease-out;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
         }
         
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+        .notification.show {
+            transform: translateX(0);
         }
-
-        /* Sidebar Styles */
-        #sidebar {
-            transition: transform 0.3s ease;
+        
+        .notification.success {
+            background-color: var(--primary);
+        }
+        
+        .notification.error {
+            background-color: #EF4444;
+        }
+        
+        .notification.info {
+            background-color: #3B82F6;
         }
         
         #sidebar-overlay {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
             z-index: 40;
+            display: none;
         }
         
-        .nav-link.active {
-            background-color: var(--primary-light);
-            color: var(--primary);
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 256px;
+            background-color: white;
+            z-index: 50;
+            transition: transform 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transform: translateX(-100%);
         }
         
-        @media (min-width: 1024px) {
+        #sidebar.show {
+            transform: translateX(0);
+        }
+        
+        #main-app-container {
+            width: 100%;
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+        
+        @media (min-width: 768px) {
             #sidebar {
                 transform: translateX(0);
+                position: fixed;
             }
+            
             #main-app-container {
-                margin-left: 16rem;
+                margin-left: 256px;
+                width: calc(100% - 256px);
+            }
+            
+            #mobile-menu-button {
+                display: none;
+            }
+            
+            #sidebar-overlay {
+                display: none !important;
             }
         }
-
-        /* Currency Styles */
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
         .currency-option {
             display: flex;
             align-items: center;
-            padding: 8px 12px;
-            border-radius: 6px;
+            padding: 12px 16px;
+            border-radius: 8px;
             border: 1px solid #E5E7EB;
             cursor: pointer;
             transition: all 0.2s;
-            margin-bottom: 8px;
         }
         
         .currency-option:hover {
@@ -108,75 +148,133 @@
         }
         
         .currency-flag {
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            margin-right: 8px;
+            margin-right: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 10px;
+            font-size: 12px;
             color: white;
             font-weight: bold;
         }
-
-        .currency-badge {
+        
+        .auto-update-indicator {
             display: inline-flex;
             align-items: center;
-            padding: 2px 8px;
+            padding: 4px 8px;
             border-radius: 12px;
-            background-color: #f3f4f6;
+            background-color: #d1fae5;
+            color: #065f46;
             font-size: 0.75rem;
             font-weight: 500;
             margin-left: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+        
+        .data-status {
+            background-color: #FEF3C7;
+            border: 1px solid #F59E0B;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 16px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .data-status.hidden {
+            display: none;
+        }
+        
+        .refresh-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .refresh-btn:hover {
+            background-color: var(--primary-dark);
         }
 
-        .currency-symbol {
-            font-weight: 600;
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .stat-card.blue {
+            background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+        }
+        
+        .stat-card.red {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+        }
+        
+        .stat-card.purple {
+            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
         }
     </style>
 </head>
-<body class="antialiased bg-gray-50">
+<body class="antialiased flex">
 
-    <!-- Sidebar Overlay -->
-    <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"></div>
-
-    <!-- Sidebar -->
-    <aside id="sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen bg-white shadow-xl transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
+    <div id="signin-overlay" class="fixed inset-0 bg-gray-100 z-50 flex items-center justify-center p-4">
+        <div class="w-full max-w-sm text-center">
+            <h1 class="text-4xl font-bold text-primary mb-4">Welcome to SmartGrocer</h1>
+            <p class="text-gray-600 mb-8">Please enter your name to get started.</p>
+            <form id="signin-form">
+                <input type="text" id="signin-name" placeholder="Your Name" class="w-full border border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg text-center" required>
+                <button type="submit" class="mt-4 w-full bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors text-lg">
+                    Start Managing Finances
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <div id="sidebar-overlay" class="hidden"></div>
+    <aside id="sidebar" class="w-64 flex-shrink-0 bg-white">
         <div class="h-full flex flex-col">
-            <div class="h-20 flex items-center justify-center border-b border-gray-200">
+            <div class="h-20 flex items-center justify-center border-b">
                 <h1 class="text-2xl font-bold text-primary">SmartGrocer</h1>
             </div>
             <nav class="flex-1 px-4 py-6 space-y-2">
-                <a href="index.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary">
-                    <i class="fas fa-home w-6 h-6 mr-3"></i>Dashboard
-                </a>
-                <a href="income.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary active">
-                    <i class="fas fa-money-bill-wave w-6 h-6 mr-3"></i>Income
-                </a>
-                <a href="expense.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary">
-                    <i class="fas fa-credit-card w-6 h-6 mr-3"></i>Expenses
-                </a>
-                <a href="accounts.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary">
-                    <i class="fas fa-wallet w-6 h-6 mr-3"></i>Accounts
-                </a>
-                <a href="budget.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary">
-                    <i class="fas fa-chart-pie w-6 h-6 mr-3"></i>Budgets
-                </a>
-                <a href="reports.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary">
-                    <i class="fas fa-chart-line w-6 h-6 mr-3"></i>Reports
-                </a>
-                <a href="blogs.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary">
-                    <i class="fas fa-blog w-6 h-6 mr-3"></i>Blog
-                </a>
-                <a href="contact.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary">
-                    <i class="fas fa-envelope w-6 h-6 mr-3"></i>Contact Us
-                </a>
-                <a href="settings.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary">
-                    <i class="fas fa-cog w-6 h-6 mr-3"></i>Settings
-                </a>
+                <a href="index.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-home w-6 h-6 mr-3"></i>Dashboard</a>
+                <a href="income.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-money-bill-wave w-6 h-6 mr-3"></i>Income</a>
+                <a href="expense.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-credit-card w-6 h-6 mr-3"></i>Expenses</a>
+                <a href="accounts.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-wallet w-6 h-6 mr-3"></i>Accounts</a>
+                <a href="budget.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-chart-pie w-6 h-6 mr-3"></i>Budgets</a>
+                <a href="reports.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary active"><i class="fas fa-chart-line w-6 h-6 mr-3"></i>Reports</a>
+                <a href="blogs.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-blog w-6 h-6 mr-3"></i>Blog</a>
+                <a href="contact.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-envelope w-6 h-6 mr-3"></i>Contact Us</a>
+                <a href="settings.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-100 hover:text-primary"><i class="fas fa-cog w-6 h-6 mr-3"></i>Settings</a>
             </nav>
-            <div class="px-4 py-4 border-t border-gray-200">
+            <div class="px-4 py-4 border-t">
                 <a href="#privacy" class="nav-link text-sm text-gray-500 hover:text-primary block">Privacy Policy</a>
                 <a href="#terms" class="nav-link text-sm text-gray-500 hover:text-primary block mt-1">Terms & Conditions</a>
                 <a href="#disclaimers" class="nav-link text-sm text-gray-500 hover:text-primary block mt-1">Disclaimers</a>
@@ -184,302 +282,251 @@
         </div>
     </aside>
 
-    <!-- Main App Container -->
-    <div id="main-app-container" class="lg:ml-64 min-h-screen">
-        <!-- Header -->
-        <header class="bg-white shadow-sm border-b border-gray-200">
-            <div class="flex items-center justify-between px-6 py-4">
-                <button id="mobile-menu-button" class="lg:hidden text-gray-600 hover:text-primary focus:outline-none">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-                <h2 class="text-xl font-semibold text-gray-800">Income</h2>
-                <div class="flex items-center space-x-4">
-                    <span id="welcome-user-text" class="text-gray-600 hidden sm:block">Welcome, User!</span>
-                    <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold" id="user-initial">U</div>
-                </div>
+    <div id="main-app-container" class="flex-1">
+        <header class="flex justify-between items-center px-4 py-4 bg-white shadow-sm sticky top-0 z-30">
+            <button id="mobile-menu-button" class="text-gray-600 focus:outline-none md:hidden">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+            <div class="flex items-center">
+                <h2 id="page-title" class="text-xl font-semibold text-gray-800">Reports & Analytics</h2>
+                <span class="auto-update-indicator ml-4" id="auto-update-indicator">
+                    <i class="fas fa-sync-alt mr-1"></i> Auto-updating
+                </span>
+            </div>
+            <div id="welcome-user-container" class="flex items-center">
+                <span id="welcome-user-text" class="text-gray-600 hidden sm:block mr-3">Welcome, User!</span>
+                <div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold" id="user-initial">U</div>
             </div>
         </header>
 
-        <!-- Main Content -->
-        <main class="p-6">
-            <!-- Currency Selection Section -->
-            <div class="card p-6 mb-8">
-                <h3 class="text-xl font-bold text-gray-800 mb-4">Select Display Currency</h3>
-                <p class="text-gray-600 mb-4">Choose your preferred currency for displaying income.</p>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="currency-option" data-currency="USD">
-                        <div class="currency-flag bg-blue-600">US</div>
-                        <div>
-                            <div class="font-medium">US Dollar</div>
-                            <div class="text-sm text-gray-500">USD ($)</div>
-                        </div>
-                    </div>
-                    <div class="currency-option" data-currency="PKR">
-                        <div class="currency-flag bg-green-600">PK</div>
-                        <div>
-                            <div class="font-medium">Pakistani Rupee</div>
-                            <div class="text-sm text-gray-500">PKR (₨)</div>
-                        </div>
-                    </div>
-                    <div class="currency-option" data-currency="INR">
-                        <div class="currency-flag bg-orange-600">IN</div>
-                        <div>
-                            <div class="font-medium">Indian Rupee</div>
-                            <div class="text-sm text-gray-500">INR (₹)</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <!-- Data Status Indicator -->
+        <div id="data-status" class="data-status hidden">
+            <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
+            <span class="text-yellow-700 text-sm flex-1" id="status-message"></span>
+            <button onclick="initializeSampleData(); updateReports();" class="refresh-btn">
+                <i class="fas fa-bolt mr-1"></i>Fix Now
+            </button>
+        </div>
 
-            <!-- Income Overview Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-600 text-sm font-medium">Today's Income</p>
-                            <h3 class="text-2xl font-bold text-gray-800" id="today-income">₨0</h3>
+        <main class="p-4 md:p-6">
+            <div class="max-w-7xl mx-auto">
+                <!-- Currency Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="lg:col-span-1">
+                        <div class="card p-6 h-full">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                                    <i class="fas fa-coins mr-2 text-primary"></i> Preferred Currency
+                                </h3>
+                                <button id="refresh-reports" class="refresh-btn">
+                                    <i class="fas fa-sync-alt mr-1"></i> Refresh Data
+                                </button>
+                            </div>
+                            <p class="text-gray-600 mb-4">Select your preferred currency for displaying financial data.</p>
+                            <div class="space-y-3">
+                                <div class="currency-option" data-currency="PKR">
+                                    <div class="currency-flag bg-green-600">PK</div>
+                                    <div>
+                                        <div class="font-medium">Pakistani Rupee (PKR)</div>
+                                        <div class="text-sm text-gray-500">₨</div>
+                                    </div>
+                                </div>
+                                <div class="currency-option" data-currency="USD">
+                                    <div class="currency-flag bg-blue-600">US</div>
+                                    <div>
+                                        <div class="font-medium">US Dollar (USD)</div>
+                                        <div class="text-sm text-gray-500">$</div>
+                                    </div>
+                                </div>
+                                <div class="currency-option" data-currency="INR">
+                                    <div class="currency-flag bg-orange-600">IN</div>
+                                    <div>
+                                        <div class="font-medium">Indian Rupee (INR)</div>
+                                        <div class="text-sm text-gray-500">₹</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <i class="fas fa-calendar-day text-2xl text-green-500"></i>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="stat-card">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-green-100">Net Cash Flow</p>
+                                    <h3 class="text-2xl font-bold mt-2" id="net-cash-flow">₨ 0</h3>
+                                </div>
+                                <div class="bg-white bg-opacity-20 p-2 rounded-lg">
+                                    <i class="fas fa-exchange-alt text-white"></i>
+                                </div>
+                            </div>
+                            <p class="text-green-100 text-sm mt-4" id="cash-flow-trend">No data available</p>
+                        </div>
+                        
+                        <div class="stat-card blue">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-blue-100">Avg. Monthly Income</p>
+                                    <h3 class="text-2xl font-bold mt-2" id="avg-monthly-income">₨ 0</h3>
+                                </div>
+                                <div class="bg-white bg-opacity-20 p-2 rounded-lg">
+                                    <i class="fas fa-chart-line text-white"></i>
+                                </div>
+                            </div>
+                            <p class="text-blue-100 text-sm mt-4" id="income-trend">No data available</p>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-blue-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-600 text-sm font-medium">This Week</p>
-                            <h3 class="text-2xl font-bold text-gray-800" id="week-income">₨0</h3>
+                <!-- Financial Overview -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="stat-card">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-green-100">Total Balance</p>
+                                <h3 class="text-2xl font-bold mt-2" id="total-balance">₨ 0</h3>
+                            </div>
+                            <div class="bg-white bg-opacity-20 p-2 rounded-lg">
+                                <i class="fas fa-wallet text-white"></i>
+                            </div>
                         </div>
-                        <i class="fas fa-calendar-week text-2xl text-blue-500"></i>
+                        <p class="text-green-100 text-sm mt-4"><i class="fas fa-arrow-up mr-1"></i> <span id="balance-change">0%</span> from last month</p>
+                    </div>
+                    
+                    <div class="stat-card blue">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-blue-100">Total Income</p>
+                                <h3 class="text-2xl font-bold mt-2" id="total-income">₨ 0</h3>
+                            </div>
+                            <div class="bg-white bg-opacity-20 p-2 rounded-lg">
+                                <i class="fas fa-money-bill-wave text-white"></i>
+                            </div>
+                        </div>
+                        <p class="text-blue-100 text-sm mt-4"><i class="fas fa-arrow-up mr-1"></i> <span id="income-change">0%</span> from last month</p>
+                    </div>
+                    
+                    <div class="stat-card red">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-red-100">Total Expenses</p>
+                                <h3 class="text-2xl font-bold mt-2" id="total-expenses">₨ 0</h3>
+                            </div>
+                            <div class="bg-white bg-opacity-20 p-2 rounded-lg">
+                                <i class="fas fa-credit-card text-white"></i>
+                            </div>
+                        </div>
+                        <p class="text-red-100 text-sm mt-4"><i class="fas fa-arrow-down mr-1"></i> <span id="expenses-change">0%</span> from last month</p>
+                    </div>
+                    
+                    <div class="stat-card purple">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-purple-100">Savings Rate</p>
+                                <h3 class="text-2xl font-bold mt-2" id="savings-rate">0%</h3>
+                            </div>
+                            <div class="bg-white bg-opacity-20 p-2 rounded-lg">
+                                <i class="fas fa-piggy-bank text-white"></i>
+                            </div>
+                        </div>
+                        <p class="text-purple-100 text-sm mt-4"><i class="fas fa-arrow-up mr-1"></i> <span id="savings-change">0%</span> from last month</p>
                     </div>
                 </div>
                 
-                <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-purple-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-600 text-sm font-medium">This Month</p>
-                            <h3 class="text-2xl font-bold text-gray-800" id="month-income">₨0</h3>
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Income vs Expenses</h3>
+                        <div class="chart-container">
+                            <canvas id="incomeExpenseChart"></canvas>
                         </div>
-                        <i class="fas fa-calendar-alt text-2xl text-purple-500"></i>
                     </div>
-                </div>
-                
-                <div class="bg-white rounded-2xl shadow-lg p-6 border-l-4 border-yellow-500">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-600 text-sm font-medium">Total Income</p>
-                            <h3 class="text-2xl font-bold text-gray-800" id="total-income">₨0</h3>
-                        </div>
-                        <i class="fas fa-chart-line text-2xl text-yellow-500"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <!-- Income Trends Chart -->
-                <div class="card p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold text-gray-800">Income Trends</h3>
-                        <select id="chart-period" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20">
-                            <option value="monthly">Monthly</option>
-                            <option value="weekly">Weekly</option>
-                            <option value="yearly">Yearly</option>
-                        </select>
-                    </div>
-                    <div class="h-64">
-                        <canvas id="incomeChart"></canvas>
-                    </div>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="card p-6">
-                    <h3 class="text-xl font-bold text-gray-800 mb-6">Quick Actions</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <button id="quick-add-income" class="bg-green-50 border border-green-200 rounded-xl p-4 text-center hover:bg-green-100 transition-colors group">
-                            <i class="fas fa-plus-circle text-green-600 text-2xl mb-2 group-hover:text-green-700"></i>
-                            <p class="font-semibold text-green-800 text-sm">Add Income</p>
-                        </button>
-                        <a href="reports.html" class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center hover:bg-blue-100 transition-colors group">
-                            <i class="fas fa-chart-bar text-blue-600 text-2xl mb-2 group-hover:text-blue-700"></i>
-                            <p class="font-semibold text-blue-800 text-sm">Income Report</p>
-                        </a>
-                        <a href="budget.html" class="bg-purple-50 border border-purple-200 rounded-xl p-4 text-center hover:bg-purple-100 transition-colors group">
-                            <i class="fas fa-target text-purple-600 text-2xl mb-2 group-hover:text-purple-700"></i>
-                            <p class="font-semibold text-purple-800 text-sm">Set Goals</p>
-                        </a>
-                        <a href="index.html" class="bg-orange-50 border border-orange-200 rounded-xl p-4 text-center hover:bg-orange-100 transition-colors group">
-                            <i class="fas fa-home text-orange-600 text-2xl mb-2 group-hover:text-orange-700"></i>
-                            <p class="font-semibold text-orange-800 text-sm">Dashboard</p>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Filters and Income Table Section -->
-            <div class="mt-6">
-                <!-- Filters -->
-                <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
-                    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                        <h3 class="text-xl font-bold text-gray-800">Income History</h3>
-                        <div class="flex flex-col sm:flex-row gap-3">
-                            <select id="category-filter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20">
-                                <option value="">All Categories</option>
-                                <option value="Salary">Salary</option>
-                                <option value="Freelance">Freelance</option>
-                                <option value="Business">Business</option>
-                                <option value="Investment">Investment</option>
-                                <option value="Rental">Rental</option>
-                                <option value="Bonus">Bonus</option>
-                                <option value="Other">Other</option>
-                            </select>
-                            <select id="currency-filter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20">
-                                <option value="">All Currencies</option>
-                                <option value="USD">USD</option>
-                                <option value="PKR">PKR</option>
-                                <option value="INR">INR</option>
-                            </select>
-                            <select id="time-filter" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20">
-                                <option value="all">All Time</option>
-                                <option value="today">Today</option>
-                                <option value="week">This Week</option>
-                                <option value="month">This Month</option>
-                                <option value="year">This Year</option>
-                            </select>
-                            <button id="clear-filters" class="bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors text-sm">
-                                Clear Filters
-                            </button>
+                    
+                    <div class="card p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Spending by Category</h3>
+                        <div class="chart-container">
+                            <canvas id="categoryChart"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <!-- Income Table -->
-                <div class="bg-white rounded-2xl shadow-lg p-6">
+                <!-- Monthly Breakdown -->
+                <div class="card p-6 mb-8">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Monthly Financial Summary</h3>
                     <div class="overflow-x-auto">
                         <table class="w-full">
                             <thead>
                                 <tr class="border-b-2 border-gray-200">
-                                    <th class="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Date</th>
-                                    <th class="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Description</th>
-                                    <th class="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Category</th>
-                                    <th class="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Account</th>
-                                    <th class="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Currency</th>
-                                    <th class="text-right py-3 px-4 font-semibold text-gray-700 text-sm">Amount</th>
-                                    <th class="text-center py-3 px-4 font-semibold text-gray-700 text-sm">Actions</th>
+                                    <th class="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Month</th>
+                                    <th class="text-right py-3 px-4 font-semibold text-gray-700 text-sm">Income</th>
+                                    <th class="text-right py-3 px-4 font-semibold text-gray-700 text-sm">Expenses</th>
+                                    <th class="text-right py-3 px-4 font-semibold text-gray-700 text-sm">Net</th>
+                                    <th class="text-right py-3 px-4 font-semibold text-gray-700 text-sm">Savings Rate</th>
                                 </tr>
                             </thead>
-                            <tbody id="income-table-body" class="divide-y divide-gray-200">
-                                <!-- Income data will be populated here -->
+                            <tbody id="monthly-summary-body" class="divide-y divide-gray-200">
+                                <!-- Monthly data will be populated here -->
                             </tbody>
                         </table>
-                        <div id="no-income-message" class="text-center py-12">
-                            <i class="fas fa-money-bill-wave text-6xl text-gray-300 mb-4"></i>
-                            <h3 class="text-xl font-semibold text-gray-600 mb-2">No Income Recorded</h3>
-                            <p class="text-gray-500 mb-4">Add your first income to start tracking your earnings.</p>
-                            <button id="add-first-income" class="bg-primary text-white font-bold py-2 px-6 rounded-lg hover:bg-green-700 transition-colors">
-                                Add Your First Income
-                            </button>
+                        <div id="no-monthly-data" class="text-center py-8 text-gray-500">
+                            <i class="fas fa-chart-bar text-3xl mb-3 opacity-40"></i>
+                            <p>No financial data available</p>
                         </div>
+                    </div>
+                </div>
+                
+                <!-- Report Options -->
+                <div class="card p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6">Generate Reports</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <button class="bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center">
+                            <i class="fas fa-file-pdf mr-2"></i> PDF Report
+                        </button>
+                        <button class="bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
+                            <i class="fas fa-file-excel mr-2"></i> Excel Export
+                        </button>
+                        <a href="index.html" class="bg-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-purple-700 transition-colors flex items-center justify-center text-center">
+                            <i class="fas fa-home mr-2"></i> Dashboard
+                        </a>
+                        <a href="expense.html" class="bg-gray-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-700 transition-colors flex items-center justify-center text-center">
+                            <i class="fas fa-plus mr-2"></i> Add Transaction
+                        </a>
                     </div>
                 </div>
             </div>
         </main>
     </div>
-
-    <!-- Notification -->
-    <div id="notification" class="notification hidden fixed top-4 right-4 z-50 max-w-sm"></div>
-
-    <!-- Add Income Modal -->
-    <div id="add-income-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-gray-800">Add New Income</h3>
-                <button id="close-income-modal" class="text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-times text-2xl"></i>
-                </button>
-            </div>
-            <form id="add-income-form" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                    <input type="text" id="income-description" placeholder="Where did this income come from?" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-                    <div class="relative">
-                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" id="modal-currency-symbol">₨</span>
-                        <input type="number" id="income-amount" step="0.01" min="0.01" placeholder="0.00" class="w-full border border-gray-300 rounded-lg pl-8 pr-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Currency</label>
-                    <select id="income-currency" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
-                        <option value="PKR">Pakistani Rupee (PKR)</option>
-                        <option value="USD">US Dollar (USD)</option>
-                        <option value="INR">Indian Rupee (INR)</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                    <select id="income-category" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
-                        <option value="Salary">Salary</option>
-                        <option value="Freelance">Freelance</option>
-                        <option value="Business">Business</option>
-                        <option value="Investment">Investment</option>
-                        <option value="Rental">Rental</option>
-                        <option value="Bonus">Bonus</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Account</label>
-                    <input type="text" id="income-account" placeholder="Account name (e.g., Bank, Cash)" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                    <input type="date" id="income-date" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-20" required>
-                </div>
-                <div class="flex space-x-3 pt-4">
-                    <button type="button" id="cancel-income" class="flex-1 bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded-lg hover:bg-gray-400 transition-colors">
-                        Cancel
-                    </button>
-                    <button type="submit" class="flex-1 bg-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors">
-                        Add Income
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Floating Action Button -->
-    <button id="fab-add-income" class="fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-full shadow-lg hover:bg-green-700 transition-colors flex items-center justify-center z-40">
-        <i class="fas fa-plus text-xl"></i>
-    </button>
+    
+    <div id="notification" class="notification"></div>
 
     <script>
-        // SmartGrocer Income Manager - Uses Shared Data Manager
-        class IncomeManager {
+        // SmartGrocer Reports Manager - Uses Shared Data Manager
+        class ReportsManager {
             constructor() {
                 // Use the shared Data Manager instance
                 this.dataManager = window.smartGrocerData;
                 this.selectedCurrency = localStorage.getItem('selectedCurrency') || 'PKR';
-                this.incomeChart = null;
+                this.charts = {};
                 this.init();
             }
 
             init() {
-                console.log('💰 Income Manager Initialized - Using Shared Data');
+                console.log('📊 Reports Manager Initialized - Using Shared Data');
                 this.setupEventListeners();
                 this.setupCurrencySelection();
                 this.checkUserAuth();
-                this.updateIncomeDisplay();
+                this.updateReports();
             }
 
             setupEventListeners() {
                 // Listen for data updates from ALL pages
                 window.addEventListener('smartgrocer-data-update', (event) => {
-                    console.log('💰 Income received data update', {
+                    console.log('📊 Reports received data update', {
                         transactions: event.detail.transactions.length,
                         time: event.detail.timestamp
                     });
-                    this.updateIncomeDisplay();
+                    this.updateReports();
                 });
 
                 // Mobile menu
@@ -489,45 +536,39 @@
                 
                 if (mobileMenuButton) {
                     mobileMenuButton.addEventListener('click', function() {
-                        sidebar.classList.toggle('-translate-x-full');
-                        sidebarOverlay.classList.toggle('hidden');
+                        sidebar.classList.toggle('show');
+                        sidebarOverlay.style.display = sidebar.classList.contains('show') ? 'block' : 'none';
                     });
                 }
                 
                 if (sidebarOverlay) {
                     sidebarOverlay.addEventListener('click', function() {
-                        sidebar.classList.add('-translate-x-full');
-                        sidebarOverlay.classList.add('hidden');
+                        sidebar.classList.remove('show');
+                        sidebarOverlay.style.display = 'none';
                     });
                 }
 
-                // Quick add income buttons
-                document.getElementById('quick-add-income')?.addEventListener('click', () => this.openAddIncomeModal());
-                document.getElementById('add-first-income')?.addEventListener('click', () => this.openAddIncomeModal());
-                document.getElementById('fab-add-income')?.addEventListener('click', () => this.openAddIncomeModal());
+                // Sign in form
+                const signinForm = document.getElementById('signin-form');
+                if (signinForm) {
+                    signinForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        this.handleSignIn();
+                    });
+                }
 
-                // Modal controls
-                document.getElementById('close-income-modal')?.addEventListener('click', () => this.closeAddIncomeModal());
-                document.getElementById('cancel-income')?.addEventListener('click', () => this.closeAddIncomeModal());
-                document.getElementById('add-income-form')?.addEventListener('submit', (e) => this.addNewIncome(e));
-
-                // Currency change in modal
-                document.getElementById('income-currency')?.addEventListener('change', (e) => {
-                    const currency = e.target.value;
-                    const symbol = this.dataManager.currencies[currency]?.symbol || '₨';
-                    document.getElementById('modal-currency-symbol').textContent = symbol;
-                });
-
-                // Filters
-                document.getElementById('category-filter')?.addEventListener('change', () => this.renderIncomeTable());
-                document.getElementById('currency-filter')?.addEventListener('change', () => this.renderIncomeTable());
-                document.getElementById('time-filter')?.addEventListener('change', () => this.renderIncomeTable());
-                document.getElementById('clear-filters')?.addEventListener('click', () => this.clearFilters());
+                // Manual refresh
+                const refreshBtn = document.getElementById('refresh-reports');
+                if (refreshBtn) {
+                    refreshBtn.addEventListener('click', () => {
+                        this.dataManager.forceRefresh();
+                        this.showNotification('Reports data refreshed!', 'info');
+                    });
+                }
             }
 
             setupCurrencySelection() {
                 const currencyOptions = document.querySelectorAll('.currency-option');
-                
                 currencyOptions.forEach(option => {
                     option.addEventListener('click', () => {
                         const currency = option.getAttribute('data-currency');
@@ -538,6 +579,7 @@
                         currencyOptions.forEach(opt => opt.classList.remove('selected'));
                         option.classList.add('selected');
                         
+                        this.updateReports();
                         this.showNotification(`Display currency set to ${this.dataManager.currencies[currency].name}`, 'success');
                     });
                     
@@ -550,125 +592,116 @@
             checkUserAuth() {
                 const userName = localStorage.getItem('smartgrocer-currentUser');
                 if (userName) {
+                    document.getElementById('signin-overlay').style.display = 'none';
                     document.getElementById('welcome-user-text').textContent = `Welcome, ${userName}!`;
                     document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
                 }
             }
 
-            updateIncomeDisplay() {
-                console.log('🔄 Updating income display with latest data');
-                this.updateIncomeOverview();
-                this.renderIncomeTable();
-                this.updateIncomeChart();
-            }
-
-            updateIncomeOverview() {
-                const transactions = this.dataManager.getTransactions();
-                const currencyInfo = this.dataManager.currencies[this.selectedCurrency];
-                
-                // Filter income in selected currency
-                const currencyIncome = transactions.filter(t => 
-                    t.type === 'income' && t.currency === this.selectedCurrency
-                );
-                
-                const today = new Date().toDateString();
-                const todayIncome = currencyIncome
-                    .filter(income => new Date(income.date).toDateString() === today)
-                    .reduce((total, income) => total + income.amount, 0);
-                
-                const weekIncome = currencyIncome
-                    .filter(income => this.isThisWeek(new Date(income.date)))
-                    .reduce((total, income) => total + income.amount, 0);
-                
-                const monthIncome = currencyIncome
-                    .filter(income => this.isThisMonth(new Date(income.date)))
-                    .reduce((total, income) => total + income.amount, 0);
-                
-                const totalIncome = currencyIncome
-                    .reduce((total, income) => total + income.amount, 0);
-
-                document.getElementById('today-income').textContent = `${currencyInfo.symbol}${todayIncome.toLocaleString()}`;
-                document.getElementById('week-income').textContent = `${currencyInfo.symbol}${weekIncome.toLocaleString()}`;
-                document.getElementById('month-income').textContent = `${currencyInfo.symbol}${monthIncome.toLocaleString()}`;
-                document.getElementById('total-income').textContent = `${currencyInfo.symbol}${totalIncome.toLocaleString()}`;
-            }
-
-            renderIncomeTable() {
-                const tableBody = document.getElementById('income-table-body');
-                const noIncomeMessage = document.getElementById('no-income-message');
-                const transactions = this.dataManager.getTransactions();
-                
-                // Filter income only
-                const income = transactions.filter(t => t.type === 'income');
-                
-                // Apply filters
-                const currencyFilter = document.getElementById('currency-filter').value;
-                const filteredIncome = income.filter(income => 
-                    !currencyFilter || income.currency === currencyFilter
-                );
-
-                if (filteredIncome.length === 0) {
-                    tableBody.innerHTML = '';
-                    noIncomeMessage.classList.remove('hidden');
-                    return;
+            handleSignIn() {
+                const userName = document.getElementById('signin-name').value.trim();
+                if (userName) {
+                    localStorage.setItem('smartgrocer-currentUser', userName);
+                    this.checkUserAuth();
+                    this.dataManager.initializeSampleData();
+                    this.updateReports();
+                    this.showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
                 }
-
-                noIncomeMessage.classList.add('hidden');
-                
-                tableBody.innerHTML = filteredIncome.map(income => {
-                    const currencyInfo = this.dataManager.currencies[income.currency];
-                    
-                    return `
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="py-3 px-4 text-gray-700 text-sm">${this.formatDate(income.date)}</td>
-                            <td class="py-3 px-4">
-                                <div class="flex items-center space-x-2">
-                                    <i class="${this.getIncomeIcon(income.category)} text-gray-400"></i>
-                                    <span class="font-medium">${income.description}</span>
-                                </div>
-                            </td>
-                            <td class="py-3 px-4">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    ${income.category}
-                                </span>
-                            </td>
-                            <td class="py-3 px-4 text-gray-600 text-sm">${income.account}</td>
-                            <td class="py-3 px-4">
-                                <span class="currency-badge">${income.currency}</span>
-                            </td>
-                            <td class="py-3 px-4 text-right font-semibold text-green-600">
-                                +${currencyInfo.symbol}${income.amount.toLocaleString()}
-                            </td>
-                            <td class="py-3 px-4 text-center">
-                                <button class="text-red-600 hover:text-red-800 transition-colors" onclick="incomeManager.deleteIncome('${income.id}')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
             }
 
-            updateIncomeChart() {
-                const ctx = document.getElementById('incomeChart');
-                if (!ctx) return;
-
+            updateReports() {
+                console.log('🔄 Updating reports with latest data');
+                const financialData = this.dataManager.calculateFinancialOverview();
+                const chartData = this.dataManager.calculateChartData();
                 const transactions = this.dataManager.getTransactions();
+
+                this.updateFinancialOverview(financialData);
+                this.updateCharts(chartData);
+                this.updateMonthlySummary(transactions);
+                this.updateQuickStats(transactions);
+                this.updateDataStatus(transactions);
+            }
+
+            updateFinancialOverview(data) {
+                const symbol = data.symbol;
+                
+                document.getElementById('total-balance').textContent = `${symbol} ${data.totalBalance.toLocaleString()}`;
+                document.getElementById('total-income').textContent = `${symbol} ${data.totalIncome.toLocaleString()}`;
+                document.getElementById('total-expenses').textContent = `${symbol} ${data.totalExpenses.toLocaleString()}`;
+                document.getElementById('savings-rate').textContent = `${data.savingsRate}%`;
+
+                // Calculate changes (simplified - in real app, compare with previous period)
+                const balanceChange = data.totalBalance > 0 ? 5 : 0;
+                const incomeChange = data.totalIncome > 0 ? 8 : 0;
+                const expensesChange = data.totalExpenses > 0 ? -3 : 0;
+                const savingsChange = data.savingsRate > 0 ? 12 : 0;
+
+                document.getElementById('balance-change').textContent = `${balanceChange}%`;
+                document.getElementById('income-change').textContent = `${incomeChange}%`;
+                document.getElementById('expenses-change').textContent = `${expensesChange}%`;
+                document.getElementById('savings-change').textContent = `${savingsChange}%`;
+            }
+
+            updateQuickStats(transactions) {
+                const currencyInfo = this.dataManager.currencies[this.selectedCurrency];
+                const symbol = currencyInfo.symbol;
+
+                // Calculate net cash flow (income - expenses for current month)
+                const currentMonth = new Date().getMonth();
+                const currentYear = new Date().getFullYear();
+                
+                const monthTransactions = transactions.filter(t => {
+                    try {
+                        const transactionDate = new Date(t.date);
+                        return transactionDate.getMonth() === currentMonth && 
+                               transactionDate.getFullYear() === currentYear &&
+                               t.currency === this.selectedCurrency;
+                    } catch (error) {
+                        return false;
+                    }
+                });
+
+                const monthIncome = monthTransactions
+                    .filter(t => t.type === 'income')
+                    .reduce((total, t) => total + (parseFloat(t.amount) || 0), 0);
+
+                const monthExpenses = monthTransactions
+                    .filter(t => t.type === 'expense')
+                    .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
+
+                const netCashFlow = monthIncome - monthExpenses;
+                
+                document.getElementById('net-cash-flow').textContent = `${symbol} ${netCashFlow.toLocaleString()}`;
+                
+                const cashFlowTrend = netCashFlow >= 0 ? 
+                    `<i class="fas fa-arrow-up mr-1"></i> Positive cash flow` : 
+                    `<i class="fas fa-arrow-down mr-1"></i> Negative cash flow`;
+                document.getElementById('cash-flow-trend').innerHTML = cashFlowTrend;
+
+                // Calculate average monthly income (last 6 months)
+                const monthlyIncomes = this.calculateMonthlyAverages(transactions, 'income');
+                const avgMonthlyIncome = monthlyIncomes.length > 0 ? 
+                    monthlyIncomes.reduce((a, b) => a + b, 0) / monthlyIncomes.length : 0;
+                
+                document.getElementById('avg-monthly-income').textContent = `${symbol} ${Math.round(avgMonthlyIncome).toLocaleString()}`;
+                
+                const incomeTrend = avgMonthlyIncome > 0 ? 
+                    `<i class="fas fa-arrow-up mr-1"></i> Stable income` : 
+                    `No income data`;
+                document.getElementById('income-trend').innerHTML = incomeTrend;
+            }
+
+            calculateMonthlyAverages(transactions, type) {
+                const monthlyData = [];
                 const currentDate = new Date();
-                const months = [];
-                const incomeData = [];
-
-                // Last 6 months data for selected currency
-                for (let i = 5; i >= 0; i--) {
+                
+                for (let i = 0; i < 6; i++) {
                     const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-                    const monthName = date.toLocaleString('default', { month: 'short' });
-                    months.push(monthName);
-
-                    const monthIncome = transactions
+                    const monthTotal = transactions
                         .filter(t => {
                             try {
                                 const transactionDate = new Date(t.date);
-                                return t.type === 'income' &&
+                                return t.type === type &&
                                        t.currency === this.selectedCurrency &&
                                        transactionDate.getMonth() === date.getMonth() &&
                                        transactionDate.getFullYear() === date.getFullYear();
@@ -676,42 +709,59 @@
                                 return false;
                             }
                         })
-                        .reduce((total, t) => total + (parseFloat(t.amount) || 0), 0);
+                        .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
+                    
+                    monthlyData.push(monthTotal);
+                }
+                
+                return monthlyData.filter(amount => amount > 0);
+            }
 
-                    incomeData.push(monthIncome);
+            updateCharts(chartData) {
+                this.updateIncomeExpenseChart(chartData.incomeExpense);
+                this.updateCategoryChart(chartData.categories);
+            }
+
+            updateIncomeExpenseChart(data) {
+                const ctx = document.getElementById('incomeExpenseChart');
+                if (!ctx) return;
+
+                if (this.charts.incomeExpense) {
+                    this.charts.incomeExpense.destroy();
                 }
 
-                if (this.incomeChart) {
-                    this.incomeChart.destroy();
-                }
+                const currencySymbol = this.dataManager.getCurrencySymbol();
 
-                const currencySymbol = this.dataManager.currencies[this.selectedCurrency].symbol;
-
-                this.incomeChart = new Chart(ctx.getContext('2d'), {
-                    type: 'line',
+                this.charts.incomeExpense = new Chart(ctx.getContext('2d'), {
+                    type: 'bar',
                     data: {
-                        labels: months,
-                        datasets: [{
-                            label: 'Income',
-                            data: incomeData,
-                            borderColor: '#10B981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.4
-                        }]
+                        labels: data.labels,
+                        datasets: [
+                            {
+                                label: 'Income',
+                                data: data.income,
+                                backgroundColor: '#10B981',
+                                borderRadius: 4
+                            },
+                            {
+                                label: 'Expenses',
+                                data: data.expenses,
+                                backgroundColor: '#EF4444',
+                                borderRadius: 4
+                            }
+                        ]
                     },
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
                             legend: {
-                                display: false
+                                position: 'top',
                             },
                             tooltip: {
                                 callbacks: {
                                     label: (context) => {
-                                        return `Income: ${currencySymbol}${context.raw.toLocaleString()}`;
+                                        return `${context.dataset.label}: ${currencySymbol}${context.raw.toLocaleString()}`;
                                     }
                                 }
                             }
@@ -720,7 +770,7 @@
                             y: {
                                 beginAtZero: true,
                                 grid: {
-                                    color: 'rgba(0, 0, 0, 0.1)'
+                                    drawBorder: false
                                 },
                                 ticks: {
                                     callback: (value) => `${currencySymbol}${value.toLocaleString()}`
@@ -736,133 +786,184 @@
                 });
             }
 
-            openAddIncomeModal() {
-                const modal = document.getElementById('add-income-modal');
-                document.getElementById('income-date').valueAsDate = new Date();
-                document.getElementById('income-currency').value = this.selectedCurrency;
-                const symbol = this.dataManager.currencies[this.selectedCurrency]?.symbol || '₨';
-                document.getElementById('modal-currency-symbol').textContent = symbol;
-                modal.classList.remove('hidden');
-            }
+            updateCategoryChart(data) {
+                const ctx = document.getElementById('categoryChart');
+                if (!ctx) return;
 
-            closeAddIncomeModal() {
-                const modal = document.getElementById('add-income-modal');
-                modal.classList.add('hidden');
-                document.getElementById('add-income-form').reset();
-            }
-
-            addNewIncome(e) {
-                e.preventDefault();
-                
-                const description = document.getElementById('income-description').value.trim();
-                const amount = parseFloat(document.getElementById('income-amount').value);
-                const currency = document.getElementById('income-currency').value;
-                const category = document.getElementById('income-category').value;
-                const account = document.getElementById('income-account').value.trim();
-                const date = document.getElementById('income-date').value;
-
-                if (!description || !amount || amount <= 0 || !account || !date) {
-                    this.showNotification('Please fill all fields correctly', 'error');
-                    return;
+                if (this.charts.category) {
+                    this.charts.category.destroy();
                 }
 
-                const newIncome = {
-                    type: 'income',
-                    description,
-                    amount: Math.abs(amount), // Ensure positive for income
-                    currency,
-                    category,
-                    account,
-                    date,
-                    createdAt: new Date().toISOString()
-                };
+                const backgroundColors = [
+                    '#10B981', '#3B82F6', '#F59E0B', '#EF4444', '#8B5CF6', '#6B7280',
+                    '#EC4899', '#14B8A6', '#F97316', '#84CC16', '#6366F1', '#8B5CF6'
+                ];
 
-                this.dataManager.addTransaction(newIncome);
-                this.showNotification('Income added successfully!', 'success');
-                this.closeAddIncomeModal();
-            }
+                const currencySymbol = this.dataManager.getCurrencySymbol();
 
-            deleteIncome(incomeId) {
-                if (confirm('Are you sure you want to delete this income?')) {
-                    this.dataManager.deleteTransaction(incomeId);
-                    this.showNotification('Income deleted successfully', 'success');
-                }
-            }
-
-            clearFilters() {
-                document.getElementById('category-filter').value = '';
-                document.getElementById('currency-filter').value = '';
-                document.getElementById('time-filter').value = 'all';
-                this.renderIncomeTable();
-            }
-
-            // Utility functions
-            getIncomeIcon(category) {
-                const icons = {
-                    'Salary': 'fas fa-briefcase',
-                    'Freelance': 'fas fa-laptop-code',
-                    'Business': 'fas fa-store',
-                    'Investment': 'fas fa-chart-line',
-                    'Rental': 'fas fa-home',
-                    'Bonus': 'fas fa-gift',
-                    'Other': 'fas fa-money-bill-wave'
-                };
-                return icons[category] || icons.Other;
-            }
-
-            formatDate(dateString) {
-                return new Date(dateString).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric'
+                this.charts.category = new Chart(ctx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            data: data.data,
+                            backgroundColor: backgroundColors.slice(0, data.labels.length),
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => {
+                                        const label = context.label || '';
+                                        const value = context.raw;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                        return `${label}: ${currencySymbol}${value.toLocaleString()} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        },
+                        cutout: '70%'
+                    }
                 });
             }
 
-            isThisWeek(date) {
-                const today = new Date();
-                const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
-                const endOfWeek = new Date(today.setDate(today.getDate() + 6));
-                return date >= startOfWeek && date <= endOfWeek;
+            updateMonthlySummary(transactions) {
+                const container = document.getElementById('monthly-summary-body');
+                const noDataMessage = document.getElementById('no-monthly-data');
+                const currencySymbol = this.dataManager.currencies[this.selectedCurrency].symbol;
+                
+                const currentDate = new Date();
+                const monthlyData = [];
+
+                // Get data for last 6 months
+                for (let i = 0; i < 6; i++) {
+                    const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+                    const monthName = date.toLocaleString('default', { month: 'long' }) + ' ' + date.getFullYear();
+                    
+                    const monthIncome = transactions
+                        .filter(t => {
+                            try {
+                                const transactionDate = new Date(t.date);
+                                return t.type === 'income' &&
+                                       t.currency === this.selectedCurrency &&
+                                       transactionDate.getMonth() === date.getMonth() &&
+                                       transactionDate.getFullYear() === date.getFullYear();
+                            } catch (error) {
+                                return false;
+                            }
+                        })
+                        .reduce((total, t) => total + (parseFloat(t.amount) || 0), 0);
+
+                    const monthExpenses = transactions
+                        .filter(t => {
+                            try {
+                                const transactionDate = new Date(t.date);
+                                return t.type === 'expense' &&
+                                       t.currency === this.selectedCurrency &&
+                                       transactionDate.getMonth() === date.getMonth() &&
+                                       transactionDate.getFullYear() === date.getFullYear();
+                            } catch (error) {
+                                return false;
+                            }
+                        })
+                        .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
+
+                    const net = monthIncome - monthExpenses;
+                    const savingsRate = monthIncome > 0 ? Math.round((net / monthIncome) * 100) : 0;
+
+                    monthlyData.push({
+                        month: monthName,
+                        income: monthIncome,
+                        expenses: monthExpenses,
+                        net: net,
+                        savingsRate: savingsRate
+                    });
+                }
+
+                // Filter out months with no data
+                const monthsWithData = monthlyData.filter(month => month.income > 0 || month.expenses > 0);
+
+                if (monthsWithData.length === 0) {
+                    container.innerHTML = '';
+                    noDataMessage.classList.remove('hidden');
+                    return;
+                }
+
+                noDataMessage.classList.add('hidden');
+                
+                container.innerHTML = monthsWithData.map(month => {
+                    const netClass = month.net >= 0 ? 'text-green-600' : 'text-red-600';
+                    const netSign = month.net >= 0 ? '+' : '';
+                    
+                    return `
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            <td class="py-3 px-4 text-gray-700 text-sm">${month.month}</td>
+                            <td class="py-3 px-4 text-right text-gray-900 font-medium">${currencySymbol}${month.income.toLocaleString()}</td>
+                            <td class="py-3 px-4 text-right text-gray-900 font-medium">${currencySymbol}${month.expenses.toLocaleString()}</td>
+                            <td class="py-3 px-4 text-right font-medium ${netClass}">${netSign}${currencySymbol}${month.net.toLocaleString()}</td>
+                            <td class="py-3 px-4 text-right font-medium ${month.savingsRate >= 0 ? 'text-green-600' : 'text-red-600'}">${month.savingsRate}%</td>
+                        </tr>
+                    `;
+                }).join('');
             }
 
-            isThisMonth(date) {
-                const today = new Date();
-                return date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
+            updateDataStatus(transactions) {
+                const statusElement = document.getElementById('data-status');
+                const messageElement = document.getElementById('status-message');
+                
+                if (transactions.length === 0) {
+                    statusElement.classList.remove('hidden');
+                    messageElement.textContent = 'No transactions found. Add some income or expenses to see reports!';
+                } else {
+                    statusElement.classList.add('hidden');
+                }
             }
 
             showNotification(message, type = 'info') {
                 const notification = document.getElementById('notification');
-                const bgColor = type === 'success' ? 'bg-green-500' :
-                               type === 'error' ? 'bg-red-500' :
-                               'bg-blue-500';
+                const bgColor = type === 'success' ? 'success' :
+                               type === 'error' ? 'error' : 'info';
                 
-                notification.innerHTML = `
-                    <div class="${bgColor} text-white p-4 rounded-lg flex items-center justify-between">
-                        <div class="flex items-center">
-                            <i class="fas ${type === 'success' ? 'fa-check-circle' : 
-                                         type === 'error' ? 'fa-exclamation-circle' : 
-                                         'fa-info-circle'} mr-3"></i>
-                            <span>${message}</span>
-                        </div>
-                        <button onclick="this.parentElement.parentElement.classList.add('hidden')" class="ml-4 text-white hover:text-gray-200">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                `;
-                
-                notification.classList.remove('hidden');
+                notification.textContent = message;
+                notification.className = `notification ${bgColor}`;
+                notification.classList.add('show');
                 
                 setTimeout(() => {
-                    notification.classList.add('hidden');
-                }, 3000);
+                    notification.classList.remove('show');
+                }, 5000);
             }
         }
 
-        // Initialize income manager when DOM is loaded
-        let incomeManager;
+        // Initialize reports when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('💰 Income page loaded, initializing manager...');
-            incomeManager = new IncomeManager();
+            console.log('📊 Reports page loaded, initializing manager...');
+            new ReportsManager();
+        });
+
+        // Global functions for HTML onclick handlers
+        function initializeSampleData() {
+            window.smartGrocerData.initializeSampleData();
+        }
+
+        function updateReports() {
+            window.smartGrocerData.forceRefresh();
+        }
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 768) {
+                document.getElementById('sidebar').classList.add('show');
+            } else {
+                document.getElementById('sidebar').classList.remove('show');
+            }
         });
     </script>
 </body>
