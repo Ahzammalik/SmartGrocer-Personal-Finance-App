@@ -454,6 +454,451 @@
     </button>
 
     <script>
+        // Data Manager - Centralized data management for SmartGrocer
+        class DataManager {
+            constructor() {
+                this.currency = localStorage.getItem('selectedCurrency') || 'PKR';
+                this.currencies = {
+                    'USD': { symbol: '$', name: 'US Dollar', flag: 'US' },
+                    'PKR': { symbol: '₨', name: 'Pakistani Rupee', flag: 'PK' },
+                    'INR': { symbol: '₹', name: 'Indian Rupee', flag: 'IN' }
+                };
+                this.autoUpdateInterval = null;
+                this.init();
+            }
+
+            // Initialize data manager
+            init() {
+                this.ensureDataStructure();
+                this.setupAutoUpdate();
+                console.log('🔧 Data Manager Initialized');
+                return this;
+            }
+
+            // Ensure proper data structure exists
+            ensureDataStructure() {
+                if (!localStorage.getItem('smartgrocer-transactions')) {
+                    localStorage.setItem('smartgrocer-transactions', JSON.stringify([]));
+                    console.log('✅ Created empty transactions array');
+                }
+                if (!localStorage.getItem('smartgrocer-accounts')) {
+                    localStorage.setItem('smartgrocer-accounts', JSON.stringify([]));
+                    console.log('✅ Created empty accounts array');
+                }
+                if (!localStorage.getItem('smartgrocer-budgets')) {
+                    localStorage.setItem('smartgrocer-budgets', JSON.stringify([]));
+                    console.log('✅ Created empty budgets array');
+                }
+                if (!localStorage.getItem('smartgrocer-categories')) {
+                    localStorage.setItem('smartgrocer-categories', JSON.stringify([
+                        'Food & Dining', 'Transportation', 'Shopping', 'Entertainment',
+                        'Bills & Utilities', 'Healthcare', 'Education', 'Travel', 'Personal Care', 'Salary'
+                    ]));
+                }
+            }
+
+            // Setup auto-update across all pages
+            setupAutoUpdate() {
+                // Clear existing interval
+                if (this.autoUpdateInterval) {
+                    clearInterval(this.autoUpdateInterval);
+                }
+
+                // Set up new interval (update every 3 seconds)
+                this.autoUpdateInterval = setInterval(() => {
+                    this.triggerDataUpdate();
+                }, 3000);
+
+                console.log('🔄 Auto-update interval set (3 seconds)');
+            }
+
+            // Trigger data update event
+            triggerDataUpdate() {
+                const transactions = this.getTransactions();
+                const accounts = this.getAccounts();
+                const budgets = this.getBudgets();
+                
+                console.log('📢 Triggering data update:', {
+                    transactions: transactions.length,
+                    accounts: accounts.length,
+                    budgets: budgets.length
+                });
+
+                const event = new CustomEvent('smartgrocer-data-update', {
+                    detail: {
+                        transactions: transactions,
+                        accounts: accounts,
+                        budgets: budgets,
+                        currency: this.currency,
+                        timestamp: new Date().toISOString()
+                    }
+                });
+                window.dispatchEvent(event);
+            }
+
+            // Get all transactions
+            getTransactions() {
+                const transactions = this.safeParseJSON(localStorage.getItem('smartgrocer-transactions')) || [];
+                console.log('📄 Retrieved transactions:', transactions.length);
+                return transactions;
+            }
+
+            // Add new transaction
+            addTransaction(transaction) {
+                console.log('➕ Adding new transaction:', transaction);
+                const transactions = this.getTransactions();
+                
+                // Ensure transaction has required fields
+                transaction.id = transaction.id || Date.now() + Math.random();
+                transaction.currency = transaction.currency || this.currency;
+                transaction.createdAt = transaction.createdAt || new Date().toISOString();
+                
+                // Ensure amount is properly formatted
+                if (transaction.type === 'expense' && transaction.amount > 0) {
+                    transaction.amount = -Math.abs(transaction.amount);
+                } else if (transaction.type === 'income' && transaction.amount < 0) {
+                    transaction.amount = Math.abs(transaction.amount);
+                }
+                
+                transactions.push(transaction);
+                localStorage.setItem('smartgrocer-transactions', JSON.stringify(transactions));
+                
+                console.log('✅ Transaction added. Total transactions:', transactions.length);
+                
+                // Update account balance if account is specified
+                if (transaction.account) {
+                    this.updateAccountBalanceFromTransaction(transaction);
+                }
+                
+                // Trigger immediate update
+                this.triggerDataUpdate();
+                return transaction;
+            }
+
+            // Update account balance based on transaction
+            updateAccountBalanceFromTransaction(transaction) {
+                const accounts = this.getAccounts();
+                let account = accounts.find(a => a.name === transaction.account);
+                
+                if (!account) {
+                    // Create account if it doesn't exist
+                    account = {
+                        id: Date.now(),
+                        name: transaction.account,
+                        type: 'bank',
+                        balance: 0,
+                        currency: this.currency
+                    };
+                    accounts.push(account);
+                }
+                
+                if (transaction.type === 'income') {
+                    account.balance += parseFloat(transaction.amount);
+                } else {
+                    account.balance -= Math.abs(parseFloat(transaction.amount));
+                }
+                
+                localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
+                console.log('💰 Updated account balance:', account.name, account.balance);
+            }
+
+            // Update transaction
+            updateTransaction(id, updates) {
+                const transactions = this.getTransactions();
+                const index = transactions.findIndex(t => t.id === id);
+                
+                if (index !== -1) {
+                    transactions[index] = { ...transactions[index], ...updates };
+                    localStorage.setItem('smartgrocer-transactions', JSON.stringify(transactions));
+                    this.triggerDataUpdate();
+                    return transactions[index];
+                }
+                return null;
+            }
+
+            // Delete transaction
+            deleteTransaction(id) {
+                const transactions = this.getTransactions();
+                const filtered = transactions.filter(t => t.id !== id);
+                localStorage.setItem('smartgrocer-transactions', JSON.stringify(filtered));
+                this.triggerDataUpdate();
+            }
+
+            // Get all accounts
+            getAccounts() {
+                return this.safeParseJSON(localStorage.getItem('smartgrocer-accounts')) || [];
+            }
+
+            // Update account balance
+            updateAccountBalance(accountId, newBalance) {
+                const accounts = this.getAccounts();
+                const account = accounts.find(a => a.id === accountId);
+                
+                if (account) {
+                    account.balance = newBalance;
+                    localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
+                    this.triggerDataUpdate();
+                }
+            }
+
+            // Get all budgets
+            getBudgets() {
+                return this.safeParseJSON(localStorage.getItem('smartgrocer-budgets')) || [];
+            }
+
+            // Get categories
+            getCategories() {
+                return this.safeParseJSON(localStorage.getItem('smartgrocer-categories')) || [];
+            }
+
+            // Calculate financial overview
+            calculateFinancialOverview() {
+                const transactions = this.getTransactions();
+                const accounts = this.getAccounts();
+                const currentMonth = new Date().getMonth();
+                const currentYear = new Date().getFullYear();
+
+                console.log('🧮 Calculating financial overview from:', {
+                    transactions: transactions.length,
+                    accounts: accounts.length
+                });
+
+                // Total balance from accounts in selected currency
+                const totalBalance = accounts
+                    .filter(account => account.currency === this.currency)
+                    .reduce((total, account) => total + (parseFloat(account.balance) || 0), 0);
+
+                // Current month transactions
+                const currentMonthTransactions = transactions.filter(transaction => {
+                    try {
+                        const transactionDate = new Date(transaction.date);
+                        return transactionDate.getMonth() === currentMonth && 
+                               transactionDate.getFullYear() === currentYear &&
+                               transaction.currency === this.currency;
+                    } catch (error) {
+                        return false;
+                    }
+                });
+
+                // Calculate totals
+                const totalIncome = currentMonthTransactions
+                    .filter(t => t.type === 'income')
+                    .reduce((total, t) => total + (parseFloat(t.amount) || 0), 0);
+
+                const totalExpenses = currentMonthTransactions
+                    .filter(t => t.type === 'expense')
+                    .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
+
+                const savingsRate = totalIncome > 0 ? 
+                    Math.round(((totalIncome - totalExpenses) / totalIncome) * 100) : 0;
+
+                const result = {
+                    totalBalance,
+                    totalIncome,
+                    totalExpenses,
+                    savingsRate,
+                    currency: this.currency,
+                    symbol: this.currencies[this.currency].symbol
+                };
+
+                console.log('📊 Financial overview calculated:', result);
+                return result;
+            }
+
+            // Calculate chart data
+            calculateChartData() {
+                const transactions = this.getTransactions();
+                const months = [];
+                const incomeData = [];
+                const expenseData = [];
+                const currentDate = new Date();
+
+                console.log('📈 Calculating chart data from transactions:', transactions.length);
+
+                // Last 6 months data
+                for (let i = 5; i >= 0; i--) {
+                    const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+                    const monthName = date.toLocaleString('default', { month: 'short' });
+                    months.push(monthName);
+
+                    const monthIncome = transactions
+                        .filter(t => {
+                            try {
+                                const transactionDate = new Date(t.date);
+                                return t.type === 'income' &&
+                                       t.currency === this.currency &&
+                                       transactionDate.getMonth() === date.getMonth() &&
+                                       transactionDate.getFullYear() === date.getFullYear();
+                            } catch (error) {
+                                return false;
+                            }
+                        })
+                        .reduce((total, t) => total + (parseFloat(t.amount) || 0), 0);
+
+                    const monthExpenses = transactions
+                        .filter(t => {
+                            try {
+                                const transactionDate = new Date(t.date);
+                                return t.type === 'expense' &&
+                                       t.currency === this.currency &&
+                                       transactionDate.getMonth() === date.getMonth() &&
+                                       transactionDate.getFullYear() === date.getFullYear();
+                            } catch (error) {
+                                return false;
+                            }
+                        })
+                        .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
+
+                    incomeData.push(monthIncome);
+                    expenseData.push(monthExpenses);
+                }
+
+                // Category data
+                const categoryMap = {};
+                const currentMonth = new Date().getMonth();
+                const currentYear = new Date().getFullYear();
+
+                transactions
+                    .filter(t => {
+                        try {
+                            const transactionDate = new Date(t.date);
+                            return t.type === 'expense' &&
+                                   t.currency === this.currency &&
+                                   transactionDate.getMonth() === currentMonth &&
+                                   transactionDate.getFullYear() === currentYear;
+                        } catch (error) {
+                            return false;
+                        }
+                    })
+                    .forEach(t => {
+                        const category = t.category || 'Uncategorized';
+                        const amount = Math.abs(parseFloat(t.amount) || 0);
+                        categoryMap[category] = (categoryMap[category] || 0) + amount;
+                    });
+
+                const result = {
+                    incomeExpense: {
+                        labels: months,
+                        income: incomeData,
+                        expenses: expenseData
+                    },
+                    categories: {
+                        labels: Object.keys(categoryMap),
+                        data: Object.values(categoryMap)
+                    }
+                };
+
+                console.log('📊 Chart data calculated:', result);
+                return result;
+            }
+
+            // Safe JSON parsing
+            safeParseJSON(jsonString) {
+                try {
+                    return jsonString ? JSON.parse(jsonString) : [];
+                } catch (error) {
+                    console.error('❌ JSON parsing error:', error);
+                    return [];
+                }
+            }
+
+            // Set currency
+            setCurrency(currency) {
+                console.log('💰 Setting currency to:', currency);
+                this.currency = currency;
+                localStorage.setItem('selectedCurrency', currency);
+                this.triggerDataUpdate();
+            }
+
+            // Get currency symbol
+            getCurrencySymbol() {
+                return this.currencies[this.currency]?.symbol || '₨';
+            }
+
+            // Initialize sample data for new users
+            initializeSampleData() {
+                const transactions = this.getTransactions();
+                const accounts = this.getAccounts();
+                
+                if (transactions.length === 0 && accounts.length === 0) {
+                    console.log('🎯 Initializing sample data for new user');
+                    
+                    const sampleTransactions = [
+                        {
+                            id: Date.now() + 1,
+                            type: 'income',
+                            amount: 75000,
+                            currency: this.currency,
+                            category: 'Salary',
+                            description: 'Monthly Salary',
+                            date: new Date().toISOString().split('T')[0],
+                            account: 'Primary Account',
+                            createdAt: new Date().toISOString()
+                        },
+                        {
+                            id: Date.now() + 2,
+                            type: 'expense',
+                            amount: -4500,
+                            currency: this.currency,
+                            category: 'Food & Dining',
+                            description: 'Grocery Shopping',
+                            date: new Date().toISOString().split('T')[0],
+                            account: 'Primary Account',
+                            createdAt: new Date().toISOString()
+                        },
+                        {
+                            id: Date.now() + 3,
+                            type: 'expense',
+                            amount: -2500,
+                            currency: this.currency,
+                            category: 'Transportation',
+                            description: 'Fuel',
+                            date: new Date(Date.now() - 86400000).toISOString().split('T')[0],
+                            account: 'Primary Account',
+                            createdAt: new Date().toISOString()
+                        }
+                    ];
+
+                    const sampleAccounts = [
+                        {
+                            id: 1,
+                            name: 'Primary Account',
+                            type: 'bank',
+                            balance: 68000, // 75000 - 4500 - 2500
+                            currency: this.currency
+                        }
+                    ];
+
+                    localStorage.setItem('smartgrocer-transactions', JSON.stringify(sampleTransactions));
+                    localStorage.setItem('smartgrocer-accounts', JSON.stringify(sampleAccounts));
+                    
+                    console.log('✅ Sample data initialized');
+                    this.triggerDataUpdate();
+                } else {
+                    console.log('ℹ️ Sample data already exists, skipping initialization');
+                }
+            }
+
+            // Force data refresh
+            forceRefresh() {
+                console.log('🔄 Manual data refresh triggered');
+                this.triggerDataUpdate();
+            }
+
+            // Cleanup
+            destroy() {
+                if (this.autoUpdateInterval) {
+                    clearInterval(this.autoUpdateInterval);
+                    console.log('🧹 Data Manager cleaned up');
+                }
+            }
+        }
+
+        // Create global instance immediately
+        if (!window.smartGrocerData) {
+            window.smartGrocerData = new DataManager();
+        }
+
         // SmartGrocer Income Manager - Uses Shared Data Manager
         class IncomeManager {
             constructor() {
@@ -602,10 +1047,40 @@
                 const income = transactions.filter(t => t.type === 'income');
                 
                 // Apply filters
+                const categoryFilter = document.getElementById('category-filter').value;
                 const currencyFilter = document.getElementById('currency-filter').value;
-                const filteredIncome = income.filter(income => 
-                    !currencyFilter || income.currency === currencyFilter
-                );
+                const timeFilter = document.getElementById('time-filter').value;
+                
+                const filteredIncome = income.filter(income => {
+                    // Category filter
+                    if (categoryFilter && income.category !== categoryFilter) return false;
+                    
+                    // Currency filter
+                    if (currencyFilter && income.currency !== currencyFilter) return false;
+                    
+                    // Time filter
+                    if (timeFilter !== 'all') {
+                        const incomeDate = new Date(income.date);
+                        const today = new Date();
+                        
+                        switch (timeFilter) {
+                            case 'today':
+                                if (incomeDate.toDateString() !== today.toDateString()) return false;
+                                break;
+                            case 'week':
+                                if (!this.isThisWeek(incomeDate)) return false;
+                                break;
+                            case 'month':
+                                if (!this.isThisMonth(incomeDate)) return false;
+                                break;
+                            case 'year':
+                                if (incomeDate.getFullYear() !== today.getFullYear()) return false;
+                                break;
+                        }
+                    }
+                    
+                    return true;
+                });
 
                 if (filteredIncome.length === 0) {
                     tableBody.innerHTML = '';
