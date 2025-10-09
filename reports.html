@@ -501,9 +501,10 @@
     <div id="notification" class="notification"></div>
 
     <script>
-        // SmartGrocer Reports Manager
+        // SmartGrocer Reports Manager - Uses Shared Data Manager
         class ReportsManager {
             constructor() {
+                // Use the shared Data Manager instance
                 this.dataManager = window.smartGrocerData;
                 this.selectedCurrency = localStorage.getItem('selectedCurrency') || 'PKR';
                 this.charts = {};
@@ -511,6 +512,7 @@
             }
 
             init() {
+                console.log('📊 Reports Manager Initialized - Using Shared Data');
                 this.setupEventListeners();
                 this.setupCurrencySelection();
                 this.checkUserAuth();
@@ -518,8 +520,12 @@
             }
 
             setupEventListeners() {
-                // Listen for data updates from other pages
+                // Listen for data updates from ALL pages
                 window.addEventListener('smartgrocer-data-update', (event) => {
+                    console.log('📊 Reports received data update', {
+                        transactions: event.detail.transactions.length,
+                        time: event.detail.timestamp
+                    });
                     this.updateReports();
                 });
 
@@ -604,6 +610,7 @@
             }
 
             updateReports() {
+                console.log('🔄 Updating reports with latest data');
                 const financialData = this.dataManager.calculateFinancialOverview();
                 const chartData = this.dataManager.calculateChartData();
                 const transactions = this.dataManager.getTransactions();
@@ -937,6 +944,7 @@
 
         // Initialize reports when DOM is loaded
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('📊 Reports page loaded, initializing manager...');
             new ReportsManager();
         });
 
