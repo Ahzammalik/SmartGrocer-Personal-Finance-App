@@ -454,9 +454,10 @@
     </button>
 
     <script>
-        // SmartGrocer Data Manager Integration
+        // SmartGrocer Income Manager - Uses Shared Data Manager
         class IncomeManager {
             constructor() {
+                // Use the shared Data Manager instance
                 this.dataManager = window.smartGrocerData;
                 this.selectedCurrency = localStorage.getItem('selectedCurrency') || 'PKR';
                 this.incomeChart = null;
@@ -464,6 +465,7 @@
             }
 
             init() {
+                console.log('💰 Income Manager Initialized - Using Shared Data');
                 this.setupEventListeners();
                 this.setupCurrencySelection();
                 this.checkUserAuth();
@@ -471,8 +473,12 @@
             }
 
             setupEventListeners() {
-                // Listen for data updates
+                // Listen for data updates from ALL pages
                 window.addEventListener('smartgrocer-data-update', (event) => {
+                    console.log('💰 Income received data update', {
+                        transactions: event.detail.transactions.length,
+                        time: event.detail.timestamp
+                    });
                     this.updateIncomeDisplay();
                 });
 
@@ -550,6 +556,7 @@
             }
 
             updateIncomeDisplay() {
+                console.log('🔄 Updating income display with latest data');
                 this.updateIncomeOverview();
                 this.renderIncomeTable();
                 this.updateIncomeChart();
@@ -854,6 +861,7 @@
         // Initialize income manager when DOM is loaded
         let incomeManager;
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('💰 Income page loaded, initializing manager...');
             incomeManager = new IncomeManager();
         });
     </script>
