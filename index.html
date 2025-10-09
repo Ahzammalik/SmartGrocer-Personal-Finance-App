@@ -2,6 +2,1190 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>SmartGrocer - Financial Management</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .progress-bar {
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+        
+        .transaction-item {
+            transition: all 0.2s ease;
+        }
+        
+        .transaction-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="antialiased bg-gray-50">
+
+    <!-- Signin Overlay -->
+    <div id="signin-overlay" class="fixed inset-0 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md mx-4">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-wallet text-white text-2xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-gray-800">SmartGrocer</h1>
+                <p class="text-gray-600 mt-2">Financial Management Dashboard</p>
+            </div>
+            
+            <form id="signin-form">
+                <div class="mb-6">
+                    <label for="signin-name" class="block text-sm font-medium text-gray-700 mb-2">Your Name</label>
+                    <input type="text" id="signin-name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" placeholder="Enter your name" required>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Preferred Currency</label>
+                    <div class="flex space-x-3">
+                        <button type="button" class="currency-option flex-1 py-2 px-3 border-2 border-blue-500 bg-blue-50 text-blue-700 rounded-lg font-medium selected" data-currency="PKR">
+                            ₨ PKR
+                        </button>
+                        <button type="button" class="currency-option flex-1 py-2 px-3 border-2 border-gray-300 text-gray-700 rounded-lg font-medium hover:border-gray-400 transition-colors" data-currency="USD">
+                            $ USD
+                        </button>
+                        <button type="button" class="currency-option flex-1 py-2 px-3 border-2 border-gray-300 text-gray-700 rounded-lg font-medium hover:border-gray-400 transition-colors" data-currency="INR">
+                            ₹ INR
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-blue-600 hover:to-purple-700 transition-all transform hover:-translate-y-0.5 focus:ring-4 focus:ring-blue-200">
+                    Get Started
+                </button>
+            </form>
+            
+            <p class="text-center text-gray-500 text-sm mt-6">
+                Start managing your finances in minutes
+            </p>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="main-app-container" class="hidden">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <!-- Mobile menu button -->
+                    <button id="mobile-menu-button" class="lg:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    
+                    <!-- Logo -->
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-wallet text-white text-sm"></i>
+                        </div>
+                        <span class="text-xl font-bold text-gray-900">SmartGrocer</span>
+                    </div>
+                    
+                    <!-- User info -->
+                    <div class="flex items-center space-x-4">
+                        <div class="hidden sm:flex items-center space-x-2 text-gray-700">
+                            <span>Currency:</span>
+                            <span id="current-currency" class="font-medium">PKR</span>
+                            <span id="currency-symbol" class="font-medium">₨</span>
+                        </div>
+                        <div class="flex items-center space-x-3 bg-gray-100 rounded-full pl-4 pr-2 py-1">
+                            <span id="user-greeting" class="text-sm font-medium text-gray-700">Hello, User!</span>
+                            <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                                <span id="user-initial" class="text-white font-semibold text-sm">U</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex">
+            <!-- Sidebar -->
+            <div id="sidebar" class="bg-white w-64 min-h-screen shadow-lg transform -translate-x-full lg:translate-x-0 transition-transform duration-300 fixed lg:static z-30">
+                <nav class="mt-8 px-4">
+                    <div class="space-y-2">
+                        <a href="index.html" class="flex items-center space-x-3 px-4 py-3 bg-blue-50 text-blue-700 rounded-lg font-medium border border-blue-200">
+                            <i class="fas fa-chart-pie text-blue-600 w-5"></i>
+                            <span>Dashboard</span>
+                        </a>
+                        <a href="transactions.html" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                            <i class="fas fa-exchange-alt text-gray-500 w-5"></i>
+                            <span>Transactions</span>
+                        </a>
+                        <a href="accounts.html" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                            <i class="fas fa-credit-card text-gray-500 w-5"></i>
+                            <span>Accounts</span>
+                        </a>
+                        <a href="budgets.html" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                            <i class="fas fa-chart-pie text-gray-500 w-5"></i>
+                            <span>Budgets</span>
+                        </a>
+                        <a href="reports.html" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors">
+                            <i class="fas fa-chart-bar text-gray-500 w-5"></i>
+                            <span>Reports</span>
+                        </a>
+                    </div>
+                    
+                    <div class="mt-12">
+                        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-4 mb-4">Tools</h3>
+                        <div class="space-y-2">
+                            <button onclick="initializeSampleData()" class="w-full flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors text-left">
+                                <i class="fas fa-database text-gray-500 w-5"></i>
+                                <span>Load Sample Data</span>
+                            </button>
+                            <button onclick="updateDashboard()" class="w-full flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg font-medium transition-colors text-left">
+                                <i class="fas fa-sync-alt text-gray-500 w-5"></i>
+                                <span>Refresh Data</span>
+                            </button>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+
+            <!-- Sidebar overlay for mobile -->
+            <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden hidden"></div>
+
+            <!-- Main content -->
+            <main class="flex-1 p-6 lg:p-8">
+                <!-- Financial Overview -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 card-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">Total Balance</p>
+                                <h3 id="total-balance" class="text-2xl font-bold text-gray-900 mt-1">₨0</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-wallet text-green-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 card-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">Total Income</p>
+                                <h3 id="total-income" class="text-2xl font-bold text-gray-900 mt-1">₨0</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-arrow-down text-blue-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 card-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">Total Expenses</p>
+                                <h3 id="total-expenses" class="text-2xl font-bold text-gray-900 mt-1">₨0</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-arrow-up text-red-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 card-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-600 text-sm font-medium">Savings Rate</p>
+                                <h3 id="savings-rate" class="text-2xl font-bold text-gray-900 mt-1">0%</h3>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-percentage text-purple-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts and Data -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Spending Chart -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-lg font-semibold text-gray-900">Spending Overview</h2>
+                            <div class="flex items-center space-x-2 text-sm text-gray-600">
+                                <i class="fas fa-circle text-green-500 text-xs"></i>
+                                <span>Last 6 Months</span>
+                            </div>
+                        </div>
+                        <div class="h-80">
+                            <canvas id="spendingChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Recent Transactions -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-lg font-semibold text-gray-900">Recent Transactions</h2>
+                            <a href="transactions.html" class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center">
+                                View All
+                                <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                            </a>
+                        </div>
+                        <div id="recent-transactions-container" class="space-y-4">
+                            <!-- Transactions will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Budget Progress -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-lg font-semibold text-gray-900">Budget Progress</h2>
+                            <a href="budgets.html" class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center">
+                                Manage
+                                <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                            </a>
+                        </div>
+                        <div id="budget-progress-container" class="space-y-6">
+                            <!-- Budget progress bars will be loaded here -->
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-6">Quick Actions</h2>
+                        <div class="grid grid-cols-2 gap-4">
+                            <a href="transactions.html?type=income" class="p-4 bg-green-50 border border-green-200 rounded-xl text-center hover:bg-green-100 transition-colors group">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-green-200 transition-colors">
+                                    <i class="fas fa-plus text-green-600 text-lg"></i>
+                                </div>
+                                <span class="font-medium text-green-700">Add Income</span>
+                            </a>
+                            <a href="transactions.html?type=expense" class="p-4 bg-red-50 border border-red-200 rounded-xl text-center hover:bg-red-100 transition-colors group">
+                                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-red-200 transition-colors">
+                                    <i class="fas fa-minus text-red-600 text-lg"></i>
+                                </div>
+                                <span class="font-medium text-red-700">Add Expense</span>
+                            </a>
+                            <a href="accounts.html" class="p-4 bg-blue-50 border border-blue-200 rounded-xl text-center hover:bg-blue-100 transition-colors group">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-blue-200 transition-colors">
+                                    <i class="fas fa-credit-card text-blue-600 text-lg"></i>
+                                </div>
+                                <span class="font-medium text-blue-700">Accounts</span>
+                            </a>
+                            <a href="reports.html" class="p-4 bg-purple-50 border border-purple-200 rounded-xl text-center hover:bg-purple-100 transition-colors group">
+                                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-purple-200 transition-colors">
+                                    <i class="fas fa-chart-bar text-purple-600 text-lg"></i>
+                                </div>
+                                <span class="font-medium text-purple-700">Reports</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Status Message -->
+                <div id="data-status" class="hidden mt-8 bg-yellow-50 border border-yellow-200 rounded-2xl p-6 text-center">
+                    <i class="fas fa-info-circle text-yellow-500 text-2xl mb-3"></i>
+                    <p id="status-message" class="text-yellow-700 font-medium"></p>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="fixed top-4 right-4 z-50 max-w-sm hidden"></div>
+
+    <script>
+        // Enhanced SmartGrocer Data Manager with Real-time Sync
+        class DataManager {
+            constructor() {
+                this.currency = localStorage.getItem('selectedCurrency') || 'PKR';
+                this.currencies = {
+                    'USD': { symbol: '$', name: 'US Dollar', flag: 'US' },
+                    'PKR': { symbol: '₨', name: 'Pakistani Rupee', flag: 'PK' },
+                    'INR': { symbol: '₹', name: 'Indian Rupee', flag: 'IN' }
+                };
+                this.autoUpdateInterval = null;
+                this.init();
+            }
+
+            init() {
+                this.ensureDataStructure();
+                this.setupAutoUpdate();
+                console.log('🔧 Data Manager Initialized - Dashboard');
+                return this;
+            }
+
+            ensureDataStructure() {
+                if (!localStorage.getItem('smartgrocer-transactions')) {
+                    localStorage.setItem('smartgrocer-transactions', JSON.stringify([]));
+                }
+                if (!localStorage.getItem('smartgrocer-accounts')) {
+                    localStorage.setItem('smartgrocer-accounts', JSON.stringify([]));
+                }
+                if (!localStorage.getItem('smartgrocer-budgets')) {
+                    localStorage.setItem('smartgrocer-budgets', JSON.stringify([]));
+                }
+                if (!localStorage.getItem('smartgrocer-categories')) {
+                    localStorage.setItem('smartgrocer-categories', JSON.stringify([
+                        'Food & Dining', 'Transportation', 'Shopping', 'Entertainment',
+                        'Bills & Utilities', 'Healthcare', 'Education', 'Travel', 'Personal Care', 'Salary'
+                    ]));
+                }
+            }
+
+            setupAutoUpdate() {
+                // Clear existing interval
+                if (this.autoUpdateInterval) {
+                    clearInterval(this.autoUpdateInterval);
+                }
+
+                // Set up new interval (update every 2 seconds for real-time feel)
+                this.autoUpdateInterval = setInterval(() => {
+                    this.triggerDataUpdate();
+                }, 2000);
+            }
+
+            triggerDataUpdate() {
+                const transactions = this.getTransactions();
+                const accounts = this.getAccounts();
+                const budgets = this.getBudgets();
+
+                // Create and dispatch custom event
+                const event = new CustomEvent('smartgrocer-data-update', {
+                    detail: {
+                        transactions: transactions,
+                        accounts: accounts,
+                        budgets: budgets,
+                        currency: this.currency,
+                        timestamp: new Date().toISOString()
+                    }
+                });
+                
+                window.dispatchEvent(event);
+                console.log('📢 Data update triggered - Dashboard', {
+                    transactions: transactions.length,
+                    timestamp: new Date().toLocaleTimeString()
+                });
+            }
+
+            getTransactions() {
+                try {
+                    return JSON.parse(localStorage.getItem('smartgrocer-transactions')) || [];
+                } catch (error) {
+                    console.error('Error parsing transactions:', error);
+                    return [];
+                }
+            }
+
+            addTransaction(transaction) {
+                const transactions = this.getTransactions();
+                
+                // Ensure transaction has required fields
+                transaction.id = transaction.id || 't_' + Date.now() + Math.random().toString(36).substr(2, 9);
+                transaction.currency = transaction.currency || this.currency;
+                transaction.createdAt = transaction.createdAt || new Date().toISOString();
+                
+                // Ensure amount is properly formatted
+                if (transaction.type === 'expense' && transaction.amount > 0) {
+                    transaction.amount = -Math.abs(transaction.amount);
+                } else if (transaction.type === 'income' && transaction.amount < 0) {
+                    transaction.amount = Math.abs(transaction.amount);
+                }
+                
+                transactions.push(transaction);
+                this.saveTransactions(transactions);
+                
+                console.log('✅ Transaction added:', transaction);
+                
+                // Update account balance
+                this.updateAccountBalanceFromTransaction(transaction);
+                
+                // Trigger immediate update
+                this.triggerDataUpdate();
+                return transaction;
+            }
+
+            saveTransactions(transactions) {
+                localStorage.setItem('smartgrocer-transactions', JSON.stringify(transactions));
+            }
+
+            updateAccountBalanceFromTransaction(transaction) {
+                const accounts = this.getAccounts();
+                let account = accounts.find(a => a.name === transaction.account);
+                
+                if (!account) {
+                    // Create account if it doesn't exist
+                    account = {
+                        id: 'acc_' + Date.now(),
+                        name: transaction.account,
+                        type: 'bank',
+                        balance: 0,
+                        currency: this.currency
+                    };
+                    accounts.push(account);
+                }
+                
+                // Update balance based on transaction type
+                if (transaction.type === 'income') {
+                    account.balance += parseFloat(transaction.amount);
+                } else {
+                    account.balance -= Math.abs(parseFloat(transaction.amount));
+                }
+                
+                localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
+                console.log('💰 Account balance updated:', account.name, account.balance);
+            }
+
+            deleteTransaction(transactionId) {
+                const transactions = this.getTransactions();
+                const transactionToDelete = transactions.find(t => t.id === transactionId);
+                
+                if (transactionToDelete) {
+                    // Reverse the account balance effect
+                    const accounts = this.getAccounts();
+                    const account = accounts.find(a => a.name === transactionToDelete.account);
+                    
+                    if (account) {
+                        if (transactionToDelete.type === 'income') {
+                            account.balance -= parseFloat(transactionToDelete.amount);
+                        } else {
+                            account.balance += Math.abs(parseFloat(transactionToDelete.amount));
+                        }
+                        localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
+                    }
+                }
+                
+                const filteredTransactions = transactions.filter(t => t.id !== transactionId);
+                this.saveTransactions(filteredTransactions);
+                
+                console.log('🗑️ Transaction deleted:', transactionId);
+                this.triggerDataUpdate();
+            }
+
+            getAccounts() {
+                try {
+                    return JSON.parse(localStorage.getItem('smartgrocer-accounts')) || [];
+                } catch (error) {
+                    console.error('Error parsing accounts:', error);
+                    return [];
+                }
+            }
+
+            getBudgets() {
+                try {
+                    return JSON.parse(localStorage.getItem('smartgrocer-budgets')) || [];
+                } catch (error) {
+                    console.error('Error parsing budgets:', error);
+                    return [];
+                }
+            }
+
+            getCategories() {
+                try {
+                    return JSON.parse(localStorage.getItem('smartgrocer-categories')) || [];
+                } catch (error) {
+                    console.error('Error parsing categories:', error);
+                    return [];
+                }
+            }
+
+            calculateFinancialOverview() {
+                const transactions = this.getTransactions();
+                const accounts = this.getAccounts();
+                const currentMonth = new Date().getMonth();
+                const currentYear = new Date().getFullYear();
+
+                // Total balance from accounts in selected currency
+                const totalBalance = accounts
+                    .filter(account => account.currency === this.currency)
+                    .reduce((total, account) => total + (parseFloat(account.balance) || 0), 0);
+
+                // Current month transactions
+                const currentMonthTransactions = transactions.filter(transaction => {
+                    try {
+                        const transactionDate = new Date(transaction.date);
+                        return transactionDate.getMonth() === currentMonth && 
+                               transactionDate.getFullYear() === currentYear &&
+                               transaction.currency === this.currency;
+                    } catch (error) {
+                        return false;
+                    }
+                });
+
+                // Calculate totals
+                const totalIncome = currentMonthTransactions
+                    .filter(t => t.type === 'income')
+                    .reduce((total, t) => total + (parseFloat(t.amount) || 0), 0);
+
+                const totalExpenses = currentMonthTransactions
+                    .filter(t => t.type === 'expense')
+                    .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
+
+                const savingsRate = totalIncome > 0 ? 
+                    Math.round(((totalIncome - totalExpenses) / totalIncome) * 100) : 0;
+
+                const result = {
+                    totalBalance,
+                    totalIncome,
+                    totalExpenses,
+                    savingsRate,
+                    currency: this.currency,
+                    symbol: this.currencies[this.currency].symbol
+                };
+
+                return result;
+            }
+
+            calculateChartData() {
+                const transactions = this.getTransactions();
+                const months = [];
+                const incomeData = [];
+                const expenseData = [];
+                const currentDate = new Date();
+
+                // Last 6 months data
+                for (let i = 5; i >= 0; i--) {
+                    const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+                    const monthName = date.toLocaleString('default', { month: 'short' });
+                    months.push(monthName);
+
+                    const monthIncome = transactions
+                        .filter(t => {
+                            try {
+                                const transactionDate = new Date(t.date);
+                                return t.type === 'income' &&
+                                       t.currency === this.currency &&
+                                       transactionDate.getMonth() === date.getMonth() &&
+                                       transactionDate.getFullYear() === date.getFullYear();
+                            } catch (error) {
+                                return false;
+                            }
+                        })
+                        .reduce((total, t) => total + (parseFloat(t.amount) || 0), 0);
+
+                    const monthExpenses = transactions
+                        .filter(t => {
+                            try {
+                                const transactionDate = new Date(t.date);
+                                return t.type === 'expense' &&
+                                       t.currency === this.currency &&
+                                       transactionDate.getMonth() === date.getMonth() &&
+                                       transactionDate.getFullYear() === date.getFullYear();
+                            } catch (error) {
+                                return false;
+                            }
+                        })
+                        .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
+
+                    incomeData.push(monthIncome);
+                    expenseData.push(monthExpenses);
+                }
+
+                // Category data for current month
+                const categoryMap = {};
+                const currentMonth = new Date().getMonth();
+                const currentYear = new Date().getFullYear();
+
+                transactions
+                    .filter(t => {
+                        try {
+                            const transactionDate = new Date(t.date);
+                            return t.type === 'expense' &&
+                                   t.currency === this.currency &&
+                                   transactionDate.getMonth() === currentMonth &&
+                                   transactionDate.getFullYear() === currentYear;
+                        } catch (error) {
+                            return false;
+                        }
+                    })
+                    .forEach(t => {
+                        const category = t.category || 'Uncategorized';
+                        const amount = Math.abs(parseFloat(t.amount) || 0);
+                        categoryMap[category] = (categoryMap[category] || 0) + amount;
+                    });
+
+                const result = {
+                    incomeExpense: {
+                        labels: months,
+                        income: incomeData,
+                        expenses: expenseData
+                    },
+                    categories: {
+                        labels: Object.keys(categoryMap),
+                        data: Object.values(categoryMap)
+                    }
+                };
+
+                return result;
+            }
+
+            setCurrency(currency) {
+                this.currency = currency;
+                localStorage.setItem('selectedCurrency', currency);
+                this.triggerDataUpdate();
+            }
+
+            getCurrencySymbol() {
+                return this.currencies[this.currency]?.symbol || '₨';
+            }
+
+            initializeSampleData() {
+                const transactions = this.getTransactions();
+                const accounts = this.getAccounts();
+                
+                if (transactions.length === 0 && accounts.length === 0) {
+                    console.log('🎯 Initializing sample data for new user');
+                    
+                    const sampleTransactions = [
+                        {
+                            id: 'sample_income_1',
+                            type: 'income',
+                            amount: 75000,
+                            currency: this.currency,
+                            category: 'Salary',
+                            description: 'Monthly Salary',
+                            date: new Date().toISOString().split('T')[0],
+                            account: 'Primary Bank',
+                            createdAt: new Date().toISOString()
+                        },
+                        {
+                            id: 'sample_expense_1',
+                            type: 'expense',
+                            amount: -4500,
+                            currency: this.currency,
+                            category: 'Food & Dining',
+                            description: 'Grocery Shopping',
+                            date: new Date().toISOString().split('T')[0],
+                            account: 'Primary Bank',
+                            createdAt: new Date().toISOString()
+                        },
+                        {
+                            id: 'sample_expense_2',
+                            type: 'expense',
+                            amount: -2500,
+                            currency: this.currency,
+                            category: 'Transportation',
+                            description: 'Fuel',
+                            date: new Date(Date.now() - 86400000).toISOString().split('T')[0],
+                            account: 'Cash',
+                            createdAt: new Date().toISOString()
+                        }
+                    ];
+
+                    const sampleAccounts = [
+                        {
+                            id: 'acc_primary',
+                            name: 'Primary Bank',
+                            type: 'bank',
+                            balance: 70500, // 75000 - 4500
+                            currency: this.currency
+                        },
+                        {
+                            id: 'acc_cash',
+                            name: 'Cash',
+                            type: 'cash',
+                            balance: -2500, // -2500
+                            currency: this.currency
+                        }
+                    ];
+
+                    localStorage.setItem('smartgrocer-transactions', JSON.stringify(sampleTransactions));
+                    localStorage.setItem('smartgrocer-accounts', JSON.stringify(sampleAccounts));
+                    
+                    console.log('✅ Sample data initialized');
+                    this.triggerDataUpdate();
+                } else {
+                    console.log('ℹ️ Sample data already exists, skipping initialization');
+                }
+            }
+
+            forceRefresh() {
+                console.log('🔄 Manual refresh triggered');
+                this.triggerDataUpdate();
+            }
+
+            destroy() {
+                if (this.autoUpdateInterval) {
+                    clearInterval(this.autoUpdateInterval);
+                }
+            }
+        }
+
+        // Create global instance immediately
+        if (!window.smartGrocerData) {
+            window.smartGrocerData = new DataManager();
+        }
+
+        // Dashboard Manager
+        class DashboardManager {
+            constructor() {
+                this.dataManager = window.smartGrocerData;
+                this.charts = {};
+                this.lastUpdateTime = null;
+                this.init();
+            }
+
+            init() {
+                console.log('🚀 Dashboard Manager Initialized');
+                this.setupEventListeners();
+                this.setupCurrencySelection();
+                this.checkUserAuth();
+                
+                // Initial dashboard update
+                setTimeout(() => {
+                    this.updateDashboard();
+                }, 100);
+            }
+
+            setupEventListeners() {
+                // Listen for data updates from ALL pages
+                window.addEventListener('smartgrocer-data-update', (event) => {
+                    console.log('📊 Dashboard received data update', {
+                        transactions: event.detail.transactions.length,
+                        time: event.detail.timestamp
+                    });
+                    this.updateDashboard();
+                });
+
+                // Mobile menu
+                const mobileMenuButton = document.getElementById('mobile-menu-button');
+                const sidebar = document.getElementById('sidebar');
+                const sidebarOverlay = document.getElementById('sidebar-overlay');
+                
+                if (mobileMenuButton) {
+                    mobileMenuButton.addEventListener('click', function() {
+                        sidebar.classList.toggle('-translate-x-full');
+                        sidebarOverlay.classList.toggle('hidden');
+                    });
+                }
+                
+                if (sidebarOverlay) {
+                    sidebarOverlay.addEventListener('click', function() {
+                        sidebar.classList.add('-translate-x-full');
+                        sidebarOverlay.classList.add('hidden');
+                    });
+                }
+
+                // Sign in form
+                const signinForm = document.getElementById('signin-form');
+                if (signinForm) {
+                    signinForm.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        this.handleSignIn();
+                    });
+                }
+
+                // Currency selection
+                document.querySelectorAll('.currency-option').forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        document.querySelectorAll('.currency-option').forEach(opt => {
+                            opt.classList.remove('selected', 'border-blue-500', 'bg-blue-50', 'text-blue-700');
+                            opt.classList.add('border-gray-300', 'text-gray-700');
+                        });
+                        option.classList.add('selected', 'border-blue-500', 'bg-blue-50', 'text-blue-700');
+                        option.classList.remove('border-gray-300', 'text-gray-700');
+                    });
+                });
+
+                // Add refresh button functionality
+                this.addRefreshButton();
+            }
+
+            addRefreshButton() {
+                // Add manual refresh capability
+                const header = document.querySelector('header .flex-1');
+                if (header && !document.getElementById('manual-refresh-btn')) {
+                    const refreshBtn = document.createElement('button');
+                    refreshBtn.id = 'manual-refresh-btn';
+                    refreshBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Refresh';
+                    refreshBtn.className = 'ml-4 px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium';
+                    refreshBtn.onclick = () => {
+                        this.dataManager.forceRefresh();
+                        this.showNotification('Dashboard refreshed!', 'success');
+                    };
+                    header.appendChild(refreshBtn);
+                }
+            }
+
+            setupCurrencySelection() {
+                const currencyOptions = document.querySelectorAll('.currency-option');
+                currencyOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const currency = option.getAttribute('data-currency');
+                        this.dataManager.setCurrency(currency);
+                        this.updateCurrencyDisplay(currency);
+                        this.showNotification(`Currency set to ${currency}`, 'info');
+                    });
+                });
+            }
+
+            checkUserAuth() {
+                const userName = localStorage.getItem('smartgrocer-currentUser');
+                if (userName) {
+                    this.showMainApp(userName);
+                    this.updateDashboard();
+                } else {
+                    console.log('👤 No user found, showing signin overlay');
+                }
+            }
+
+            handleSignIn() {
+                const userName = document.getElementById('signin-name').value.trim();
+                const selectedCurrency = document.querySelector('.currency-option.selected')?.getAttribute('data-currency') || 'PKR';
+                
+                if (userName) {
+                    localStorage.setItem('smartgrocer-currentUser', userName);
+                    localStorage.setItem('selectedCurrency', selectedCurrency);
+                    this.dataManager.setCurrency(selectedCurrency);
+                    this.showMainApp(userName);
+                    this.updateDashboard();
+                    this.showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
+                }
+            }
+
+            showMainApp(userName) {
+                document.getElementById('signin-overlay').style.display = 'none';
+                document.getElementById('main-app-container').classList.remove('hidden');
+                
+                document.getElementById('user-greeting').textContent = `Hello, ${userName}!`;
+                document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
+                
+                const currency = localStorage.getItem('selectedCurrency') || 'PKR';
+                this.updateCurrencyDisplay(currency);
+            }
+
+            updateCurrencyDisplay(currency) {
+                const currencyInfo = this.dataManager.currencies[currency];
+                if (document.getElementById('current-currency')) {
+                    document.getElementById('current-currency').textContent = currency;
+                    document.getElementById('currency-symbol').textContent = currencyInfo.symbol;
+                }
+            }
+
+            updateDashboard() {
+                console.log('🔄 Updating dashboard with latest data...');
+                try {
+                    const financialData = this.dataManager.calculateFinancialOverview();
+                    const chartData = this.dataManager.calculateChartData();
+                    const transactions = this.dataManager.getTransactions();
+                    const budgets = this.dataManager.getBudgets();
+
+                    this.updateFinancialOverview(financialData);
+                    this.updateCharts(chartData);
+                    this.updateRecentTransactions(transactions);
+                    this.updateBudgetProgress(budgets, transactions);
+                    this.updateDataStatus(transactions);
+
+                    this.lastUpdateTime = new Date();
+                    console.log('✅ Dashboard updated successfully');
+
+                } catch (error) {
+                    console.error('❌ Error updating dashboard:', error);
+                    this.showNotification('Error updating dashboard', 'error');
+                }
+            }
+
+            updateFinancialOverview(data) {
+                console.log('💰 Updating financial overview:', data);
+                document.getElementById('total-balance').textContent = `${data.symbol}${data.totalBalance.toLocaleString()}`;
+                document.getElementById('total-income').textContent = `${data.symbol}${data.totalIncome.toLocaleString()}`;
+                document.getElementById('total-expenses').textContent = `${data.symbol}${data.totalExpenses.toLocaleString()}`;
+                document.getElementById('savings-rate').textContent = `${Math.max(data.savingsRate, 0)}%`;
+            }
+
+            updateCharts(chartData) {
+                this.updateSpendingChart(chartData.incomeExpense);
+            }
+
+            updateSpendingChart(data) {
+                const ctx = document.getElementById('spendingChart');
+                if (!ctx) {
+                    console.log('❌ Spending chart canvas not found');
+                    return;
+                }
+
+                // Destroy existing chart
+                if (this.charts.spending) {
+                    this.charts.spending.destroy();
+                }
+
+                const currencySymbol = this.dataManager.getCurrencySymbol();
+
+                this.charts.spending = new Chart(ctx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Spending',
+                            data: data.expenses,
+                            borderColor: '#10B981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return `Spending: ${currencySymbol}${context.raw.toLocaleString()}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return `${currencySymbol}${value.toLocaleString()}`;
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            updateRecentTransactions(transactions) {
+                const container = document.getElementById('recent-transactions-container');
+                if (!container) {
+                    console.log('❌ Recent transactions container not found');
+                    return;
+                }
+
+                const oneWeekAgo = new Date();
+                oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                
+                const recentTransactions = transactions
+                    .filter(transaction => {
+                        try {
+                            const transactionDate = new Date(transaction.date);
+                            return transactionDate >= oneWeekAgo;
+                        } catch (error) {
+                            return false;
+                        }
+                    })
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .slice(0, 5);
+
+                const currencySymbol = this.dataManager.getCurrencySymbol();
+
+                if (recentTransactions.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-exchange-alt text-3xl mb-3 opacity-40"></i>
+                            <p>No recent transactions</p>
+                            <p class="text-sm mt-2">Add income or expenses to see them here</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = recentTransactions.map(transaction => {
+                    const isExpense = transaction.type === 'expense';
+                    const amountClass = isExpense ? 'text-red-500' : 'text-green-500';
+                    const amountSign = isExpense ? '-' : '+';
+                    const absoluteAmount = Math.abs(transaction.amount);
+                    
+                    const iconClass = this.getTransactionIcon(transaction.category);
+                    const timeAgo = this.getTimeAgo(new Date(transaction.date));
+                    
+                    return `
+                        <div class="transaction-item flex justify-between items-center p-3 rounded-lg border border-gray-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 ${iconClass.bg} rounded-full flex items-center justify-center">
+                                    <i class="${iconClass.icon} ${iconClass.color}"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-800">${transaction.description || transaction.category}</p>
+                                    <p class="text-gray-500 text-xs">${transaction.category} • ${timeAgo}</p>
+                                </div>
+                            </div>
+                            <span class="${amountClass} font-bold">${amountSign}${currencySymbol}${absoluteAmount.toLocaleString()}</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            updateBudgetProgress(budgets, transactions) {
+                const container = document.getElementById('budget-progress-container');
+                if (!container) return;
+
+                const currentMonth = new Date().getMonth();
+                const currentYear = new Date().getFullYear();
+                const currencySymbol = this.dataManager.getCurrencySymbol();
+
+                const filteredBudgets = budgets.filter(budget => budget.currency === this.dataManager.currency);
+                
+                if (filteredBudgets.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-chart-pie text-3xl mb-3 opacity-40"></i>
+                            <p>No budgets set yet</p>
+                            <p class="text-sm mt-2">Create budgets to track spending limits</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = filteredBudgets.map(budget => {
+                    const spent = transactions
+                        .filter(transaction => {
+                            try {
+                                const transactionDate = new Date(transaction.date);
+                                return transaction.type === 'expense' && 
+                                       transaction.category === budget.category &&
+                                       transaction.currency === this.dataManager.currency &&
+                                       transactionDate.getMonth() === currentMonth &&
+                                       transactionDate.getFullYear() === currentYear;
+                            } catch (error) {
+                                return false;
+                            }
+                        })
+                        .reduce((total, transaction) => total + Math.abs(transaction.amount), 0);
+                    
+                    const percentage = budget.amount > 0 ? Math.min((spent / budget.amount) * 100, 100) : 0;
+                    const progressColor = percentage > 90 ? 'bg-red-500' : 
+                                       percentage > 75 ? 'bg-yellow-500' : 'bg-green-500';
+                    
+                    return `
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-medium text-gray-700">${budget.name}</span>
+                                <span class="text-sm text-gray-500">${currencySymbol}${spent.toFixed(0)} / ${currencySymbol}${budget.amount}</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill ${progressColor}" style="width: ${percentage}%"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            updateDataStatus(transactions) {
+                const statusElement = document.getElementById('data-status');
+                const messageElement = document.getElementById('status-message');
+                
+                if (transactions.length === 0) {
+                    statusElement.classList.remove('hidden');
+                    messageElement.textContent = 'No transactions found. Add some income or expenses to get started!';
+                } else {
+                    statusElement.classList.add('hidden');
+                }
+            }
+
+            getTransactionIcon(category) {
+                const icons = {
+                    'Food & Dining': { icon: 'fas fa-utensils', color: 'text-green-600', bg: 'bg-green-100' },
+                    'Transportation': { icon: 'fas fa-car', color: 'text-blue-600', bg: 'bg-blue-100' },
+                    'Shopping': { icon: 'fas fa-shopping-bag', color: 'text-purple-600', bg: 'bg-purple-100' },
+                    'Entertainment': { icon: 'fas fa-film', color: 'text-yellow-600', bg: 'bg-yellow-100' },
+                    'Bills & Utilities': { icon: 'fas fa-file-invoice-dollar', color: 'text-red-600', bg: 'bg-red-100' },
+                    'Healthcare': { icon: 'fas fa-heartbeat', color: 'text-pink-600', bg: 'bg-pink-100' },
+                    'Education': { icon: 'fas fa-graduation-cap', color: 'text-indigo-600', bg: 'bg-indigo-100' },
+                    'Travel': { icon: 'fas fa-plane', color: 'text-teal-600', bg: 'bg-teal-100' },
+                    'Personal Care': { icon: 'fas fa-spa', color: 'text-orange-600', bg: 'bg-orange-100' },
+                    'Salary': { icon: 'fas fa-money-bill-wave', color: 'text-green-600', bg: 'bg-green-100' }
+                };
+                
+                return icons[category] || { icon: 'fas fa-wallet', color: 'text-gray-600', bg: 'bg-gray-100' };
+            }
+
+            getTimeAgo(date) {
+                const now = new Date();
+                const diffInMs = now - date;
+                const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+                const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+                
+                if (diffInHours < 1) return 'Just now';
+                if (diffInHours < 24) return `${diffInHours}h ago`;
+                if (diffInDays === 1) return 'Yesterday';
+                if (diffInDays < 7) return `${diffInDays}d ago`;
+                return date.toLocaleDateString();
+            }
+
+            showNotification(message, type = 'info') {
+                const notification = document.getElementById('notification');
+                const bgColor = type === 'success' ? 'bg-green-500' :
+                               type === 'error' ? 'bg-red-500' :
+                               type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500';
+                
+                notification.innerHTML = `
+                    <div class="${bgColor} text-white p-4 rounded-lg flex items-center justify-between">
+                        <div class="flex items-center">
+                            <i class="fas ${type === 'success' ? 'fa-check-circle' : 
+                                         type === 'error' ? 'fa-exclamation-circle' : 
+                                         type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'} mr-3"></i>
+                            <span>${message}</span>
+                        </div>
+                        <button onclick="this.parentElement.parentElement.classList.add('hidden')" class="ml-4 text-white hover:text-gray-200">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                
+                notification.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    notification.classList.add('hidden');
+                }, 5000);
+            }
+        }
+
+        // Initialize dashboard when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🏠 Dashboard DOM loaded, initializing...');
+            window.dashboardManager = new DashboardManager();
+        });
+
+        // Global functions
+        function initializeSampleData() {
+            window.smartGrocerData.initializeSampleData();
+        }
+
+        function updateDashboard() {
+            window.smartGrocerData.forceRefresh();
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SmartGrocer - Personal Finance Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
