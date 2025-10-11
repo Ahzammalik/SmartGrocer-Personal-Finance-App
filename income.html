@@ -542,6 +542,113 @@
     </button>
 
     <script>
+        // Data Manager - Shared across all pages
+        class DataManager {
+            constructor() {
+                this.storageKey = 'smartgrocer-transactions';
+                this.userKey = 'smartgrocer-currentUser';
+                this.currencies = {
+                    'USD': { name: 'US Dollar', symbol: '$' },
+                    'PKR': { name: 'Pakistani Rupee', symbol: '₨' },
+                    'INR': { name: 'Indian Rupee', symbol: '₹' }
+                };
+                this.init();
+            }
+
+            init() {
+                // Clear all demo transactions and start with zero
+                this.clearAllTransactions();
+                
+                // Set default user if not exists
+                if (!localStorage.getItem(this.userKey)) {
+                    localStorage.setItem(this.userKey, 'User');
+                }
+                
+                console.log('📊 Data Manager Initialized - Starting with Zero Transactions');
+            }
+
+            getTransactions() {
+                const transactions = localStorage.getItem(this.storageKey);
+                return transactions ? JSON.parse(transactions) : [];
+            }
+
+            saveTransactions(transactions) {
+                localStorage.setItem(this.storageKey, JSON.stringify(transactions));
+                this.dispatchUpdateEvent();
+            }
+
+            addTransaction(transaction) {
+                const transactions = this.getTransactions();
+                transaction.id = this.generateId();
+                transactions.push(transaction);
+                this.saveTransactions(transactions);
+                return transaction.id;
+            }
+
+            deleteTransaction(id) {
+                const transactions = this.getTransactions();
+                const index = transactions.findIndex(t => t.id === id);
+                if (index !== -1) {
+                    transactions.splice(index, 1);
+                    this.saveTransactions(transactions);
+                    return true;
+                }
+                return false;
+            }
+
+            clearAllTransactions() {
+                localStorage.setItem(this.storageKey, JSON.stringify([]));
+                this.dispatchUpdateEvent();
+            }
+
+            setCurrency(currency) {
+                localStorage.setItem('selectedCurrency', currency);
+                this.dispatchUpdateEvent();
+            }
+
+            exportToCSV() {
+                const transactions = this.getTransactions();
+                if (transactions.length === 0) return false;
+
+                const headers = ['Date', 'Description', 'Category', 'Amount', 'Currency', 'Account', 'Type'];
+                const csvData = transactions.map(t => [
+                    t.date,
+                    t.description,
+                    t.category,
+                    Math.abs(t.amount),
+                    t.currency,
+                    t.account,
+                    t.type
+                ]);
+
+                const csvContent = [headers, ...csvData]
+                    .map(row => row.map(field => `"${field}"`).join(','))
+                    .join('\n');
+
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `smartgrocer-income-${new Date().toISOString().split('T')[0]}.csv`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+                return true;
+            }
+
+            generateId() {
+                return Date.now().toString(36) + Math.random().toString(36).substr(2);
+            }
+
+            dispatchUpdateEvent() {
+                window.dispatchEvent(new CustomEvent('smartgrocer-data-update'));
+            }
+        }
+
+        // Initialize Data Manager
+        if (!window.smartGrocerData) {
+            window.smartGrocerData = new DataManager();
+        }
+
         // Income Manager - Uses Shared Data Manager
         class IncomeManager {
             constructor() {
