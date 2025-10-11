@@ -1100,23 +1100,192 @@
             }
 
             updateCategoryBreakdown() {
-                // ... existing category breakdown code ...
+                const container = document.getElementById('category-breakdown');
+                const transactions = this.dataManager.getTransactions();
+                
+                // Filter expenses by selected currency and current month
+                const currentMonthExpenses = transactions.filter(expense => 
+                    expense.type === 'expense' &&
+                    expense.currency === this.selectedCurrency && 
+                    this.isThisMonth(new Date(expense.date))
+                );
+                
+                // Calculate category totals
+                const categoryTotals = {};
+                currentMonthExpenses.forEach(expense => {
+                    if (!categoryTotals[expense.category]) {
+                        categoryTotals[expense.category] = 0;
+                    }
+                    categoryTotals[expense.category] += Math.abs(expense.amount);
+                });
+                
+                const totalAmount = Object.values(categoryTotals).reduce((sum, amount) => sum + amount, 0);
+                
+                if (Object.keys(categoryTotals).length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-chart-pie text-3xl mb-3 opacity-40"></i>
+                            <p>No expenses recorded</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = Object.entries(categoryTotals).map(([category, amount]) => {
+                    const percentage = totalAmount > 0 ? (amount / totalAmount) * 100 : 0;
+                    const currencySymbol = this.dataManager.currencies[this.selectedCurrency].symbol;
+                    
+                    return `
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                                    <i class="${this.getExpenseIcon(category)} text-gray-600 text-sm"></i>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800 text-sm">${category}</p>
+                                    <p class="text-gray-500 text-xs">${currencySymbol}${amount.toLocaleString()}</p>
+                                </div>
+                            </div>
+                            <div class="w-24 bg-gray-200 rounded-full h-2">
+                                <div class="h-2 rounded-full ${this.getCategoryColor(category, true)}" style="width: ${percentage}%"></div>
+                            </div>
+                            <span class="text-sm font-medium text-gray-700 w-8 text-right">${percentage.toFixed(0)}%</span>
+                        </div>
+                    `;
+                }).join('');
             }
 
             updateExpenseChart() {
-                // ... existing chart code ...
+                const ctx = document.getElementById('expenseChart');
+                if (!ctx) return;
+
+                const transactions = this.dataManager.getTransactions();
+                const currentDate = new Date();
+                const months = [];
+                const expenseData = [];
+
+                // Last 6 months data for selected currency
+                for (let i = 5; i >= 0; i--) {
+                    const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
+                    const monthName = date.toLocaleString('default', { month: 'short' });
+                    months.push(monthName);
+
+                    const monthExpenses = transactions
+                        .filter(t => {
+                            try {
+                                const transactionDate = new Date(t.date);
+                                return t.type === 'expense' &&
+                                       t.currency === this.selectedCurrency &&
+                                       transactionDate.getMonth() === date.getMonth() &&
+                                       transactionDate.getFullYear() === date.getFullYear();
+                            } catch (error) {
+                                return false;
+                            }
+                        })
+                        .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
+
+                    expenseData.push(monthExpenses);
+                }
+
+                if (this.expenseChart) {
+                    this.expenseChart.destroy();
+                }
+
+                const currencySymbol = this.dataManager.currencies[this.selectedCurrency].symbol;
+
+                this.expenseChart = new Chart(ctx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: months,
+                        datasets: [{
+                            label: 'Expenses',
+                            data: expenseData,
+                            borderColor: '#EF4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: (context) => {
+                                        return `Expenses: ${currencySymbol}${context.raw.toLocaleString()}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.1)'
+                                },
+                                ticks: {
+                                    callback: (value) => `${currencySymbol}${value.toLocaleString()}`
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
             }
 
             openAddExpenseModal() {
-                // ... existing modal code ...
+                const modal = document.getElementById('add-expense-modal');
+                document.getElementById('expense-date').valueAsDate = new Date();
+                document.getElementById('expense-currency').value = this.selectedCurrency;
+                const symbol = this.dataManager.currencies[this.selectedCurrency]?.symbol || '₨';
+                document.getElementById('modal-currency-symbol').textContent = symbol;
+                modal.classList.remove('hidden');
             }
 
             closeAddExpenseModal() {
-                // ... existing modal code ...
+                const modal = document.getElementById('add-expense-modal');
+                modal.classList.add('hidden');
+                document.getElementById('add-expense-form').reset();
             }
 
             addNewExpense(e) {
-                // ... existing add expense code ...
+                e.preventDefault();
+                
+                const description = document.getElementById('expense-description').value.trim();
+                const amount = parseFloat(document.getElementById('expense-amount').value);
+                const currency = document.getElementById('expense-currency').value;
+                const category = document.getElementById('expense-category').value;
+                const account = document.getElementById('expense-account').value.trim();
+                const date = document.getElementById('expense-date').value;
+
+                if (!description || !amount || amount <= 0 || !account || !date) {
+                    this.showNotification('Please fill all fields correctly', 'error');
+                    return;
+                }
+
+                const newExpense = {
+                    type: 'expense',
+                    description,
+                    amount: -Math.abs(amount), // Ensure negative for expenses
+                    currency,
+                    category,
+                    account,
+                    date,
+                    createdAt: new Date().toISOString()
+                };
+
+                this.dataManager.addTransaction(newExpense);
+                this.showNotification('Expense added successfully!', 'success');
+                this.closeAddExpenseModal();
             }
 
             deleteExpense(expenseId) {
