@@ -654,12 +654,21 @@
                 const transactions = this.getTransactions();
                 const transactionToDelete = transactions.find(t => t.id === id);
                 
-                if (transactionToDelete) {
-                    this.reverseAccountBalanceFromTransaction(transactionToDelete);
+                if (!transactionToDelete) {
+                    console.log('❌ Transaction not found with ID:', id);
+                    return false;
                 }
                 
+                console.log('📝 Transaction to delete:', transactionToDelete);
+                
+                // Reverse the account balance effect FIRST
+                this.reverseAccountBalanceFromTransaction(transactionToDelete);
+                
+                // Then remove the transaction
                 const filtered = transactions.filter(t => t.id !== id);
                 localStorage.setItem('smartgrocer-transactions', JSON.stringify(filtered));
+                
+                console.log('✅ Transaction deleted. Remaining transactions:', filtered.length);
                 this.triggerDataUpdate();
                 return true;
             }
@@ -669,13 +678,21 @@
                 const account = accounts.find(a => a.name === transaction.account);
                 
                 if (account) {
+                    console.log('💰 Reversing account balance for:', transaction.account);
+                    console.log('📊 Before reversal - Balance:', account.balance, 'Transaction amount:', transaction.amount);
+                    
                     if (transaction.type === 'income') {
                         account.balance -= parseFloat(transaction.amount);
+                        console.log('📈 Reversed income: subtracted', transaction.amount);
                     } else {
                         account.balance += Math.abs(parseFloat(transaction.amount));
+                        console.log('📉 Reversed expense: added', Math.abs(transaction.amount));
                     }
                     
+                    console.log('📊 After reversal - Balance:', account.balance);
                     localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
+                } else {
+                    console.log('❌ Account not found for reversal:', transaction.account);
                 }
             }
 
@@ -807,16 +824,22 @@
             }
 
             setupEventDelegation() {
-                document.getElementById('expense-table-body').addEventListener('click', (e) => {
-                    if (e.target.closest('.delete-expense-btn')) {
-                        const expenseId = e.target.closest('.delete-expense-btn').getAttribute('data-expense-id');
-                        this.deleteExpense(expenseId);
-                    }
-                });
+                const tableBody = document.getElementById('expense-table-body');
+                if (tableBody) {
+                    tableBody.addEventListener('click', (e) => {
+                        const deleteBtn = e.target.closest('.delete-expense-btn');
+                        if (deleteBtn) {
+                            const expenseId = deleteBtn.getAttribute('data-expense-id');
+                            console.log('🖱️ Delete button clicked for expense ID:', expenseId);
+                            this.deleteExpense(expenseId);
+                        }
+                    });
+                }
             }
 
             setupEventListeners() {
                 window.addEventListener('smartgrocer-data-update', (event) => {
+                    console.log('📢 Received data update event');
                     this.updateExpenseDisplay();
                 });
 
@@ -905,6 +928,7 @@
             }
 
             updateExpenseDisplay() {
+                console.log('🔄 Updating expense display');
                 this.updateExpenseOverview();
                 this.renderExpenseTable();
                 this.updateCategoryBreakdown();
@@ -993,6 +1017,9 @@
                     }).join('');
                     
                     this.updatePaginationInfo(filteredExpenses.length, paginatedExpenses.length);
+                    
+                    // Re-attach event delegation after rendering
+                    this.setupEventDelegation();
                 }, 500); // Simulate loading delay
             }
 
@@ -1289,10 +1316,12 @@
             }
 
             deleteExpense(expenseId) {
+                console.log('🗑️ Attempting to delete expense:', expenseId);
                 if (confirm('Are you sure you want to delete this expense?')) {
                     const success = this.dataManager.deleteTransaction(expenseId);
                     if (success) {
                         this.showNotification('Expense deleted successfully', 'success');
+                        // The table will automatically update via the data update event
                     } else {
                         this.showNotification('Failed to delete expense', 'error');
                     }
