@@ -474,3 +474,16 @@ function showNotification(message, type = 'info') {
     // Simple notification implementation
     console.log(`${type.toUpperCase()}: ${message}`);
 }
+// Save function
+function saveTransaction(type, transaction) {
+    const key = type === 'expense' ? 'expenses' : 'income';
+    const transactions = JSON.parse(localStorage.getItem(key)) || [];
+    transactions.push(transaction);
+    localStorage.setItem(key, JSON.stringify(transactions));
+}
+
+// Load function  
+function loadTransactions(type) {
+    const key = type === 'expense' ? 'expenses' : 'income';
+    return JSON.parse(localStorage.getItem(key)) || [];
+}
