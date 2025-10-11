@@ -271,6 +271,63 @@
         .full-width-section {
             grid-column: 1 / -1;
         }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .confirm-btn {
+            background: #EF4444;
+            color: white;
+        }
+        
+        .confirm-btn:hover {
+            background: #DC2626;
+        }
+        
+        .cancel-btn {
+            background: #6B7280;
+            color: white;
+        }
+        
+        .cancel-btn:hover {
+            background: #4B5563;
+        }
     </style>
 </head>
 <body class="antialiased flex">
@@ -537,6 +594,7 @@
         const sidebar = document.getElementById('sidebar');
         const sidebarOverlay = document.getElementById('sidebar-overlay');
         const notification = document.getElementById('notification');
+        const modalContainer = document.getElementById('modal-container');
         
         // Profile elements
         const profileName = document.getElementById('profile-name');
@@ -562,7 +620,7 @@
         const resetDataBtn = document.getElementById('reset-data-btn');
         
         // Check if user is signed in
-        const userName = localStorage.getItem('userName');
+        const userName = localStorage.getItem('smartgrocer-currentUser');
         if (userName) {
             signinOverlay.style.display = 'none';
             welcomeUserText.textContent = `Welcome, ${userName}!`;
@@ -577,7 +635,7 @@
             e.preventDefault();
             const name = signinName.value.trim();
             if (name) {
-                localStorage.setItem('userName', name);
+                localStorage.setItem('smartgrocer-currentUser', name);
                 signinOverlay.style.display = 'none';
                 welcomeUserText.textContent = `Welcome, ${name}!`;
                 userInitial.textContent = name.charAt(0).toUpperCase();
@@ -615,14 +673,14 @@
                 const currency = this.getAttribute('data-currency');
                 
                 // Save to localStorage
-                localStorage.setItem('preferredCurrency', currency);
+                localStorage.setItem('selectedCurrency', currency);
                 
                 showNotification(`Currency preference saved: ${currency}`, 'success');
             });
         });
         
         // Set default currency
-        const defaultCurrency = localStorage.getItem('preferredCurrency') || 'PKR';
+        const defaultCurrency = localStorage.getItem('selectedCurrency') || 'PKR';
         document.querySelector(`.currency-option[data-currency="${defaultCurrency}"]`).classList.add('selected');
         
         // Profile editing
@@ -645,7 +703,7 @@
             const newEmail = profileEmail.value.trim();
             
             if (newName) {
-                localStorage.setItem('userName', newName);
+                localStorage.setItem('smartgrocer-currentUser', newName);
                 welcomeUserText.textContent = `Welcome, ${newName}!`;
                 userInitial.textContent = newName.charAt(0).toUpperCase();
             }
@@ -709,14 +767,75 @@
             showNotification(`Data sync ${this.checked ? 'enabled' : 'disabled'}`, 'success');
         });
         
-        // Reset data button
+        // Reset data button - FIXED VERSION
         resetDataBtn.addEventListener('click', function() {
-            if (confirm('Are you sure you want to reset all your financial data? This action cannot be undone.')) {
-                // In a real app, this would clear all financial data
-                // For now, we'll just show a notification
-                showNotification('All financial data has been reset.', 'success');
-            }
+            showResetConfirmationModal();
         });
+
+        // NEW: Show reset confirmation modal
+        function showResetConfirmationModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Reset All Data</h3>
+                    <p class="text-gray-600 mb-4">Are you sure you want to reset all your financial data? This will permanently delete:</p>
+                    <ul class="text-gray-600 mb-4 space-y-2">
+                        <li class="flex items-center"><i class="fas fa-times text-red-500 mr-2"></i> All transactions (income & expenses)</li>
+                        <li class="flex items-center"><i class="fas fa-times text-red-500 mr-2"></i> All accounts and balances</li>
+                        <li class="flex items-center"><i class="fas fa-times text-red-500 mr-2"></i> All budget settings</li>
+                        <li class="flex items-center"><i class="fas fa-times text-red-500 mr-2"></i> All financial reports data</li>
+                    </ul>
+                    <p class="text-red-600 font-semibold mb-4">This action cannot be undone!</p>
+                    <div class="modal-buttons">
+                        <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+                        <button class="confirm-btn" onclick="confirmReset()">Yes, Reset Everything</button>
+                    </div>
+                </div>
+            `;
+            
+            modalContainer.innerHTML = '';
+            modalContainer.appendChild(modal);
+        }
+
+        // NEW: Close modal function
+        function closeModal() {
+            modalContainer.innerHTML = '';
+        }
+
+        // NEW: Confirm reset function
+        function confirmReset() {
+            // Clear all financial data from localStorage
+            localStorage.removeItem('smartgrocer-transactions');
+            localStorage.removeItem('smartgrocer-accounts');
+            localStorage.removeItem('smartgrocer-budgets');
+            
+            // Keep user profile and settings
+            const userName = localStorage.getItem('smartgrocer-currentUser');
+            const userPhone = localStorage.getItem('userPhone');
+            const userEmail = localStorage.getItem('userEmail');
+            const selectedCurrency = localStorage.getItem('selectedCurrency');
+            
+            // Clear everything except user profile
+            localStorage.clear();
+            
+            // Restore user profile and settings
+            if (userName) localStorage.setItem('smartgrocer-currentUser', userName);
+            if (userPhone) localStorage.setItem('userPhone', userPhone);
+            if (userEmail) localStorage.setItem('userEmail', userEmail);
+            if (selectedCurrency) localStorage.setItem('selectedCurrency', selectedCurrency);
+            
+            // Close modal
+            closeModal();
+            
+            // Show success notification
+            showNotification('All financial data has been reset successfully!', 'success');
+            
+            // Refresh the page to reflect changes
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        }
         
         // Show notification function
         function showNotification(message, type) {
@@ -759,6 +878,10 @@
                 sidebar.classList.remove('show');
             }
         });
+
+        // Make functions global for modal onclick handlers
+        window.closeModal = closeModal;
+        window.confirmReset = confirmReset;
     </script>
 </body>
 </html>
