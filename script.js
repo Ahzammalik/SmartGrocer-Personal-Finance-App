@@ -1,13 +1,19 @@
 // Enhanced updateDashboard function with REAL data only
 function updateDashboard() {
     try {
-        // Load all data from localStorage
+        // Load all data from localStorage - FIXED KEYS
         const accounts = safeParseJSON(localStorage.getItem('smartgrocer-accounts') || '[]');
-        const transactions = safeParseJSON(localStorage.getItem('smartgrocer-transactions') || '[]');
+        const expenses = safeParseJSON(localStorage.getItem('expenses') || '[]');
+        const income = safeParseJSON(localStorage.getItem('income') || '[]');
         const budgets = safeParseJSON(localStorage.getItem('smartgrocer-budgets') || '[]');
+        
+        // Combine expenses and income into transactions for dashboard
+        const transactions = [...expenses, ...income];
         
         console.log('Real User Data Loaded:', {
             accounts: accounts.length,
+            expenses: expenses.length,
+            income: income.length,
             transactions: transactions.length,
             budgets: budgets.length
         });
@@ -413,7 +419,7 @@ function navigateToIncome() {
 function setupDataListeners() {
     // Refresh dashboard when storage changes (from other tabs/windows)
     window.addEventListener('storage', function(e) {
-        if (e.key && e.key.startsWith('smartgrocer-')) {
+        if (e.key && (e.key.startsWith('smartgrocer-') || e.key === 'expenses' || e.key === 'income')) {
             updateDashboard();
         }
     });
@@ -474,16 +480,68 @@ function showNotification(message, type = 'info') {
     // Simple notification implementation
     console.log(`${type.toUpperCase()}: ${message}`);
 }
-// Save function
+
+// Enhanced Save function - FIXED to ensure data persistence
 function saveTransaction(type, transaction) {
-    const key = type === 'expense' ? 'expenses' : 'income';
-    const transactions = JSON.parse(localStorage.getItem(key)) || [];
-    transactions.push(transaction);
-    localStorage.setItem(key, JSON.stringify(transactions));
+    try {
+        const key = type === 'expense' ? 'expenses' : 'income';
+        const transactions = JSON.parse(localStorage.getItem(key)) || [];
+        
+        // Add timestamp and ID for better tracking
+        transaction.id = Date.now() + Math.random().toString(36).substr(2, 9);
+        transaction.timestamp = new Date().toISOString();
+        
+        transactions.push(transaction);
+        localStorage.setItem(key, JSON.stringify(transactions));
+        
+        console.log(`Saved ${type}:`, transaction);
+        console.log(`Total ${type}s:`, transactions.length);
+        
+        // Trigger dashboard update
+        triggerDataUpdate();
+        
+        return true;
+    } catch (error) {
+        console.error('Error saving transaction:', error);
+        return false;
+    }
 }
 
-// Load function  
+// Enhanced Load function  
 function loadTransactions(type) {
-    const key = type === 'expense' ? 'expenses' : 'income';
-    return JSON.parse(localStorage.getItem(key)) || [];
+    try {
+        const key = type === 'expense' ? 'expenses' : 'income';
+        const transactions = JSON.parse(localStorage.getItem(key)) || [];
+        console.log(`Loaded ${type}s:`, transactions.length);
+        return transactions;
+    } catch (error) {
+        console.error('Error loading transactions:', error);
+        return [];
+    }
 }
+
+// NEW: Function to migrate old data if needed
+function migrateOldData() {
+    // Check if old smartgrocer-transactions exists and migrate to new structure
+    const oldTransactions = localStorage.getItem('smartgrocer-transactions');
+    if (oldTransactions) {
+        try {
+            const transactions = JSON.parse(oldTransactions);
+            const expenses = transactions.filter(t => t.type === 'expense');
+            const income = transactions.filter(t => t.type === 'income');
+            
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+            localStorage.setItem('income', JSON.stringify(income));
+            localStorage.removeItem('smartgrocer-transactions');
+            
+            console.log('Migrated old data:', { expenses: expenses.length, income: income.length });
+        } catch (error) {
+            console.error('Error migrating old data:', error);
+        }
+    }
+}
+
+// Run migration on load
+document.addEventListener('DOMContentLoaded', function() {
+    migrateOldData();
+});
