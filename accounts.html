@@ -387,14 +387,14 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">From Account</label>
-                                    <select id="from-account" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required>
-                                        <option value="">Select Account</option>
+                                    <select id="from-account" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required disabled>
+                                        <option value="">No accounts available</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">To Account</label>
-                                    <select id="to-account" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required>
-                                        <option value="">Select Account</option>
+                                    <select id="to-account" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required disabled>
+                                        <option value="">No accounts available</option>
                                     </select>
                                 </div>
                             </div>
@@ -403,13 +403,13 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Amount</label>
                                 <div class="relative">
                                     <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" id="currency-symbol">$</span>
-                                    <input type="number" id="transfer-amount" step="0.01" min="0.01" placeholder="0.00" class="w-full border border-gray-300 rounded-lg pl-8 pr-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required>
+                                    <input type="number" id="transfer-amount" step="0.01" min="0.01" placeholder="0.00" class="w-full border border-gray-300 rounded-lg pl-8 pr-3 py-2.5 focus:border-green-500 focus:ring-2 focus:ring-green-500 focus:ring-opacity-20" required disabled>
                                 </div>
                             </div>
                             
                             <div class="pt-2">
-                                <button type="submit" id="transfer-btn" class="w-full btn-primary flex items-center justify-center py-2.5 px-4 rounded-lg font-medium">
-                                    <i class="fas fa-exchange-alt mr-2"></i>Transfer Funds
+                                <button type="submit" id="transfer-btn" class="w-full btn-primary flex items-center justify-center py-2.5 px-4 rounded-lg font-medium opacity-50 cursor-not-allowed" disabled>
+                                    <i class="fas fa-exchange-alt mr-2"></i>Add Accounts to Transfer
                                 </button>
                             </div>
                         </form>
@@ -501,14 +501,8 @@
             'INR': { symbol: '₹', name: 'Indian Rupee', flag: 'IN' }
         };
 
-        // Sample accounts data with different currencies
-        let accounts = [
-            { id: 1, name: 'Main Checking', type: 'checking', balance: 2500.00, currency: 'USD' },
-            { id: 2, name: 'Savings Account', type: 'savings', balance: 15000.00, currency: 'USD' },
-            { id: 3, name: 'Credit Card', type: 'credit', balance: -500.00, currency: 'USD' },
-            { id: 4, name: 'PKR Savings', type: 'savings', balance: 50000.00, currency: 'PKR' },
-            { id: 5, name: 'INR Account', type: 'checking', balance: 75000.00, currency: 'INR' }
-        ];
+        // Start with empty accounts array - NO DEMO DATA
+        let accounts = [];
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
@@ -592,7 +586,7 @@
             document.getElementById('close-account-modal').addEventListener('click', closeModal);
             document.getElementById('cancel-account').addEventListener('click', closeModal);
 
-            // FIXED: Add account form submission
+            // Add account form submission
             document.getElementById('add-account-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const accountName = document.getElementById('account-name').value;
@@ -803,7 +797,7 @@
                                 </div>
                             </div>
                             <div class="flex justify-between items-center text-sm text-gray-500">
-                                <span>Account No: ****${account.id.toString().padStart(4, '0')}</span>
+                                <span>Account No: ****${account.id.toString().slice(-4)}</span>
                                 <div class="flex space-x-2">
                                     <button class="text-green-600 hover:text-green-800" onclick="editAccount(${account.id})">
                                         <i class="fas fa-edit"></i>
@@ -824,19 +818,57 @@
             function updateTransferDropdowns() {
                 const fromAccountSelect = document.getElementById('from-account');
                 const toAccountSelect = document.getElementById('to-account');
+                const transferAmount = document.getElementById('transfer-amount');
+                const transferBtn = document.getElementById('transfer-btn');
                 
                 // Clear existing options
-                fromAccountSelect.innerHTML = '<option value="">Select Account</option>';
-                toAccountSelect.innerHTML = '<option value="">Select Account</option>';
+                fromAccountSelect.innerHTML = '';
+                toAccountSelect.innerHTML = '';
+                
+                if (accounts.length < 2) {
+                    // Not enough accounts for transfer
+                    fromAccountSelect.innerHTML = '<option value="">Need at least 2 accounts</option>';
+                    toAccountSelect.innerHTML = '<option value="">Need at least 2 accounts</option>';
+                    fromAccountSelect.disabled = true;
+                    toAccountSelect.disabled = true;
+                    transferAmount.disabled = true;
+                    transferBtn.disabled = true;
+                    transferBtn.textContent = 'Add Accounts to Transfer';
+                    transferBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                    return;
+                }
+                
+                // Enable transfer functionality
+                fromAccountSelect.disabled = false;
+                toAccountSelect.disabled = false;
+                transferAmount.disabled = false;
+                transferBtn.disabled = false;
+                transferBtn.textContent = 'Transfer Funds';
+                transferBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                
+                // Add default options
+                const defaultOptionFrom = document.createElement('option');
+                defaultOptionFrom.value = '';
+                defaultOptionFrom.textContent = 'Select Account';
+                fromAccountSelect.appendChild(defaultOptionFrom);
+                
+                const defaultOptionTo = document.createElement('option');
+                defaultOptionTo.value = '';
+                defaultOptionTo.textContent = 'Select Account';
+                toAccountSelect.appendChild(defaultOptionTo);
                 
                 // Add accounts to dropdowns
                 accounts.forEach(account => {
-                    const option = document.createElement('option');
-                    option.value = account.id;
-                    option.textContent = `${account.name} (${currencies[account.currency].symbol}${account.balance.toFixed(2)})`;
+                    const optionFrom = document.createElement('option');
+                    optionFrom.value = account.id;
+                    optionFrom.textContent = `${account.name} (${currencies[account.currency].symbol}${account.balance.toFixed(2)})`;
                     
-                    fromAccountSelect.appendChild(option.cloneNode(true));
-                    toAccountSelect.appendChild(option);
+                    const optionTo = document.createElement('option');
+                    optionTo.value = account.id;
+                    optionTo.textContent = `${account.name} (${currencies[account.currency].symbol}${account.balance.toFixed(2)})`;
+                    
+                    fromAccountSelect.appendChild(optionFrom);
+                    toAccountSelect.appendChild(optionTo);
                 });
             }
             
@@ -907,7 +939,7 @@
                                 </div>
                             </div>
                             <div class="flex justify-between items-center text-sm text-gray-500">
-                                <span>Account No: ****${account.id.toString().padStart(4, '0')}</span>
+                                <span>Account No: ****${account.id.toString().slice(-4)}</span>
                                 <div class="flex space-x-2">
                                     <button class="text-green-600 hover:text-green-800" onclick="editAccount(${account.id})">
                                         <i class="fas fa-edit"></i>
