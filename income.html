@@ -556,11 +556,14 @@
             }
 
             init() {
-                // REMOVED: this.clearAllTransactions(); - This was causing the issue
-                
                 // Set default user if not exists
                 if (!localStorage.getItem(this.userKey)) {
                     localStorage.setItem(this.userKey, 'User');
+                }
+                
+                // Initialize empty transactions if not exists
+                if (!localStorage.getItem(this.storageKey)) {
+                    localStorage.setItem(this.storageKey, JSON.stringify([]));
                 }
                 
                 console.log('📊 Data Manager Initialized - Preserving Existing Transactions');
@@ -594,8 +597,6 @@
                 }
                 return false;
             }
-
-            // REMOVED: clearAllTransactions method - This was dangerous
 
             setCurrency(currency) {
                 localStorage.setItem('selectedCurrency', currency);
