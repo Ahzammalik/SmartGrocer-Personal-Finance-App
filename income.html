@@ -561,12 +561,15 @@
                     localStorage.setItem(this.userKey, 'User');
                 }
                 
-                // Initialize empty transactions if not exists
-                if (!localStorage.getItem(this.storageKey)) {
-                    localStorage.setItem(this.storageKey, JSON.stringify([]));
-                }
+                // Clear any existing demo data and start fresh
+                this.clearDemoTransactions();
                 
-                console.log('📊 Data Manager Initialized - Preserving Existing Transactions');
+                console.log('📊 Data Manager Initialized - Starting with Zero Transactions');
+            }
+
+            clearDemoTransactions() {
+                // Clear all transactions to start fresh
+                localStorage.setItem(this.storageKey, JSON.stringify([]));
             }
 
             getTransactions() {
@@ -589,10 +592,10 @@
 
             deleteTransaction(id) {
                 const transactions = this.getTransactions();
-                const index = transactions.findIndex(t => t.id === id);
-                if (index !== -1) {
-                    transactions.splice(index, 1);
-                    this.saveTransactions(transactions);
+                const updatedTransactions = transactions.filter(t => t.id !== id);
+                
+                if (updatedTransactions.length !== transactions.length) {
+                    this.saveTransactions(updatedTransactions);
                     return true;
                 }
                 return false;
@@ -658,7 +661,7 @@
             }
 
             init() {
-                console.log('💰 Income Manager Initialized - Using Shared Data');
+                console.log('💰 Income Manager Initialized - Starting with Zero Transactions');
                 this.setupEventListeners();
                 this.setupCurrencySelection();
                 this.checkUserAuth();
@@ -667,7 +670,8 @@
             }
 
             setupEventDelegation() {
-                document.getElementById('income-table-body').addEventListener('click', (e) => {
+                // Use event delegation for delete buttons
+                document.addEventListener('click', (e) => {
                     if (e.target.closest('.delete-income-btn')) {
                         const incomeId = e.target.closest('.delete-income-btn').getAttribute('data-income-id');
                         this.deleteIncome(incomeId);
@@ -1180,6 +1184,7 @@
                     const success = this.dataManager.deleteTransaction(incomeId);
                     if (success) {
                         this.showNotification('Income deleted successfully', 'success');
+                        this.updateIncomeDisplay();
                     } else {
                         this.showNotification('Failed to delete income', 'error');
                     }
