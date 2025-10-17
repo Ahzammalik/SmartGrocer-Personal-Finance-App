@@ -561,15 +561,12 @@
                     localStorage.setItem(this.userKey, 'User');
                 }
                 
-                // Clear any existing demo data and start fresh
-                this.clearDemoTransactions();
+                // Initialize empty transactions array if not exists
+                if (!localStorage.getItem(this.storageKey)) {
+                    localStorage.setItem(this.storageKey, JSON.stringify([]));
+                }
                 
                 console.log('📊 Data Manager Initialized - Starting with Zero Transactions');
-            }
-
-            clearDemoTransactions() {
-                // Clear all transactions to start fresh
-                localStorage.setItem(this.storageKey, JSON.stringify([]));
             }
 
             getTransactions() {
@@ -585,8 +582,10 @@
             addTransaction(transaction) {
                 const transactions = this.getTransactions();
                 transaction.id = this.generateId();
+                transaction.createdAt = new Date().toISOString();
                 transactions.push(transaction);
                 this.saveTransactions(transactions);
+                console.log('✅ Transaction added:', transaction);
                 return transaction.id;
             }
 
@@ -596,6 +595,7 @@
                 
                 if (updatedTransactions.length !== transactions.length) {
                     this.saveTransactions(updatedTransactions);
+                    console.log('🗑️ Transaction deleted:', id);
                     return true;
                 }
                 return false;
@@ -681,6 +681,7 @@
 
             setupEventListeners() {
                 window.addEventListener('smartgrocer-data-update', (event) => {
+                    console.log('🔄 Data update event received');
                     this.updateIncomeDisplay();
                 });
 
@@ -769,6 +770,7 @@
             }
 
             updateIncomeDisplay() {
+                console.log('🔄 Updating income display');
                 this.updateIncomeOverview();
                 this.renderIncomeTable();
                 this.updateSourceBreakdown();
@@ -779,32 +781,30 @@
                 const transactions = this.dataManager.getTransactions();
                 const currencyInfo = this.dataManager.currencies[this.selectedCurrency];
                 
-                // Filter income in selected currency
-                const currencyIncome = transactions.filter(t => 
-                    t.type === 'income' && t.currency === this.selectedCurrency
-                );
+                // Filter income transactions
+                const incomeTransactions = transactions.filter(t => t.type === 'income');
                 
                 const today = new Date().toDateString();
-                const todayIncome = currencyIncome
+                const todayIncome = incomeTransactions
                     .filter(income => new Date(income.date).toDateString() === today)
                     .reduce((total, income) => total + Math.abs(income.amount), 0);
                 
-                const weekIncome = currencyIncome
+                const weekIncome = incomeTransactions
                     .filter(income => this.isThisWeek(new Date(income.date)))
                     .reduce((total, income) => total + Math.abs(income.amount), 0);
                 
-                const monthIncome = currencyIncome
+                const monthIncome = incomeTransactions
                     .filter(income => this.isThisMonth(new Date(income.date)))
                     .reduce((total, income) => total + Math.abs(income.amount), 0);
                 
-                const totalIncome = currencyIncome
+                const totalIncome = incomeTransactions
                     .reduce((total, income) => total + Math.abs(income.amount), 0);
 
                 // Count transactions
-                const todayCount = currencyIncome.filter(income => new Date(income.date).toDateString() === today).length;
-                const weekCount = currencyIncome.filter(income => this.isThisWeek(new Date(income.date))).length;
-                const monthCount = currencyIncome.filter(income => this.isThisMonth(new Date(income.date))).length;
-                const totalCount = currencyIncome.length;
+                const todayCount = incomeTransactions.filter(income => new Date(income.date).toDateString() === today).length;
+                const weekCount = incomeTransactions.filter(income => this.isThisWeek(new Date(income.date))).length;
+                const monthCount = incomeTransactions.filter(income => this.isThisMonth(new Date(income.date))).length;
+                const totalCount = incomeTransactions.length;
 
                 document.getElementById('today-income').textContent = `${currencyInfo.symbol}${todayIncome.toLocaleString()}`;
                 document.getElementById('week-income').textContent = `${currencyInfo.symbol}${weekIncome.toLocaleString()}`;
@@ -994,10 +994,9 @@
                 const container = document.getElementById('source-breakdown');
                 const transactions = this.dataManager.getTransactions();
                 
-                // Filter income by selected currency and current month
+                // Filter income by current month
                 const currentMonthIncome = transactions.filter(income => 
-                    income.type === 'income' &&
-                    income.currency === this.selectedCurrency && 
+                    income.type === 'income' && 
                     this.isThisMonth(new Date(income.date))
                 );
                 
@@ -1055,7 +1054,7 @@
                 const months = [];
                 const incomeData = [];
 
-                // Last 6 months data for selected currency
+                // Last 6 months data
                 for (let i = 5; i >= 0; i--) {
                     const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
                     const monthName = date.toLocaleString('default', { month: 'short' });
@@ -1066,7 +1065,6 @@
                             try {
                                 const transactionDate = new Date(t.date);
                                 return t.type === 'income' &&
-                                       t.currency === this.selectedCurrency &&
                                        transactionDate.getMonth() === date.getMonth() &&
                                        transactionDate.getFullYear() === date.getFullYear();
                             } catch (error) {
@@ -1177,6 +1175,7 @@
                 this.dataManager.addTransaction(newIncome);
                 this.showNotification('Income added successfully!', 'success');
                 this.closeAddIncomeModal();
+                this.updateIncomeDisplay(); // Force refresh the display
             }
 
             deleteIncome(incomeId) {
@@ -1184,7 +1183,7 @@
                     const success = this.dataManager.deleteTransaction(incomeId);
                     if (success) {
                         this.showNotification('Income deleted successfully', 'success');
-                        this.updateIncomeDisplay();
+                        this.updateIncomeDisplay(); // Force refresh the display
                     } else {
                         this.showNotification('Failed to delete income', 'error');
                     }
