@@ -225,20 +225,6 @@
             }
         }
 
-        /* Auto-update indicator */
-        .auto-update-indicator {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 8px;
-            border-radius: 12px;
-            background-color: #d1fae5;
-            color: #065f46;
-            font-size: 0.75rem;
-            font-weight: 500;
-            margin-left: 8px;
-            animation: pulse 2s infinite;
-        }
-
         .data-status {
             background-color: #FEF3C7;
             border: 1px solid #F59E0B;
@@ -366,22 +352,12 @@
                 <a href="reports.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-primary">
                     <i class="fas fa-chart-line w-5 h-5 mr-3"></i>Reports
                 </a>
-                <a href="blogs.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-primary">
-                    <i class="fas fa-blog w-5 h-5 mr-3"></i>Blog
-                </a>
-                <a href="contact.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-primary">
-                    <i class="fas fa-envelope w-5 h-5 mr-3"></i>Contact Us
-                </a>
-                <a href="settings.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-primary">
-                    <i class="fas fa-cog w-5 h-5 mr-3"></i>Settings
-                </a>
             </nav>
 
             <!-- Footer Links -->
             <div class="px-4 py-4 border-t border-gray-200">
                 <a href="#privacy" class="text-xs text-gray-500 hover:text-primary block">Privacy Policy</a>
                 <a href="#terms" class="text-xs text-gray-500 hover:text-primary block mt-1">Terms & Conditions</a>
-                <a href="#disclaimers" class="text-xs text-gray-500 hover:text-primary block mt-1">Disclaimers</a>
             </div>
         </div>
     </aside>
@@ -407,12 +383,12 @@
                     <div class="hidden md:flex items-center space-x-2 bg-gray-100 rounded-lg px-3 py-1">
                         <span id="current-currency" class="text-sm font-medium text-gray-700">PKR</span>
                         <span id="currency-symbol" class="text-sm font-medium text-gray-700">₨</span>
-                        <span class="auto-update-indicator ml-2" id="auto-update-indicator">
-                            <i class="fas fa-sync-alt mr-1"></i> Auto-updating
-                        </span>
                     </div>
                     <div class="flex items-center space-x-3">
                         <span id="user-greeting" class="text-gray-600 hidden sm:block">Hello, User!</span>
+                        <button onclick="updateDashboard()" class="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
                         <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold shadow-md" id="user-initial">U</div>
                     </div>
                 </div>
@@ -420,10 +396,10 @@
         </header>
 
         <!-- Data Status Indicator -->
-        <div id="data-status" class="data-status hidden">
+        <div id="data-status" class="data-status">
             <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
             <span class="text-yellow-700 text-sm flex-1" id="status-message">No transactions found. Add some income or expenses to get started!</span>
-            <button onclick="initializeSampleData()" class="refresh-btn">
+            <button onclick="addSampleData()" class="refresh-btn">
                 <i class="fas fa-bolt mr-1"></i>Add Sample Data
             </button>
         </div>
@@ -443,7 +419,7 @@
                             <i class="fas fa-wallet text-white"></i>
                         </div>
                     </div>
-                    <p class="text-green-100 text-xs mt-4"><i class="fas fa-arrow-up mr-1"></i> <span id="balance-change">0%</span> from last month</p>
+                    <p class="text-green-100 text-xs mt-4">Your remaining cash</p>
                 </div>
                 
                 <!-- Total Income -->
@@ -457,7 +433,7 @@
                             <i class="fas fa-money-bill-wave text-white"></i>
                         </div>
                     </div>
-                    <p class="text-blue-100 text-xs mt-4"><i class="fas fa-arrow-up mr-1"></i> <span id="income-change">0%</span> from last month</p>
+                    <p class="text-blue-100 text-xs mt-4">This month's income</p>
                 </div>
                 
                 <!-- Total Expenses -->
@@ -471,7 +447,7 @@
                             <i class="fas fa-credit-card text-white"></i>
                         </div>
                     </div>
-                    <p class="text-purple-100 text-xs mt-4"><i class="fas fa-arrow-down mr-1"></i> <span id="expenses-change">0%</span> from last month</p>
+                    <p class="text-purple-100 text-xs mt-4">This month's expenses</p>
                 </div>
                 
                 <!-- Savings Rate -->
@@ -485,7 +461,7 @@
                             <i class="fas fa-piggy-bank text-white"></i>
                         </div>
                     </div>
-                    <p class="text-orange-100 text-xs mt-4"><i class="fas fa-arrow-up mr-1"></i> <span id="savings-change">0%</span> from last month</p>
+                    <p class="text-orange-100 text-xs mt-4">Of this month's income</p>
                 </div>
             </div>
 
@@ -499,7 +475,6 @@
                     </div>
                     
                     <div id="budget-progress-container" class="space-y-6">
-                        <!-- Budget items will be populated here -->
                         <div class="text-center py-8 text-gray-500">
                             <i class="fas fa-chart-pie text-3xl mb-3 opacity-40"></i>
                             <p>No budgets set yet</p>
@@ -522,7 +497,6 @@
                     </div>
                     
                     <div id="recent-transactions-container" class="space-y-4">
-                        <!-- Transactions will be populated here -->
                         <div class="text-center py-8 text-gray-500">
                             <i class="fas fa-exchange-alt text-3xl mb-3 opacity-40"></i>
                             <p>No recent transactions</p>
@@ -556,10 +530,10 @@
                             <i class="fas fa-chart-pie text-purple-600 text-xl mb-2 group-hover:text-purple-700"></i>
                             <p class="font-semibold text-purple-800 text-sm">Set Budget</p>
                         </a>
-                        <a href="reports.html" class="bg-orange-50 border border-orange-100 rounded-xl p-4 text-center hover:bg-orange-100 transition-colors group">
-                            <i class="fas fa-chart-line text-orange-600 text-xl mb-2 group-hover:text-orange-700"></i>
-                            <p class="font-semibold text-orange-800 text-sm">View Reports</p>
-                        </a>
+                        <button onclick="updateDashboard()" class="bg-orange-50 border border-orange-100 rounded-xl p-4 text-center hover:bg-orange-100 transition-colors group">
+                            <i class="fas fa-sync-alt text-orange-600 text-xl mb-2 group-hover:text-orange-700"></i>
+                            <p class="font-semibold text-orange-800 text-sm">Refresh Data</p>
+                        </button>
                     </div>
                 </div>
 
@@ -578,57 +552,46 @@
     <div id="notification" class="notification hidden fixed top-4 right-4 z-50 max-w-sm"></div>
 
     <script>
-        // Dashboard Manager - COMPLETE FIX
-        class DashboardManager {
+        // SIMPLE DASHBOARD MANAGER - NO COMPLEX EVENT SYSTEM
+        class SimpleDashboard {
             constructor() {
-                this.charts = {};
                 this.currencies = {
-                    'USD': { symbol: '$', name: 'US Dollar', flag: 'US' },
-                    'PKR': { symbol: '₨', name: 'Pakistani Rupee', flag: 'PK' },
-                    'INR': { symbol: '₹', name: 'Indian Rupee', flag: 'IN' }
+                    'USD': { symbol: '$', name: 'US Dollar' },
+                    'PKR': { symbol: '₨', name: 'Pakistani Rupee' },
+                    'INR': { symbol: '₹', name: 'Indian Rupee' }
                 };
+                this.chart = null;
                 this.init();
             }
 
             init() {
-                console.log('🚀 Initializing Dashboard Manager');
+                console.log('🚀 Starting Simple Dashboard');
                 this.initializeStorage();
                 this.setupEventListeners();
-                this.setupCurrencySelection();
                 this.checkUserAuth();
-                this.setupAutoUpdate();
                 
                 // Initial dashboard update
                 setTimeout(() => {
                     this.updateDashboard();
-                }, 500);
+                }, 100);
+                
+                // Auto-update every 3 seconds
+                setInterval(() => {
+                    this.updateDashboard();
+                }, 3000);
             }
 
             initializeStorage() {
-                const keys = ['expenses', 'income', 'smartgrocer-accounts', 'smartgrocer-budgets'];
+                const keys = ['expenses', 'income', 'smartgrocer-budgets'];
                 keys.forEach(key => {
                     if (!localStorage.getItem(key)) {
                         localStorage.setItem(key, '[]');
-                        console.log(`✅ Initialized empty array for: ${key}`);
+                        console.log(`✅ Initialized: ${key}`);
                     }
                 });
             }
 
             setupEventListeners() {
-                // Listen for data updates from ALL pages
-                window.addEventListener('smartgrocer-data-update', () => {
-                    console.log('📊 Dashboard received data update event');
-                    this.updateDashboard();
-                });
-
-                // Listen for storage changes (cross-tab updates)
-                window.addEventListener('storage', (e) => {
-                    if (e.key === 'expenses' || e.key === 'income') {
-                        console.log('📦 Storage changed, updating dashboard');
-                        this.updateDashboard();
-                    }
-                });
-
                 // Mobile menu
                 const mobileMenuButton = document.getElementById('mobile-menu-button');
                 const sidebar = document.getElementById('sidebar');
@@ -657,48 +620,15 @@
                     });
                 }
 
-                // Add manual refresh button
-                this.addRefreshButton();
-            }
-
-            addRefreshButton() {
-                const header = document.querySelector('header .flex-1');
-                if (!header) return;
-
-                // Remove existing button if any
-                const existingBtn = document.getElementById('manual-refresh-btn');
-                if (existingBtn) existingBtn.remove();
-
-                const refreshBtn = document.createElement('button');
-                refreshBtn.id = 'manual-refresh-btn';
-                refreshBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Refresh';
-                refreshBtn.className = 'ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium';
-                refreshBtn.onclick = () => {
-                    console.log('🔄 Manual refresh triggered');
-                    this.triggerDataUpdate();
-                    this.showNotification('Dashboard refreshed!', 'success');
-                };
-
-                header.appendChild(refreshBtn);
-            }
-
-            setupAutoUpdate() {
-                // Auto-update dashboard every 5 seconds
-                setInterval(() => {
-                    this.updateDashboard();
-                }, 5000);
-            }
-
-            setupCurrencySelection() {
+                // Currency selection
                 const currencyOptions = document.querySelectorAll('.currency-option');
                 currencyOptions.forEach(option => {
                     option.addEventListener('click', () => {
                         currencyOptions.forEach(opt => opt.classList.remove('selected'));
                         option.classList.add('selected');
-                        
                         const currency = option.getAttribute('data-currency');
                         localStorage.setItem('selectedCurrency', currency);
-                        this.updateCurrencyDisplay(currency);
+                        this.updateCurrencyDisplay();
                         this.updateDashboard();
                     });
                 });
@@ -708,8 +638,6 @@
                 const userName = localStorage.getItem('smartgrocer-currentUser');
                 if (userName) {
                     this.showMainApp(userName);
-                } else {
-                    console.log('👤 No user found, showing signin overlay');
                 }
             }
 
@@ -728,15 +656,13 @@
             showMainApp(userName) {
                 document.getElementById('signin-overlay').style.display = 'none';
                 document.getElementById('main-app-container').classList.remove('hidden');
-                
                 document.getElementById('user-greeting').textContent = `Hello, ${userName}!`;
                 document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
-                
-                const currency = localStorage.getItem('selectedCurrency') || 'PKR';
-                this.updateCurrencyDisplay(currency);
+                this.updateCurrencyDisplay();
             }
 
-            updateCurrencyDisplay(currency) {
+            updateCurrencyDisplay() {
+                const currency = localStorage.getItem('selectedCurrency') || 'PKR';
                 const currencyInfo = this.currencies[currency];
                 if (currencyInfo) {
                     document.getElementById('current-currency').textContent = currency;
@@ -745,18 +671,17 @@
             }
 
             updateDashboard() {
-                console.log('🔄 Dashboard update started...');
+                console.log('📊 Updating dashboard...');
                 try {
-                    const expenses = this.safeParseJSON(localStorage.getItem('expenses') || '[]');
-                    const income = this.safeParseJSON(localStorage.getItem('income') || '[]');
-                    const budgets = this.safeParseJSON(localStorage.getItem('smartgrocer-budgets') || '[]');
+                    const expenses = this.getData('expenses');
+                    const income = this.getData('income');
+                    const budgets = this.getData('smartgrocer-budgets');
                     const transactions = [...expenses, ...income];
                     
-                    console.log('📊 Data loaded:', {
+                    console.log('Data loaded:', {
                         expenses: expenses.length,
                         income: income.length,
-                        transactions: transactions.length,
-                        budgets: budgets.length
+                        transactions: transactions.length
                     });
 
                     const financialData = this.calculateFinancialData(transactions);
@@ -766,11 +691,18 @@
                     this.updateSpendingChart(transactions);
                     this.updateDataStatus(transactions);
                     
-                    console.log('✅ Dashboard updated successfully');
-                    
                 } catch (error) {
-                    console.error('❌ Error updating dashboard:', error);
-                    this.showNotification('Error updating dashboard data', 'error');
+                    console.error('Error updating dashboard:', error);
+                }
+            }
+
+            getData(key) {
+                try {
+                    const data = localStorage.getItem(key);
+                    return data ? JSON.parse(data) : [];
+                } catch (error) {
+                    console.error(`Error loading ${key}:`, error);
+                    return [];
                 }
             }
 
@@ -778,31 +710,27 @@
                 const currency = localStorage.getItem('selectedCurrency') || 'PKR';
                 const currencySymbol = this.currencies[currency]?.symbol || '₨';
                 
-                console.log('🧮 Calculating financial data from:', transactions.length, 'transactions');
-
-                // Calculate TOTAL INCOME from all income transactions
+                // Calculate TOTAL from ALL transactions
                 const totalIncome = transactions
                     .filter(t => t.type === 'income')
                     .reduce((total, t) => total + (parseFloat(t.amount) || 0), 0);
 
-                // Calculate TOTAL EXPENSES from all expense transactions
                 const totalExpenses = transactions
                     .filter(t => t.type === 'expense')
                     .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
 
-                // TOTAL BALANCE = TOTAL INCOME - TOTAL EXPENSES (Remaining Cash)
+                // TOTAL BALANCE = Total Income - Total Expenses
                 const totalBalance = totalIncome - totalExpenses;
 
-                // Calculate monthly data for current month only
+                // Current month calculations
                 const currentMonth = new Date().getMonth();
                 const currentYear = new Date().getFullYear();
                 
-                const currentMonthTransactions = transactions.filter(transaction => {
+                const currentMonthTransactions = transactions.filter(t => {
                     try {
-                        const transactionDate = new Date(transaction.date || transaction.timestamp);
-                        return transactionDate.getMonth() === currentMonth && 
-                               transactionDate.getFullYear() === currentYear;
-                    } catch (error) {
+                        const date = new Date(t.date || t.timestamp);
+                        return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+                    } catch {
                         return false;
                     }
                 });
@@ -818,22 +746,16 @@
                 const savingsRate = monthlyIncome > 0 ? 
                     Math.max(Math.round(((monthlyIncome - monthlyExpenses) / monthlyIncome) * 100), 0) : 0;
 
-                const result = {
+                return {
                     totalBalance,
                     totalIncome: monthlyIncome,
                     totalExpenses: monthlyExpenses,
                     savingsRate,
-                    currency: currency,
                     symbol: currencySymbol
                 };
-
-                console.log('📊 Financial data calculated:', result);
-                return result;
             }
 
             updateFinancialOverview(data) {
-                console.log('💰 Updating financial overview:', data);
-                
                 document.getElementById('total-balance').textContent = `${data.symbol}${data.totalBalance.toLocaleString()}`;
                 document.getElementById('total-income').textContent = `${data.symbol}${data.totalIncome.toLocaleString()}`;
                 document.getElementById('total-expenses').textContent = `${data.symbol}${data.totalExpenses.toLocaleString()}`;
@@ -844,35 +766,34 @@
                 const container = document.getElementById('budget-progress-container');
                 if (!container) return;
 
-                const currentMonth = new Date().getMonth();
-                const currentYear = new Date().getFullYear();
-                const currencySymbol = this.currencies[localStorage.getItem('selectedCurrency') || 'PKR']?.symbol || '₨';
-
                 if (budgets.length === 0) {
                     container.innerHTML = `
                         <div class="text-center py-8 text-gray-500">
                             <i class="fas fa-chart-pie text-3xl mb-3 opacity-40"></i>
                             <p>No budgets set yet</p>
-                            <p class="text-sm mt-2">Create budgets to track your spending limits</p>
                         </div>
                     `;
                     return;
                 }
 
+                const currencySymbol = this.currencies[localStorage.getItem('selectedCurrency') || 'PKR']?.symbol || '₨';
+                const currentMonth = new Date().getMonth();
+                const currentYear = new Date().getFullYear();
+
                 container.innerHTML = budgets.map(budget => {
                     const spent = transactions
-                        .filter(transaction => {
+                        .filter(t => {
                             try {
-                                const transactionDate = new Date(transaction.date || transaction.timestamp);
-                                return transaction.type === 'expense' && 
-                                       transaction.category === budget.category &&
-                                       transactionDate.getMonth() === currentMonth &&
-                                       transactionDate.getFullYear() === currentYear;
-                            } catch (error) {
+                                const date = new Date(t.date || t.timestamp);
+                                return t.type === 'expense' && 
+                                       t.category === budget.category &&
+                                       date.getMonth() === currentMonth &&
+                                       date.getFullYear() === currentYear;
+                            } catch {
                                 return false;
                             }
                         })
-                        .reduce((total, transaction) => total + Math.abs(parseFloat(transaction.amount) || 0), 0);
+                        .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
                     
                     const percentage = budget.amount > 0 ? Math.min((spent / budget.amount) * 100, 100) : 0;
                     const progressColor = percentage > 90 ? 'bg-red-500' : 
@@ -900,11 +821,11 @@
                 oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
                 
                 const recentTransactions = transactions
-                    .filter(transaction => {
+                    .filter(t => {
                         try {
-                            const transactionDate = new Date(transaction.date || transaction.timestamp);
-                            return transactionDate >= oneWeekAgo;
-                        } catch (error) {
+                            const date = new Date(t.date || t.timestamp);
+                            return date >= oneWeekAgo;
+                        } catch {
                             return false;
                         }
                     })
@@ -918,7 +839,6 @@
                         <div class="text-center py-8 text-gray-500">
                             <i class="fas fa-exchange-alt text-3xl mb-3 opacity-40"></i>
                             <p>No recent transactions</p>
-                            <p class="text-sm mt-2">Add some income or expenses to see them here!</p>
                         </div>
                     `;
                     return;
@@ -955,14 +875,14 @@
                 if (!ctx) return;
 
                 // Destroy existing chart
-                if (this.charts.spending) {
-                    this.charts.spending.destroy();
+                if (this.chart) {
+                    this.chart.destroy();
                 }
 
                 const currencySymbol = this.currencies[localStorage.getItem('selectedCurrency') || 'PKR']?.symbol || '₨';
                 const chartData = this.calculateChartData(transactions);
 
-                this.charts.spending = new Chart(ctx.getContext('2d'), {
+                this.chart = new Chart(ctx.getContext('2d'), {
                     type: 'line',
                     data: {
                         labels: chartData.labels,
@@ -980,34 +900,22 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         plugins: {
-                            legend: {
-                                display: false
-                            },
+                            legend: { display: false },
                             tooltip: {
                                 callbacks: {
-                                    label: function(context) {
-                                        return `Spending: ${currencySymbol}${context.raw.toLocaleString()}`;
-                                    }
+                                    label: (context) => `Spending: ${currencySymbol}${context.raw.toLocaleString()}`
                                 }
                             }
                         },
                         scales: {
                             y: {
                                 beginAtZero: true,
-                                grid: {
-                                    color: 'rgba(0, 0, 0, 0.1)'
-                                },
+                                grid: { color: 'rgba(0, 0, 0, 0.1)' },
                                 ticks: {
-                                    callback: function(value) {
-                                        return `${currencySymbol}${value.toLocaleString()}`;
-                                    }
+                                    callback: (value) => `${currencySymbol}${value.toLocaleString()}`
                                 }
                             },
-                            x: {
-                                grid: {
-                                    display: false
-                                }
-                            }
+                            x: { grid: { display: false } }
                         }
                     }
                 });
@@ -1018,7 +926,7 @@
                 const expenseData = [];
                 const currentDate = new Date();
 
-                // Last 6 months data
+                // Last 6 months
                 for (let i = 5; i >= 0; i--) {
                     const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
                     const monthName = date.toLocaleString('default', { month: 'short' });
@@ -1031,7 +939,7 @@
                                 return t.type === 'expense' &&
                                        transactionDate.getMonth() === date.getMonth() &&
                                        transactionDate.getFullYear() === date.getFullYear();
-                            } catch (error) {
+                            } catch {
                                 return false;
                             }
                         })
@@ -1040,10 +948,7 @@
                     expenseData.push(monthExpenses);
                 }
 
-                return {
-                    labels: months,
-                    expenses: expenseData
-                };
+                return { labels: months, expenses: expenseData };
             }
 
             updateDataStatus(transactions) {
@@ -1066,40 +971,20 @@
                     'Bills & Utilities': { icon: 'fas fa-file-invoice-dollar', color: 'text-red-600', bg: 'bg-red-100' },
                     'Healthcare': { icon: 'fas fa-heartbeat', color: 'text-pink-600', bg: 'bg-pink-100' },
                     'Education': { icon: 'fas fa-graduation-cap', color: 'text-indigo-600', bg: 'bg-indigo-100' },
-                    'Travel': { icon: 'fas fa-plane', color: 'text-teal-600', bg: 'bg-teal-100' },
-                    'Personal Care': { icon: 'fas fa-spa', color: 'text-orange-600', bg: 'bg-orange-100' },
                     'Salary': { icon: 'fas fa-money-bill-wave', color: 'text-green-600', bg: 'bg-green-100' }
                 };
-                
                 return icons[category] || { icon: 'fas fa-wallet', color: 'text-gray-600', bg: 'bg-gray-100' };
             }
 
             getTimeAgo(date) {
                 const now = new Date();
                 const diffInMs = now - date;
-                const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
                 const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
                 
-                if (diffInHours < 1) return 'Just now';
-                if (diffInHours < 24) return `${diffInHours}h ago`;
+                if (diffInDays === 0) return 'Today';
                 if (diffInDays === 1) return 'Yesterday';
                 if (diffInDays < 7) return `${diffInDays}d ago`;
                 return date.toLocaleDateString();
-            }
-
-            safeParseJSON(jsonString) {
-                try {
-                    return jsonString ? JSON.parse(jsonString) : [];
-                } catch (error) {
-                    console.error('❌ JSON parsing error:', error);
-                    return [];
-                }
-            }
-
-            triggerDataUpdate() {
-                console.log('🔄 Triggering data update event');
-                const event = new CustomEvent('smartgrocer-data-update');
-                window.dispatchEvent(event);
             }
 
             showNotification(message, type = 'info') {
@@ -1107,15 +992,12 @@
                 if (!notification) return;
                 
                 const bgColor = type === 'success' ? 'bg-green-500' :
-                               type === 'error' ? 'bg-red-500' :
-                               type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500';
+                               type === 'error' ? 'bg-red-500' : 'bg-blue-500';
                 
                 notification.innerHTML = `
                     <div class="${bgColor} text-white p-4 rounded-lg flex items-center justify-between">
                         <div class="flex items-center">
-                            <i class="fas ${type === 'success' ? 'fa-check-circle' : 
-                                         type === 'error' ? 'fa-exclamation-circle' : 
-                                         type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'} mr-3"></i>
+                            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} mr-3"></i>
                             <span>${message}</span>
                         </div>
                         <button onclick="this.parentElement.parentElement.classList.add('hidden')" class="ml-4 text-white hover:text-gray-200">
@@ -1125,20 +1007,17 @@
                 `;
                 
                 notification.classList.remove('hidden');
-                
-                setTimeout(() => {
-                    notification.classList.add('hidden');
-                }, 5000);
+                setTimeout(() => notification.classList.add('hidden'), 5000);
             }
         }
 
         // Global functions
-        function initializeSampleData() {
-            console.log('🎯 Initializing sample data');
+        function addSampleData() {
+            console.log('➕ Adding sample data');
             
             const sampleExpenses = [
                 {
-                    id: 'sample-expense-1',
+                    id: 'sample-1',
                     type: 'expense',
                     amount: 4500,
                     category: 'Food & Dining',
@@ -1147,7 +1026,7 @@
                     timestamp: new Date().toISOString()
                 },
                 {
-                    id: 'sample-expense-2',
+                    id: 'sample-2',
                     type: 'expense',
                     amount: 2500,
                     category: 'Transportation',
@@ -1159,7 +1038,7 @@
             
             const sampleIncome = [
                 {
-                    id: 'sample-income-1',
+                    id: 'sample-3',
                     type: 'income',
                     amount: 75000,
                     category: 'Salary',
@@ -1172,28 +1051,31 @@
             localStorage.setItem('expenses', JSON.stringify(sampleExpenses));
             localStorage.setItem('income', JSON.stringify(sampleIncome));
             
-            // Trigger dashboard update
-            if (window.dashboardManager) {
-                window.dashboardManager.triggerDataUpdate();
+            // Force dashboard update
+            if (window.dashboard) {
+                window.dashboard.updateDashboard();
             }
             
-            showNotification('Sample data added! Dashboard will update automatically.', 'success');
+            showNotification('Sample data added! Dashboard updated.', 'success');
+        }
+
+        function updateDashboard() {
+            if (window.dashboard) {
+                window.dashboard.updateDashboard();
+                showNotification('Dashboard refreshed!', 'success');
+            }
         }
 
         function showNotification(message, type = 'info') {
             const notification = document.getElementById('notification');
             if (!notification) return;
             
-            const bgColor = type === 'success' ? 'bg-green-500' :
-                           type === 'error' ? 'bg-red-500' :
-                           type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500';
+            const bgColor = type === 'success' ? 'bg-green-500' : 'bg-blue-500';
             
             notification.innerHTML = `
                 <div class="${bgColor} text-white p-4 rounded-lg flex items-center justify-between">
                     <div class="flex items-center">
-                        <i class="fas ${type === 'success' ? 'fa-check-circle' : 
-                                     type === 'error' ? 'fa-exclamation-circle' : 
-                                     type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'} mr-3"></i>
+                        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} mr-3"></i>
                         <span>${message}</span>
                     </div>
                     <button onclick="this.parentElement.parentElement.classList.add('hidden')" class="ml-4 text-white hover:text-gray-200">
@@ -1203,16 +1085,13 @@
             `;
             
             notification.classList.remove('hidden');
-            
-            setTimeout(() => {
-                notification.classList.add('hidden');
-            }, 5000);
+            setTimeout(() => notification.classList.add('hidden'), 3000);
         }
 
-        // Initialize dashboard when DOM is loaded
+        // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🏠 Dashboard DOM loaded, initializing manager...');
-            window.dashboardManager = new DashboardManager();
+            console.log('🏠 DOM loaded, starting dashboard...');
+            window.dashboard = new SimpleDashboard();
         });
     </script>
 </body>
