@@ -6,39 +6,99 @@
         'INR': { symbol: '₹', name: 'Indian Rupee', flag: 'IN' }
     };
 
-    // Global accounts array and functions
-    let accounts = [];
-
-    // Account Manager Class to handle all account operations
-    class AccountManager {
-        constructor() {
-            this.accounts = [];
-            this.init();
-        }
+    // Global accounts management
+    const AccountManager = {
+        accounts: [],
 
         init() {
             this.loadAccountsFromStorage();
-            this.setupEventListeners();
-        }
-
-        setupEventListeners() {
-            // These will be set up in DOMContentLoaded
-        }
+        },
 
         loadAccountsFromStorage() {
             const storedAccounts = localStorage.getItem('smartgrocer-accounts');
             if (storedAccounts) {
                 this.accounts = JSON.parse(storedAccounts);
             }
-        }
+        },
 
         saveAccountsToStorage() {
             localStorage.setItem('smartgrocer-accounts', JSON.stringify(this.accounts));
-        }
+        },
+
+        deleteAccount(accountId) {
+            if (confirm('Are you sure you want to delete this account? This action cannot be undone.')) {
+                console.log('Deleting account:', accountId);
+                console.log('Before deletion:', this.accounts);
+                
+                // Filter out the account to delete
+                this.accounts = this.accounts.filter(acc => acc.id !== accountId);
+                
+                console.log('After deletion:', this.accounts);
+                
+                // Save to localStorage
+                this.saveAccountsToStorage();
+                
+                // Update UI
+                this.renderAccounts();
+                this.updateTransferDropdowns();
+                this.updateDashboard();
+                
+                this.showNotification('Account deleted successfully!', 'success');
+            }
+        },
+
+        editAccount(accountId) {
+            // Find the account
+            const account = this.accounts.find(acc => acc.id === accountId);
+            if (!account) return;
+            
+            // Populate the modal with account data
+            document.getElementById('account-name').value = account.name;
+            document.getElementById('account-type').value = account.type;
+            document.getElementById('account-currency').value = account.currency;
+            document.getElementById('account-balance').value = account.balance;
+            document.getElementById('modal-currency-symbol').textContent = currencies[account.currency].symbol;
+            
+            // Change the modal title and button
+            document.querySelector('#add-account-modal h3').textContent = 'Edit Account';
+            document.querySelector('#add-account-form button[type="submit"]').textContent = 'Update Account';
+            
+            // Remove existing event listener and add a new one for updating
+            const form = document.getElementById('add-account-form');
+            const newForm = form.cloneNode(true);
+            form.parentNode.replaceChild(newForm, form);
+            
+            newForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                // Update account
+                account.name = document.getElementById('account-name').value;
+                account.type = document.getElementById('account-type').value;
+                account.currency = document.getElementById('account-currency').value;
+                account.balance = parseFloat(document.getElementById('account-balance').value) || 0;
+                
+                // Save to localStorage
+                this.saveAccountsToStorage();
+                
+                // Update UI
+                this.renderAccounts();
+                this.updateTransferDropdowns();
+                this.updateDashboard();
+                
+                this.closeModal();
+                this.showNotification('Account updated successfully!', 'success');
+            });
+            
+            // Show the modal
+            document.getElementById('add-account-modal').classList.remove('hidden');
+            document.getElementById('add-account-modal').classList.add('flex');
+        },
 
         renderAccounts() {
             const accountsContainer = document.getElementById('accounts-container');
             const selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+            
+            console.log('Rendering accounts:', this.accounts);
             
             if (this.accounts.length === 0) {
                 accountsContainer.innerHTML = `
@@ -91,10 +151,10 @@
                         <div class="flex justify-between items-center text-sm text-gray-500">
                             <span>Account No: ****${account.id.toString().slice(-4)}</span>
                             <div class="flex space-x-2">
-                                <button class="text-green-600 hover:text-green-800 edit-account-btn" data-account-id="${account.id}">
+                                <button class="text-green-600 hover:text-green-800" onclick="AccountManager.editAccount(${account.id})">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="text-red-600 hover:text-red-800 delete-account-btn" data-account-id="${account.id}">
+                                <button class="text-red-600 hover:text-red-800" onclick="AccountManager.deleteAccount(${account.id})">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -103,94 +163,9 @@
                 `;
             }).join('');
             
-            // Add event listeners to the buttons
-            this.attachAccountButtonListeners();
-            
             // Update accounts count
             document.getElementById('accounts-count').textContent = this.accounts.length;
-        }
-
-        attachAccountButtonListeners() {
-            // Add event listeners to delete buttons
-            document.querySelectorAll('.delete-account-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const accountId = parseInt(button.getAttribute('data-account-id'));
-                    this.deleteAccount(accountId);
-                });
-            });
-
-            // Add event listeners to edit buttons
-            document.querySelectorAll('.edit-account-btn').forEach(button => {
-                button.addEventListener('click', (e) => {
-                    const accountId = parseInt(button.getAttribute('data-account-id'));
-                    this.editAccount(accountId);
-                });
-            });
-        }
-
-        deleteAccount(accountId) {
-            if (confirm('Are you sure you want to delete this account? This action cannot be undone.')) {
-                // Filter out the account to delete
-                this.accounts = this.accounts.filter(acc => acc.id !== accountId);
-                
-                // Save to localStorage
-                this.saveAccountsToStorage();
-                
-                // Update UI
-                this.renderAccounts();
-                this.updateTransferDropdowns();
-                this.updateDashboard();
-                
-                this.showNotification('Account deleted successfully!', 'success');
-            }
-        }
-
-        editAccount(accountId) {
-            // Find the account
-            const account = this.accounts.find(acc => acc.id === accountId);
-            if (!account) return;
-            
-            // Populate the modal with account data
-            document.getElementById('account-name').value = account.name;
-            document.getElementById('account-type').value = account.type;
-            document.getElementById('account-currency').value = account.currency;
-            document.getElementById('account-balance').value = account.balance;
-            document.getElementById('modal-currency-symbol').textContent = currencies[account.currency].symbol;
-            
-            // Change the modal title and button
-            document.querySelector('#add-account-modal h3').textContent = 'Edit Account';
-            document.querySelector('#add-account-form button[type="submit"]').textContent = 'Update Account';
-            
-            // Remove existing event listener and add a new one for updating
-            const form = document.getElementById('add-account-form');
-            const newForm = form.cloneNode(true);
-            form.parentNode.replaceChild(newForm, form);
-            
-            newForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                
-                // Update account
-                account.name = document.getElementById('account-name').value;
-                account.type = document.getElementById('account-type').value;
-                account.currency = document.getElementById('account-currency').value;
-                account.balance = parseFloat(document.getElementById('account-balance').value) || 0;
-                
-                // Save to localStorage
-                this.saveAccountsToStorage();
-                
-                // Update UI
-                this.renderAccounts();
-                this.updateTransferDropdowns();
-                this.updateDashboard();
-                
-                this.closeModal();
-                this.showNotification('Account updated successfully!', 'success');
-            });
-            
-            // Show the modal
-            document.getElementById('add-account-modal').classList.remove('hidden');
-            document.getElementById('add-account-modal').classList.add('flex');
-        }
+        },
 
         updateTransferDropdowns() {
             const fromAccountSelect = document.getElementById('from-account');
@@ -247,12 +222,12 @@
                 fromAccountSelect.appendChild(optionFrom);
                 toAccountSelect.appendChild(optionTo);
             });
-        }
+        },
 
         updateDashboard() {
             this.updateTotalBalanceDisplay();
             document.getElementById('accounts-count').textContent = this.accounts.length;
-        }
+        },
 
         updateTotalBalanceDisplay() {
             const selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
@@ -271,7 +246,7 @@
             
             document.getElementById('total-balance-display').textContent = 
                 `${currencyInfo.symbol}${totalBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-        }
+        },
 
         closeModal() {
             document.getElementById('add-account-modal').classList.add('hidden');
@@ -320,7 +295,7 @@
                 this.closeModal();
                 this.showNotification('Account added successfully!', 'success');
             });
-        }
+        },
 
         showNotification(message, type = 'info') {
             const notification = document.getElementById('notification');
@@ -342,7 +317,7 @@
             setTimeout(() => {
                 notification.classList.add('hidden');
             }, 3000);
-        }
+        },
 
         filterAccounts(searchTerm) {
             if (!searchTerm) {
@@ -408,10 +383,10 @@
                         <div class="flex justify-between items-center text-sm text-gray-500">
                             <span>Account No: ****${account.id.toString().slice(-4)}</span>
                             <div class="flex space-x-2">
-                                <button class="text-green-600 hover:text-green-800 edit-account-btn" data-account-id="${account.id}">
+                                <button class="text-green-600 hover:text-green-800" onclick="AccountManager.editAccount(${account.id})">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="text-red-600 hover:text-red-800 delete-account-btn" data-account-id="${account.id}">
+                                <button class="text-red-600 hover:text-red-800" onclick="AccountManager.deleteAccount(${account.id})">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -419,19 +394,13 @@
                     </div>
                 `;
             }).join('');
-            
-            // Re-attach event listeners to the filtered buttons
-            this.attachAccountButtonListeners();
         }
-    }
-
-    // Create global account manager instance
-    let accountManager;
+    };
 
     // Initialize the page
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize account manager
-        accountManager = new AccountManager();
+        AccountManager.init();
 
         // Mobile menu functionality
         const mobileMenuButton = document.getElementById('mobile-menu-button');
@@ -465,7 +434,7 @@
                 hideSignInOverlay();
                 document.getElementById('welcome-user-text').textContent = `Welcome, ${userName}!`;
                 document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
-                accountManager.showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
+                AccountManager.showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
             }
         });
 
@@ -489,7 +458,7 @@
                 currencyOptions.forEach(opt => opt.classList.remove('selected'));
                 this.classList.add('selected');
                 
-                accountManager.showNotification(`Display currency set to ${currencies[currency].name}`, 'success');
+                AccountManager.showNotification(`Display currency set to ${currencies[currency].name}`, 'success');
             });
             
             // Set initial selected state
@@ -510,19 +479,19 @@
             document.getElementById('add-account-modal').classList.add('flex');
         });
 
-        document.getElementById('close-account-modal').addEventListener('click', () => accountManager.closeModal());
-        document.getElementById('cancel-account').addEventListener('click', () => accountManager.closeModal());
+        document.getElementById('close-account-modal').addEventListener('click', () => AccountManager.closeModal());
+        document.getElementById('cancel-account').addEventListener('click', () => AccountManager.closeModal());
 
         // Search functionality
         document.getElementById('search-accounts').addEventListener('input', function(e) {
             const searchTerm = e.target.value.toLowerCase();
-            accountManager.filterAccounts(searchTerm);
+            AccountManager.filterAccounts(searchTerm);
         });
 
         // Initial render
-        accountManager.renderAccounts();
-        accountManager.updateTransferDropdowns();
-        accountManager.updateDashboard();
+        AccountManager.renderAccounts();
+        AccountManager.updateTransferDropdowns();
+        AccountManager.updateDashboard();
         
         // Set up auto-update interval
         setInterval(() => {
@@ -540,10 +509,10 @@
             document.getElementById('currency-symbol').textContent = currencyInfo.symbol;
             
             // Update total balance display
-            accountManager.updateTotalBalanceDisplay();
+            AccountManager.updateTotalBalanceDisplay();
             
             // Re-render accounts to show updated currency symbols
-            accountManager.renderAccounts();
+            AccountManager.renderAccounts();
         }
         
         function autoUpdateDashboard() {
@@ -553,7 +522,7 @@
             
             // In a real app, this would fetch updated data from a server
             setTimeout(() => {
-                accountManager.updateDashboard();
+                AccountManager.updateDashboard();
                 updateIndicator.classList.remove('animate-pulse');
             }, 1000);
         }
