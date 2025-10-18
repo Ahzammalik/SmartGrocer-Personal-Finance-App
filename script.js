@@ -6,21 +6,21 @@
         'INR': { symbol: '₹', name: 'Indian Rupee', flag: 'IN' }
     };
 
-    // Simple global functions that will definitely work
+    // Simple global functions that work directly with localStorage
     function deleteAccount(accountId) {
-        console.log('Attempting to delete account:', accountId);
+        console.log('Deleting account:', accountId);
         
         if (confirm('Are you sure you want to delete this account? This action cannot be undone.')) {
             // Get current accounts from localStorage
             const storedAccounts = localStorage.getItem('smartgrocer-accounts');
             let accounts = storedAccounts ? JSON.parse(storedAccounts) : [];
             
-            console.log('Accounts before deletion:', accounts);
+            console.log('Before deletion:', accounts);
             
             // Filter out the account to delete
             accounts = accounts.filter(acc => acc.id !== accountId);
             
-            console.log('Accounts after deletion:', accounts);
+            console.log('After deletion:', accounts);
             
             // Save back to localStorage
             localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
@@ -267,16 +267,26 @@
         document.getElementById('account-currency').value = 'USD';
         
         // Reset form event listener to default add behavior
+        setupAddAccountForm();
+    }
+
+    function setupAddAccountForm() {
         const form = document.getElementById('add-account-form');
+        // Remove any existing event listeners by cloning the form
         const newForm = form.cloneNode(true);
         form.parentNode.replaceChild(newForm, form);
         
-        newForm.addEventListener('submit', function(e) {
+        // Add new event listener
+        document.getElementById('add-account-form').addEventListener('submit', function(e) {
             e.preventDefault();
+            console.log('Add account form submitted');
+            
             const accountName = document.getElementById('account-name').value;
             const accountType = document.getElementById('account-type').value;
             const accountCurrency = document.getElementById('account-currency').value;
             const accountBalance = parseFloat(document.getElementById('account-balance').value) || 0;
+            
+            console.log('Form data:', { accountName, accountType, accountCurrency, accountBalance });
             
             // Get current accounts
             const storedAccounts = localStorage.getItem('smartgrocer-accounts');
@@ -291,10 +301,13 @@
                 currency: accountCurrency
             };
             
+            console.log('New account:', newAccount);
+            
             accounts.push(newAccount);
             
             // Save to localStorage
             localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
+            console.log('Accounts saved to localStorage:', accounts);
             
             // Update UI
             loadAndDisplayAccounts();
@@ -409,6 +422,8 @@
 
     // Initialize the page
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('DOM loaded, initializing account page...');
+        
         // Mobile menu functionality
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const sidebar = document.getElementById('sidebar');
@@ -482,6 +497,7 @@
 
         // Initialize account modal
         document.getElementById('add-account-btn').addEventListener('click', function() {
+            console.log('Add account button clicked');
             document.getElementById('add-account-modal').classList.remove('hidden');
             document.getElementById('add-account-modal').classList.add('flex');
         });
@@ -489,16 +505,68 @@
         document.getElementById('close-account-modal').addEventListener('click', closeModal);
         document.getElementById('cancel-account').addEventListener('click', closeModal);
 
+        // Initialize transfer form
+        document.getElementById('transfer-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const fromAccountId = parseInt(document.getElementById('from-account').value);
+            const toAccountId = parseInt(document.getElementById('to-account').value);
+            const amount = parseFloat(document.getElementById('transfer-amount').value);
+            
+            if (fromAccountId === toAccountId) {
+                showNotification('Cannot transfer to the same account', 'error');
+                return;
+            }
+            
+            // Get current accounts
+            const storedAccounts = localStorage.getItem('smartgrocer-accounts');
+            const accounts = storedAccounts ? JSON.parse(storedAccounts) : [];
+            
+            // Find accounts
+            const fromAccount = accounts.find(acc => acc.id === fromAccountId);
+            const toAccount = accounts.find(acc => acc.id === toAccountId);
+            
+            if (!fromAccount || !toAccount) {
+                showNotification('Account not found', 'error');
+                return;
+            }
+            
+            if (fromAccount.balance < amount) {
+                showNotification('Insufficient funds for transfer', 'error');
+                return;
+            }
+            
+            // Perform transfer
+            fromAccount.balance -= amount;
+            toAccount.balance += amount;
+            
+            // Save to localStorage
+            localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
+            
+            // Update UI
+            loadAndDisplayAccounts();
+            updateDashboard();
+            updateTransferDropdowns();
+            
+            showNotification('Transfer completed successfully!', 'success');
+            this.reset();
+        });
+
         // Search functionality
         document.getElementById('search-accounts').addEventListener('input', function(e) {
             const searchTerm = e.target.value.toLowerCase();
             filterAccounts(searchTerm);
         });
 
-        // Initial render
+        // Setup the add account form
+        setupAddAccountForm();
+
+        // Initial render - NO DEMO ACCOUNTS
         loadAndDisplayAccounts();
         updateTransferDropdowns();
         updateDashboard();
+        
+        console.log('Account page initialized successfully');
         
         // Set up auto-update interval
         setInterval(autoUpdateDashboard, 30000);
