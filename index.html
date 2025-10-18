@@ -226,13 +226,14 @@
         }
 
         .data-status {
-            background-color: #FEF3C7;
-            border: 1px solid #F59E0B;
+            background-color: #F0F9FF;
+            border: 1px solid #38BDF8;
             border-radius: 8px;
-            padding: 12px 16px;
+            padding: 16px;
             margin: 16px;
             display: flex;
             align-items: center;
+            justify-content: center;
         }
         
         .data-status.hidden {
@@ -397,11 +398,16 @@
 
         <!-- Data Status Indicator -->
         <div id="data-status" class="data-status">
-            <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
-            <span class="text-yellow-700 text-sm flex-1" id="status-message">No transactions found. Add some income or expenses to get started!</span>
-            <button onclick="addSampleData()" class="refresh-btn">
-                <i class="fas fa-bolt mr-1"></i>Add Sample Data
-            </button>
+            <i class="fas fa-info-circle text-blue-500 mr-3 text-lg"></i>
+            <span class="text-blue-700 text-sm flex-1">No transactions yet. Add income or expenses to see your financial overview.</span>
+            <div class="flex space-x-2 ml-4">
+                <a href="income.html" class="refresh-btn">
+                    <i class="fas fa-plus mr-1"></i>Add Income
+                </a>
+                <a href="expense.html" class="refresh-btn" style="background-color: #3B82F6;">
+                    <i class="fas fa-minus mr-1"></i>Add Expense
+                </a>
+            </div>
         </div>
 
         <!-- Main Content -->
@@ -478,6 +484,7 @@
                         <div class="text-center py-8 text-gray-500">
                             <i class="fas fa-chart-pie text-3xl mb-3 opacity-40"></i>
                             <p>No budgets set yet</p>
+                            <p class="text-sm mt-2">Create budgets to track your spending</p>
                         </div>
                     </div>
                     
@@ -500,6 +507,7 @@
                         <div class="text-center py-8 text-gray-500">
                             <i class="fas fa-exchange-alt text-3xl mb-3 opacity-40"></i>
                             <p>No recent transactions</p>
+                            <p class="text-sm mt-2">Your transactions from the last 7 days will appear here</p>
                         </div>
                     </div>
                     
@@ -552,8 +560,8 @@
     <div id="notification" class="notification hidden fixed top-4 right-4 z-50 max-w-sm"></div>
 
     <script>
-        // SIMPLE DASHBOARD MANAGER - NO COMPLEX EVENT SYSTEM
-        class SimpleDashboard {
+        // CLEAN DASHBOARD MANAGER - REAL USER DATA ONLY
+        class Dashboard {
             constructor() {
                 this.currencies = {
                     'USD': { symbol: '$', name: 'US Dollar' },
@@ -565,7 +573,7 @@
             }
 
             init() {
-                console.log('🚀 Starting Simple Dashboard');
+                console.log('🚀 Starting Dashboard - Real Data Only');
                 this.initializeStorage();
                 this.setupEventListeners();
                 this.checkUserAuth();
@@ -575,18 +583,19 @@
                     this.updateDashboard();
                 }, 100);
                 
-                // Auto-update every 3 seconds
+                // Auto-update every 5 seconds
                 setInterval(() => {
                     this.updateDashboard();
-                }, 3000);
+                }, 5000);
             }
 
             initializeStorage() {
+                // Only initialize if not exists - don't add any sample data
                 const keys = ['expenses', 'income', 'smartgrocer-budgets'];
                 keys.forEach(key => {
                     if (!localStorage.getItem(key)) {
                         localStorage.setItem(key, '[]');
-                        console.log(`✅ Initialized: ${key}`);
+                        console.log(`✅ Initialized empty: ${key}`);
                     }
                 });
             }
@@ -671,14 +680,14 @@
             }
 
             updateDashboard() {
-                console.log('📊 Updating dashboard...');
+                console.log('📊 Updating dashboard with REAL user data...');
                 try {
                     const expenses = this.getData('expenses');
                     const income = this.getData('income');
                     const budgets = this.getData('smartgrocer-budgets');
                     const transactions = [...expenses, ...income];
                     
-                    console.log('Data loaded:', {
+                    console.log('User Data Loaded:', {
                         expenses: expenses.length,
                         income: income.length,
                         transactions: transactions.length
@@ -710,7 +719,7 @@
                 const currency = localStorage.getItem('selectedCurrency') || 'PKR';
                 const currencySymbol = this.currencies[currency]?.symbol || '₨';
                 
-                // Calculate TOTAL from ALL transactions
+                // Calculate from REAL user transactions only
                 const totalIncome = transactions
                     .filter(t => t.type === 'income')
                     .reduce((total, t) => total + (parseFloat(t.amount) || 0), 0);
@@ -722,7 +731,7 @@
                 // TOTAL BALANCE = Total Income - Total Expenses
                 const totalBalance = totalIncome - totalExpenses;
 
-                // Current month calculations
+                // Current month from real data
                 const currentMonth = new Date().getMonth();
                 const currentYear = new Date().getFullYear();
                 
@@ -771,6 +780,7 @@
                         <div class="text-center py-8 text-gray-500">
                             <i class="fas fa-chart-pie text-3xl mb-3 opacity-40"></i>
                             <p>No budgets set yet</p>
+                            <p class="text-sm mt-2">Create budgets to track your spending</p>
                         </div>
                     `;
                     return;
@@ -839,6 +849,7 @@
                         <div class="text-center py-8 text-gray-500">
                             <i class="fas fa-exchange-alt text-3xl mb-3 opacity-40"></i>
                             <p>No recent transactions</p>
+                            <p class="text-sm mt-2">Your transactions from the last 7 days will appear here</p>
                         </div>
                     `;
                     return;
@@ -874,7 +885,6 @@
                 const ctx = document.getElementById('spendingChart');
                 if (!ctx) return;
 
-                // Destroy existing chart
                 if (this.chart) {
                     this.chart.destroy();
                 }
@@ -882,43 +892,53 @@
                 const currencySymbol = this.currencies[localStorage.getItem('selectedCurrency') || 'PKR']?.symbol || '₨';
                 const chartData = this.calculateChartData(transactions);
 
-                this.chart = new Chart(ctx.getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: chartData.labels,
-                        datasets: [{
-                            label: 'Spending',
-                            data: chartData.expenses,
-                            borderColor: '#10B981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                callbacks: {
-                                    label: (context) => `Spending: ${currencySymbol}${context.raw.toLocaleString()}`
-                                }
-                            }
+                if (chartData.expenses.some(expense => expense > 0)) {
+                    this.chart = new Chart(ctx.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: chartData.labels,
+                            datasets: [{
+                                label: 'Spending',
+                                data: chartData.expenses,
+                                borderColor: '#10B981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.4
+                            }]
                         },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: { color: 'rgba(0, 0, 0, 0.1)' },
-                                ticks: {
-                                    callback: (value) => `${currencySymbol}${value.toLocaleString()}`
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    callbacks: {
+                                        label: (context) => `Spending: ${currencySymbol}${context.raw.toLocaleString()}`
+                                    }
                                 }
                             },
-                            x: { grid: { display: false } }
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                                    ticks: {
+                                        callback: (value) => `${currencySymbol}${value.toLocaleString()}`
+                                    }
+                                },
+                                x: { grid: { display: false } }
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    ctx.parentElement.innerHTML = `
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-chart-line text-3xl mb-3 opacity-40"></i>
+                            <p>No spending data yet</p>
+                            <p class="text-sm mt-2">Add expenses to see your spending chart</p>
+                        </div>
+                    `;
+                }
             }
 
             calculateChartData(transactions) {
@@ -926,7 +946,6 @@
                 const expenseData = [];
                 const currentDate = new Date();
 
-                // Last 6 months
                 for (let i = 5; i >= 0; i--) {
                     const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
                     const monthName = date.toLocaleString('default', { month: 'short' });
@@ -991,8 +1010,7 @@
                 const notification = document.getElementById('notification');
                 if (!notification) return;
                 
-                const bgColor = type === 'success' ? 'bg-green-500' :
-                               type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+                const bgColor = type === 'success' ? 'bg-green-500' : 'bg-blue-500';
                 
                 notification.innerHTML = `
                     <div class="${bgColor} text-white p-4 rounded-lg flex items-center justify-between">
@@ -1011,54 +1029,7 @@
             }
         }
 
-        // Global functions
-        function addSampleData() {
-            console.log('➕ Adding sample data');
-            
-            const sampleExpenses = [
-                {
-                    id: 'sample-1',
-                    type: 'expense',
-                    amount: 4500,
-                    category: 'Food & Dining',
-                    description: 'Grocery Shopping',
-                    date: new Date().toISOString().split('T')[0],
-                    timestamp: new Date().toISOString()
-                },
-                {
-                    id: 'sample-2',
-                    type: 'expense',
-                    amount: 2500,
-                    category: 'Transportation',
-                    description: 'Fuel',
-                    date: new Date(Date.now() - 86400000).toISOString().split('T')[0],
-                    timestamp: new Date(Date.now() - 86400000).toISOString()
-                }
-            ];
-            
-            const sampleIncome = [
-                {
-                    id: 'sample-3',
-                    type: 'income',
-                    amount: 75000,
-                    category: 'Salary',
-                    description: 'Monthly Salary',
-                    date: new Date().toISOString().split('T')[0],
-                    timestamp: new Date().toISOString()
-                }
-            ];
-            
-            localStorage.setItem('expenses', JSON.stringify(sampleExpenses));
-            localStorage.setItem('income', JSON.stringify(sampleIncome));
-            
-            // Force dashboard update
-            if (window.dashboard) {
-                window.dashboard.updateDashboard();
-            }
-            
-            showNotification('Sample data added! Dashboard updated.', 'success');
-        }
-
+        // Global function for manual refresh
         function updateDashboard() {
             if (window.dashboard) {
                 window.dashboard.updateDashboard();
@@ -1091,7 +1062,7 @@
         // Initialize dashboard
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🏠 DOM loaded, starting dashboard...');
-            window.dashboard = new SimpleDashboard();
+            window.dashboard = new Dashboard();
         });
     </script>
 </body>
