@@ -75,13 +75,12 @@
             }
         }
 
-        /* Sidebar Styles */
-        #sidebar {
+        .sidebar {
             transition: transform 0.3s ease;
             background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
         }
         
-        #sidebar-overlay {
+        .sidebar-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -99,15 +98,14 @@
         }
         
         @media (min-width: 1024px) {
-            #sidebar {
+            .sidebar {
                 transform: translateX(0);
             }
-            #main-app-container {
+            .main-content {
                 margin-left: 16rem;
             }
         }
 
-        /* Currency Styles */
         .currency-option {
             display: flex;
             align-items: center;
@@ -142,21 +140,6 @@
             font-size: 10px;
             color: white;
             font-weight: bold;
-        }
-
-        .currency-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 10px;
-            border-radius: 12px;
-            background-color: #f3f4f6;
-            font-size: 0.75rem;
-            font-weight: 500;
-            margin-left: 8px;
-        }
-
-        .currency-symbol {
-            font-weight: 600;
         }
         
         .stat-card {
@@ -225,20 +208,6 @@
             }
         }
 
-        /* Auto-update indicator */
-        .auto-update-indicator {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 8px;
-            border-radius: 12px;
-            background-color: #d1fae5;
-            color: #065f46;
-            font-size: 0.75rem;
-            font-weight: 500;
-            margin-left: 8px;
-            animation: pulse 2s infinite;
-        }
-
         .data-status {
             background-color: #FEF3C7;
             border: 1px solid #F59E0B;
@@ -275,11 +244,11 @@
 </head>
 <body class="antialiased">
 
-    <!-- Enhanced Signin Overlay -->
+    <!-- Signin Overlay -->
     <div id="signin-overlay" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-gradient-to-br from-green-50 to-blue-50"></div>
         <div class="relative w-full max-w-md">
-            <div class="card p-8 transform transition-all duration-500 scale-100 opacity-100">
+            <div class="card p-8">
                 <div class="text-center mb-8">
                     <div class="w-24 h-24 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg pulse">
                         <i class="fas fa-chart-pie text-white text-4xl"></i>
@@ -288,7 +257,7 @@
                     <p class="text-gray-600 text-lg">Smart Financial Management</p>
                 </div>
                 
-                <p class="text-gray-600 mb-8 text-center">Welcome! Please enter your name to begin your financial journey.</p>
+                <p class="text-gray-600 mb-8 text-center">Welcome! Please enter your name to begin.</p>
                 
                 <form id="signin-form" class="space-y-6">
                     <div class="relative">
@@ -300,7 +269,7 @@
                     
                     <!-- Currency Selection -->
                     <div class="bg-gray-50 rounded-xl p-4">
-                        <p class="text-sm font-medium text-gray-700 mb-3 text-center">Select Display Currency</p>
+                        <p class="text-sm font-medium text-gray-700 mb-3 text-center">Select Currency</p>
                         <div class="grid grid-cols-3 gap-2">
                             <div class="currency-option text-center" data-currency="USD">
                                 <div class="currency-flag bg-blue-600 mx-auto mb-2">US</div>
@@ -317,24 +286,19 @@
                         </div>
                     </div>
                     
-                    <button type="submit" 
-                            class="btn-primary w-full text-white font-bold py-4 px-4 rounded-xl text-lg shadow-lg">
+                    <button type="submit" class="btn-primary w-full text-white font-bold py-4 px-4 rounded-xl text-lg">
                         <i class="fas fa-rocket mr-2"></i>Start Managing Finances
                     </button>
                 </form>
-
-                <div class="mt-8 text-center">
-                    <p class="text-xs text-gray-500">Your data is stored locally on your device for privacy</p>
-                </div>
             </div>
         </div>
     </div>
 
     <!-- Sidebar Overlay -->
-    <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"></div>
+    <div id="sidebar-overlay" class="sidebar-overlay hidden lg:hidden"></div>
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen shadow-xl transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
+    <aside id="sidebar" class="sidebar fixed top-0 left-0 z-40 w-64 h-screen shadow-xl transform -translate-x-full lg:translate-x-0">
         <div class="h-full flex flex-col">
             <!-- Logo -->
             <div class="h-20 flex items-center justify-center border-b border-gray-200 px-4">
@@ -357,42 +321,20 @@
                 <a href="expense.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-primary">
                     <i class="fas fa-credit-card w-5 h-5 mr-3"></i>Expenses
                 </a>
-                <a href="accounts.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-primary">
-                    <i class="fas fa-wallet w-5 h-5 mr-3"></i>Accounts
-                </a>
                 <a href="budget.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-primary">
                     <i class="fas fa-chart-pie w-5 h-5 mr-3"></i>Budgets
                 </a>
-                <a href="reports.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-primary">
-                    <i class="fas fa-chart-line w-5 h-5 mr-3"></i>Reports
-                </a>
-                <a href="blogs.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-primary">
-                    <i class="fas fa-blog w-5 h-5 mr-3"></i>Blog
-                </a>
-                <a href="contact.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-primary">
-                    <i class="fas fa-envelope w-5 h-5 mr-3"></i>Contact Us
-                </a>
-                <a href="settings.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-primary">
-                    <i class="fas fa-cog w-5 h-5 mr-3"></i>Settings
-                </a>
             </nav>
-
-            <!-- Footer Links -->
-            <div class="px-4 py-4 border-t border-gray-200">
-                <a href="#privacy" class="text-xs text-gray-500 hover:text-primary block">Privacy Policy</a>
-                <a href="#terms" class="text-xs text-gray-500 hover:text-primary block mt-1">Terms & Conditions</a>
-                <a href="#disclaimers" class="text-xs text-gray-500 hover:text-primary block mt-1">Disclaimers</a>
-            </div>
         </div>
     </aside>
 
     <!-- Main App Content -->
-    <div id="main-app-container" class="lg:ml-64 min-h-screen hidden">
+    <div id="main-app-container" class="main-content min-h-screen hidden">
         <!-- Header -->
         <header class="glass-effect shadow-sm border-b border-gray-200 sticky top-0 z-30">
             <div class="flex items-center justify-between px-6 py-4">
                 <!-- Mobile Menu Button -->
-                <button id="mobile-menu-button" class="lg:hidden text-gray-600 hover:text-primary focus:outline-none">
+                <button id="mobile-menu-button" class="lg:hidden text-gray-600 hover:text-primary">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
                 
@@ -402,15 +344,11 @@
                     <p class="text-gray-600 text-sm">Welcome back! Here's your financial overview</p>
                 </div>
                 
-                <!-- User Info and Currency -->
+                <!-- User Info -->
                 <div class="flex items-center space-x-4">
-                    <div class="hidden md:flex items-center space-x-2 bg-gray-100 rounded-lg px-3 py-1">
-                        <span id="current-currency" class="text-sm font-medium text-gray-700">PKR</span>
-                        <span id="currency-symbol" class="text-sm font-medium text-gray-700">₨</span>
-                        <span class="auto-update-indicator ml-2" id="auto-update-indicator">
-                            <i class="fas fa-sync-alt mr-1"></i> Auto-updating
-                        </span>
-                    </div>
+                    <button onclick="updateDashboard()" class="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
                     <div class="flex items-center space-x-3">
                         <span id="user-greeting" class="text-gray-600 hidden sm:block">Hello, User!</span>
                         <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold shadow-md" id="user-initial">U</div>
@@ -419,13 +357,10 @@
             </div>
         </header>
 
-        <!-- Data Status Indicator -->
-        <div id="data-status" class="data-status hidden">
+        <!-- Data Status -->
+        <div id="data-status" class="data-status">
             <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
-            <span class="text-yellow-700 text-sm flex-1" id="status-message"></span>
-            <button onclick="updateDashboard()" class="refresh-btn">
-                <i class="fas fa-sync-alt mr-1"></i>Refresh
-            </button>
+            <span class="text-yellow-700 text-sm flex-1" id="status-message">No transactions found. Add some income or expenses to get started!</span>
         </div>
 
         <!-- Main Content -->
@@ -443,7 +378,7 @@
                             <i class="fas fa-wallet text-white"></i>
                         </div>
                     </div>
-                    <p class="text-green-100 text-xs mt-4"><i class="fas fa-arrow-up mr-1"></i> <span id="balance-change">0%</span> from last month</p>
+                    <p class="text-green-100 text-xs mt-4">Your remaining cash</p>
                 </div>
                 
                 <!-- Total Income -->
@@ -457,7 +392,7 @@
                             <i class="fas fa-money-bill-wave text-white"></i>
                         </div>
                     </div>
-                    <p class="text-blue-100 text-xs mt-4"><i class="fas fa-arrow-up mr-1"></i> <span id="income-change">0%</span> from last month</p>
+                    <p class="text-blue-100 text-xs mt-4">This month's income</p>
                 </div>
                 
                 <!-- Total Expenses -->
@@ -471,7 +406,7 @@
                             <i class="fas fa-credit-card text-white"></i>
                         </div>
                     </div>
-                    <p class="text-purple-100 text-xs mt-4"><i class="fas fa-arrow-down mr-1"></i> <span id="expenses-change">0%</span> from last month</p>
+                    <p class="text-purple-100 text-xs mt-4">This month's expenses</p>
                 </div>
                 
                 <!-- Savings Rate -->
@@ -485,7 +420,7 @@
                             <i class="fas fa-piggy-bank text-white"></i>
                         </div>
                     </div>
-                    <p class="text-orange-100 text-xs mt-4"><i class="fas fa-arrow-up mr-1"></i> <span id="savings-change">0%</span> from last month</p>
+                    <p class="text-orange-100 text-xs mt-4">Of this month's income</p>
                 </div>
             </div>
 
@@ -499,18 +434,10 @@
                     </div>
                     
                     <div id="budget-progress-container" class="space-y-6">
-                        <!-- Budget items will be populated here -->
                         <div class="text-center py-8 text-gray-500">
                             <i class="fas fa-chart-pie text-3xl mb-3 opacity-40"></i>
                             <p>No budgets set yet</p>
                         </div>
-                    </div>
-                    
-                    <div class="mt-6 text-center">
-                        <a href="budget.html" class="inline-flex items-center text-primary hover:text-green-700 font-semibold text-sm">
-                            Manage Budgets
-                            <i class="fas fa-arrow-right ml-2"></i>
-                        </a>
                     </div>
                 </div>
 
@@ -522,18 +449,10 @@
                     </div>
                     
                     <div id="recent-transactions-container" class="space-y-4">
-                        <!-- Transactions will be populated here -->
                         <div class="text-center py-8 text-gray-500">
                             <i class="fas fa-exchange-alt text-3xl mb-3 opacity-40"></i>
                             <p>No recent transactions</p>
                         </div>
-                    </div>
-                    
-                    <div class="mt-6 text-center">
-                        <a href="expense.html" class="inline-flex items-center text-primary hover:text-green-700 font-semibold text-sm">
-                            View All Transactions
-                            <i class="fas fa-arrow-right ml-2"></i>
-                        </a>
                     </div>
                 </div>
             </div>
@@ -556,10 +475,10 @@
                             <i class="fas fa-chart-pie text-purple-600 text-xl mb-2 group-hover:text-purple-700"></i>
                             <p class="font-semibold text-purple-800 text-sm">Set Budget</p>
                         </a>
-                        <a href="reports.html" class="bg-orange-50 border border-orange-100 rounded-xl p-4 text-center hover:bg-orange-100 transition-colors group">
-                            <i class="fas fa-chart-line text-orange-600 text-xl mb-2 group-hover:text-orange-700"></i>
-                            <p class="font-semibold text-orange-800 text-sm">View Reports</p>
-                        </a>
+                        <button onclick="updateDashboard()" class="bg-orange-50 border border-orange-100 rounded-xl p-4 text-center hover:bg-orange-100 transition-colors group">
+                            <i class="fas fa-sync-alt text-orange-600 text-xl mb-2 group-hover:text-orange-700"></i>
+                            <p class="font-semibold text-orange-800 text-sm">Refresh</p>
+                        </button>
                     </div>
                 </div>
 
@@ -577,46 +496,31 @@
     <!-- Notification -->
     <div id="notification" class="notification hidden fixed top-4 right-4 z-50 max-w-sm"></div>
 
-    <script src="script.js"></script>
     <script>
-        // Dashboard Manager for index.html
+        // Simple Dashboard Manager
         class DashboardManager {
             constructor() {
-                this.charts = {};
                 this.currencies = {
-                    'USD': { symbol: '$', name: 'US Dollar', flag: 'US' },
-                    'PKR': { symbol: '₨', name: 'Pakistani Rupee', flag: 'PK' },
-                    'INR': { symbol: '₹', name: 'Indian Rupee', flag: 'IN' }
+                    'USD': { symbol: '$' },
+                    'PKR': { symbol: '₨' },
+                    'INR': { symbol: '₹' }
                 };
+                this.chart = null;
                 this.init();
             }
 
             init() {
-                console.log('🚀 Initializing Dashboard Manager');
+                console.log('🚀 Starting Dashboard');
                 this.setupEventListeners();
-                this.setupCurrencySelection();
                 this.checkUserAuth();
-                this.setupAutoUpdate();
-                
-                // Initial dashboard update
-                setTimeout(() => {
-                    this.updateDashboard();
-                }, 100);
+                this.updateDashboard();
             }
 
             setupEventListeners() {
-                // Listen for data updates from other pages
-                window.addEventListener('smartgrocer-data-update', (event) => {
-                    console.log('📊 Dashboard received data update event', event.detail);
+                // Listen for data updates
+                window.addEventListener('smartgrocer-data-update', () => {
+                    console.log('📊 Dashboard updating from event');
                     this.updateDashboard();
-                });
-
-                // Listen for storage changes (cross-tab communication)
-                window.addEventListener('storage', (e) => {
-                    if (e.key === 'expenses' || e.key === 'income') {
-                        console.log('📦 Storage changed, updating dashboard');
-                        this.updateDashboard();
-                    }
                 });
 
                 // Mobile menu
@@ -625,14 +529,14 @@
                 const sidebarOverlay = document.getElementById('sidebar-overlay');
                 
                 if (mobileMenuButton) {
-                    mobileMenuButton.addEventListener('click', function() {
+                    mobileMenuButton.addEventListener('click', () => {
                         sidebar.classList.toggle('-translate-x-full');
                         sidebarOverlay.classList.toggle('hidden');
                     });
                 }
                 
                 if (sidebarOverlay) {
-                    sidebarOverlay.addEventListener('click', function() {
+                    sidebarOverlay.addEventListener('click', () => {
                         sidebar.classList.add('-translate-x-full');
                         sidebarOverlay.classList.add('hidden');
                     });
@@ -647,50 +551,14 @@
                     });
                 }
 
-                // Add manual refresh button
-                this.addRefreshButton();
-            }
-
-            addRefreshButton() {
-                const header = document.querySelector('header .flex-1');
-                if (!header) return;
-
-                // Remove existing button if any
-                const existingBtn = document.getElementById('manual-refresh-btn');
-                if (existingBtn) existingBtn.remove();
-
-                const refreshBtn = document.createElement('button');
-                refreshBtn.id = 'manual-refresh-btn';
-                refreshBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Refresh Now';
-                refreshBtn.className = 'ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium';
-                refreshBtn.onclick = () => {
-                    console.log('🔄 Manual refresh triggered');
-                    this.updateDashboard();
-                    this.showNotification('Dashboard refreshed!', 'success');
-                };
-
-                header.appendChild(refreshBtn);
-            }
-
-            setupAutoUpdate() {
-                // Auto-update dashboard every 3 seconds
-                setInterval(() => {
-                    this.updateDashboard();
-                }, 3000);
-            }
-
-            setupCurrencySelection() {
+                // Currency selection
                 const currencyOptions = document.querySelectorAll('.currency-option');
                 currencyOptions.forEach(option => {
                     option.addEventListener('click', () => {
-                        // Remove selected class from all options
                         currencyOptions.forEach(opt => opt.classList.remove('selected'));
-                        // Add selected class to clicked option
                         option.classList.add('selected');
-                        
                         const currency = option.getAttribute('data-currency');
                         localStorage.setItem('selectedCurrency', currency);
-                        this.updateCurrencyDisplay(currency);
                         this.updateDashboard();
                     });
                 });
@@ -700,9 +568,6 @@
                 const userName = localStorage.getItem('smartgrocer-currentUser');
                 if (userName) {
                     this.showMainApp(userName);
-                    this.updateDashboard();
-                } else {
-                    console.log('👤 No user found, showing signin overlay');
                 }
             }
 
@@ -714,7 +579,6 @@
                     localStorage.setItem('smartgrocer-currentUser', userName);
                     localStorage.setItem('selectedCurrency', selectedCurrency);
                     this.showMainApp(userName);
-                    this.updateDashboard();
                     this.showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
                 }
             }
@@ -722,47 +586,19 @@
             showMainApp(userName) {
                 document.getElementById('signin-overlay').style.display = 'none';
                 document.getElementById('main-app-container').classList.remove('hidden');
-                
                 document.getElementById('user-greeting').textContent = `Hello, ${userName}!`;
                 document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
-                
-                const currency = localStorage.getItem('selectedCurrency') || 'PKR';
-                this.updateCurrencyDisplay(currency);
-            }
-
-            updateCurrencyDisplay(currency) {
-                const currencyInfo = this.currencies[currency];
-                if (currencyInfo) {
-                    document.getElementById('current-currency').textContent = currency;
-                    document.getElementById('currency-symbol').textContent = currencyInfo.symbol;
-                }
             }
 
             updateDashboard() {
-                console.log('🔄 Updating dashboard with real data...');
+                console.log('🔄 Updating dashboard...');
                 try {
-                    // Use the functions from script.js
-                    if (typeof updateDashboard === 'function') {
-                        updateDashboard();
-                    } else {
-                        console.error('updateDashboard function not found in script.js');
-                        // Fallback: direct update
-                        this.directUpdateDashboard();
-                    }
-                } catch (error) {
-                    console.error('❌ Error updating dashboard:', error);
-                    this.showNotification('Error updating dashboard data', 'error');
-                }
-            }
-
-            directUpdateDashboard() {
-                try {
-                    const expenses = this.safeParseJSON(localStorage.getItem('expenses') || '[]');
-                    const income = this.safeParseJSON(localStorage.getItem('income') || '[]');
-                    const budgets = this.safeParseJSON(localStorage.getItem('smartgrocer-budgets') || '[]');
+                    const expenses = this.getData('expenses');
+                    const income = this.getData('income');
+                    const budgets = this.getData('smartgrocer-budgets');
                     const transactions = [...expenses, ...income];
                     
-                    console.log('Real User Data Loaded:', {
+                    console.log('User Data:', {
                         expenses: expenses.length,
                         income: income.length,
                         transactions: transactions.length
@@ -776,7 +612,16 @@
                     this.updateDataStatus(transactions);
                     
                 } catch (error) {
-                    console.error('Error in direct update:', error);
+                    console.error('Error updating dashboard:', error);
+                }
+            }
+
+            getData(key) {
+                try {
+                    const data = localStorage.getItem(key);
+                    return data ? JSON.parse(data) : [];
+                } catch (error) {
+                    return [];
                 }
             }
 
@@ -784,7 +629,7 @@
                 const currency = localStorage.getItem('selectedCurrency') || 'PKR';
                 const currencySymbol = this.currencies[currency]?.symbol || '₨';
                 
-                // Calculate from REAL transactions only
+                // Calculate totals from ALL transactions
                 const totalIncome = transactions
                     .filter(t => t.type === 'income')
                     .reduce((total, t) => total + (parseFloat(t.amount) || 0), 0);
@@ -800,12 +645,11 @@
                 const currentMonth = new Date().getMonth();
                 const currentYear = new Date().getFullYear();
                 
-                const currentMonthTransactions = transactions.filter(transaction => {
+                const currentMonthTransactions = transactions.filter(t => {
                     try {
-                        const transactionDate = new Date(transaction.date || transaction.timestamp);
-                        return transactionDate.getMonth() === currentMonth && 
-                               transactionDate.getFullYear() === currentYear;
-                    } catch (error) {
+                        const date = new Date(t.date || t.timestamp);
+                        return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
+                    } catch {
                         return false;
                     }
                 });
@@ -819,37 +663,27 @@
                     .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
 
                 const savingsRate = monthlyIncome > 0 ? 
-                    Math.round(((monthlyIncome - monthlyExpenses) / monthlyIncome) * 100) : 0;
+                    Math.max(Math.round(((monthlyIncome - monthlyExpenses) / monthlyIncome) * 100), 0) : 0;
 
-                const result = {
+                return {
                     totalBalance,
                     totalIncome: monthlyIncome,
                     totalExpenses: monthlyExpenses,
                     savingsRate,
-                    currency: currency,
                     symbol: currencySymbol
                 };
-
-                console.log('📊 Financial data calculated:', result);
-                return result;
             }
 
             updateFinancialOverview(data) {
-                console.log('💰 Updating financial overview:', data);
-                
                 document.getElementById('total-balance').textContent = `${data.symbol}${data.totalBalance.toLocaleString()}`;
                 document.getElementById('total-income').textContent = `${data.symbol}${data.totalIncome.toLocaleString()}`;
                 document.getElementById('total-expenses').textContent = `${data.symbol}${data.totalExpenses.toLocaleString()}`;
-                document.getElementById('savings-rate').textContent = `${Math.max(data.savingsRate, 0)}%`;
+                document.getElementById('savings-rate').textContent = `${data.savingsRate}%`;
             }
 
             updateBudgetProgress(budgets, transactions) {
                 const container = document.getElementById('budget-progress-container');
                 if (!container) return;
-
-                const currentMonth = new Date().getMonth();
-                const currentYear = new Date().getFullYear();
-                const currencySymbol = this.currencies[localStorage.getItem('selectedCurrency') || 'PKR']?.symbol || '₨';
 
                 if (budgets.length === 0) {
                     container.innerHTML = `
@@ -861,20 +695,24 @@
                     return;
                 }
 
+                const currencySymbol = this.currencies[localStorage.getItem('selectedCurrency') || 'PKR']?.symbol || '₨';
+                const currentMonth = new Date().getMonth();
+                const currentYear = new Date().getFullYear();
+
                 container.innerHTML = budgets.map(budget => {
                     const spent = transactions
-                        .filter(transaction => {
+                        .filter(t => {
                             try {
-                                const transactionDate = new Date(transaction.date || transaction.timestamp);
-                                return transaction.type === 'expense' && 
-                                       transaction.category === budget.category &&
-                                       transactionDate.getMonth() === currentMonth &&
-                                       transactionDate.getFullYear() === currentYear;
-                            } catch (error) {
+                                const date = new Date(t.date || t.timestamp);
+                                return t.type === 'expense' && 
+                                       t.category === budget.category &&
+                                       date.getMonth() === currentMonth &&
+                                       date.getFullYear() === currentYear;
+                            } catch {
                                 return false;
                             }
                         })
-                        .reduce((total, transaction) => total + Math.abs(parseFloat(transaction.amount) || 0), 0);
+                        .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
                     
                     const percentage = budget.amount > 0 ? Math.min((spent / budget.amount) * 100, 100) : 0;
                     const progressColor = percentage > 90 ? 'bg-red-500' : 
@@ -902,11 +740,11 @@
                 oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
                 
                 const recentTransactions = transactions
-                    .filter(transaction => {
+                    .filter(t => {
                         try {
-                            const transactionDate = new Date(transaction.date || transaction.timestamp);
-                            return transactionDate >= oneWeekAgo;
-                        } catch (error) {
+                            const date = new Date(t.date || t.timestamp);
+                            return date >= oneWeekAgo;
+                        } catch {
                             return false;
                         }
                     })
@@ -955,63 +793,45 @@
                 const ctx = document.getElementById('spendingChart');
                 if (!ctx) return;
 
-                // Destroy existing chart
-                if (this.charts.spending) {
-                    this.charts.spending.destroy();
+                if (this.chart) {
+                    this.chart.destroy();
                 }
 
                 const currencySymbol = this.currencies[localStorage.getItem('selectedCurrency') || 'PKR']?.symbol || '₨';
                 const chartData = this.calculateChartData(transactions);
 
-                this.charts.spending = new Chart(ctx.getContext('2d'), {
-                    type: 'line',
-                    data: {
-                        labels: chartData.labels,
-                        datasets: [{
-                            label: 'Spending',
-                            data: chartData.expenses,
-                            borderColor: '#10B981',
-                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return `Spending: ${currencySymbol}${context.raw.toLocaleString()}`;
-                                    }
-                                }
-                            }
+                if (chartData.expenses.some(expense => expense > 0)) {
+                    this.chart = new Chart(ctx.getContext('2d'), {
+                        type: 'line',
+                        data: {
+                            labels: chartData.labels,
+                            datasets: [{
+                                label: 'Spending',
+                                data: chartData.expenses,
+                                borderColor: '#10B981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.4
+                            }]
                         },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                grid: {
-                                    color: 'rgba(0, 0, 0, 0.1)'
-                                },
-                                ticks: {
-                                    callback: function(value) {
-                                        return `${currencySymbol}${value.toLocaleString()}`;
-                                    }
-                                }
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false }
                             },
-                            x: {
-                                grid: {
-                                    display: false
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: (value) => `${currencySymbol}${value.toLocaleString()}`
+                                    }
                                 }
                             }
                         }
-                    }
-                });
+                    });
+                }
             }
 
             calculateChartData(transactions) {
@@ -1019,7 +839,6 @@
                 const expenseData = [];
                 const currentDate = new Date();
 
-                // Last 6 months data
                 for (let i = 5; i >= 0; i--) {
                     const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
                     const monthName = date.toLocaleString('default', { month: 'short' });
@@ -1032,7 +851,7 @@
                                 return t.type === 'expense' &&
                                        transactionDate.getMonth() === date.getMonth() &&
                                        transactionDate.getFullYear() === date.getFullYear();
-                            } catch (error) {
+                            } catch {
                                 return false;
                             }
                         })
@@ -1041,19 +860,15 @@
                     expenseData.push(monthExpenses);
                 }
 
-                return {
-                    labels: months,
-                    expenses: expenseData
-                };
+                return { labels: months, expenses: expenseData };
             }
 
             updateDataStatus(transactions) {
                 const statusElement = document.getElementById('data-status');
-                const messageElement = document.getElementById('status-message');
-                
+                if (!statusElement) return;
+
                 if (transactions.length === 0) {
                     statusElement.classList.remove('hidden');
-                    messageElement.textContent = 'No transactions found. Add some income or expenses to get started!';
                 } else {
                     statusElement.classList.add('hidden');
                 }
@@ -1066,50 +881,32 @@
                     'Shopping': { icon: 'fas fa-shopping-bag', color: 'text-purple-600', bg: 'bg-purple-100' },
                     'Entertainment': { icon: 'fas fa-film', color: 'text-yellow-600', bg: 'bg-yellow-100' },
                     'Bills & Utilities': { icon: 'fas fa-file-invoice-dollar', color: 'text-red-600', bg: 'bg-red-100' },
-                    'Healthcare': { icon: 'fas fa-heartbeat', color: 'text-pink-600', bg: 'bg-pink-100' },
-                    'Education': { icon: 'fas fa-graduation-cap', color: 'text-indigo-600', bg: 'bg-indigo-100' },
-                    'Travel': { icon: 'fas fa-plane', color: 'text-teal-600', bg: 'bg-teal-100' },
-                    'Personal Care': { icon: 'fas fa-spa', color: 'text-orange-600', bg: 'bg-orange-100' },
                     'Salary': { icon: 'fas fa-money-bill-wave', color: 'text-green-600', bg: 'bg-green-100' }
                 };
-                
                 return icons[category] || { icon: 'fas fa-wallet', color: 'text-gray-600', bg: 'bg-gray-100' };
             }
 
             getTimeAgo(date) {
                 const now = new Date();
                 const diffInMs = now - date;
-                const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
                 const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
                 
-                if (diffInHours < 1) return 'Just now';
-                if (diffInHours < 24) return `${diffInHours}h ago`;
+                if (diffInDays === 0) return 'Today';
                 if (diffInDays === 1) return 'Yesterday';
                 if (diffInDays < 7) return `${diffInDays}d ago`;
                 return date.toLocaleDateString();
             }
 
-            safeParseJSON(jsonString) {
-                try {
-                    return jsonString ? JSON.parse(jsonString) : [];
-                } catch (error) {
-                    console.error('❌ JSON parsing error:', error);
-                    return [];
-                }
-            }
-
             showNotification(message, type = 'info') {
                 const notification = document.getElementById('notification');
-                const bgColor = type === 'success' ? 'bg-green-500' :
-                               type === 'error' ? 'bg-red-500' :
-                               type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500';
+                if (!notification) return;
+                
+                const bgColor = type === 'success' ? 'bg-green-500' : 'bg-blue-500';
                 
                 notification.innerHTML = `
                     <div class="${bgColor} text-white p-4 rounded-lg flex items-center justify-between">
                         <div class="flex items-center">
-                            <i class="fas ${type === 'success' ? 'fa-check-circle' : 
-                                         type === 'error' ? 'fa-exclamation-circle' : 
-                                         type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'} mr-3"></i>
+                            <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} mr-3"></i>
                             <span>${message}</span>
                         </div>
                         <button onclick="this.parentElement.parentElement.classList.add('hidden')" class="ml-4 text-white hover:text-gray-200">
@@ -1119,26 +916,45 @@
                 `;
                 
                 notification.classList.remove('hidden');
-                
-                setTimeout(() => {
-                    notification.classList.add('hidden');
-                }, 5000);
+                setTimeout(() => notification.classList.add('hidden'), 3000);
             }
         }
 
-        // Initialize dashboard when DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🏠 Dashboard DOM loaded, initializing manager...');
-            window.dashboardManager = new DashboardManager();
-        });
-
-        // Global functions for HTML onclick handlers
+        // Global function for manual refresh
         function updateDashboard() {
-            console.log('🔄 Manual dashboard update from global function');
-            if (window.dashboardManager) {
-                window.dashboardManager.updateDashboard();
+            if (window.dashboard) {
+                window.dashboard.updateDashboard();
+                showNotification('Dashboard refreshed!', 'success');
             }
         }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            if (!notification) return;
+            
+            const bgColor = type === 'success' ? 'bg-green-500' : 'bg-blue-500';
+            
+            notification.innerHTML = `
+                <div class="${bgColor} text-white p-4 rounded-lg flex items-center justify-between">
+                    <div class="flex items-center">
+                        <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-info-circle'} mr-3"></i>
+                        <span>${message}</span>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.classList.add('hidden')" class="ml-4 text-white hover:text-gray-200">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            notification.classList.remove('hidden');
+            setTimeout(() => notification.classList.add('hidden'), 3000);
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🏠 Starting dashboard...');
+            window.dashboard = new DashboardManager();
+        });
     </script>
 </body>
 </html>
