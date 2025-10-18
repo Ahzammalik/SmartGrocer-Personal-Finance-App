@@ -1,871 +1,592 @@
 <script>
-    // Data Manager - Centralized data management for SmartGrocer
-    class DataManager {
-        constructor() {
-            this.currency = localStorage.getItem('selectedCurrency') || 'PKR';
-            this.currencies = {
-                'USD': { symbol: '$', name: 'US Dollar', flag: 'US' },
-                'PKR': { symbol: '₨', name: 'Pakistani Rupee', flag: 'PK' },
-                'INR': { symbol: '₹', name: 'Indian Rupee', flag: 'IN' }
-            };
-            this.autoUpdateInterval = null;
-            this.init();
-        }
-
-        // Initialize data manager
-        init() {
-            this.ensureDataStructure();
-            this.setupAutoUpdate();
-            console.log('🔧 Data Manager Initialized');
-            return this;
-        }
-
-        // Ensure proper data structure exists
-        ensureDataStructure() {
-            if (!localStorage.getItem('smartgrocer-transactions')) {
-                localStorage.setItem('smartgrocer-transactions', JSON.stringify([]));
-                console.log('✅ Created empty transactions array');
-            }
-            if (!localStorage.getItem('smartgrocer-accounts')) {
-                localStorage.setItem('smartgrocer-accounts', JSON.stringify([]));
-                console.log('✅ Created empty accounts array');
-            }
-            if (!localStorage.getItem('smartgrocer-budgets')) {
-                localStorage.setItem('smartgrocer-budgets', JSON.stringify([]));
-                console.log('✅ Created empty budgets array');
-            }
-            if (!localStorage.getItem('smartgrocer-categories')) {
-                localStorage.setItem('smartgrocer-categories', JSON.stringify([
-                    'Food & Dining', 'Transportation', 'Shopping', 'Entertainment',
-                    'Bills & Utilities', 'Healthcare', 'Education', 'Travel', 'Personal Care', 'Salary'
-                ]));
-            }
-        }
-
-        // Setup auto-update across all pages
-        setupAutoUpdate() {
-            // Clear existing interval
-            if (this.autoUpdateInterval) {
-                clearInterval(this.autoUpdateInterval);
-            }
-
-            // Set up new interval (update every 3 seconds)
-            this.autoUpdateInterval = setInterval(() => {
-                this.triggerDataUpdate();
-            }, 3000);
-
-            console.log('🔄 Auto-update interval set (3 seconds)');
-        }
-
-        // Trigger data update event
-        triggerDataUpdate() {
-            const transactions = this.getTransactions();
-            const accounts = this.getAccounts();
-            const budgets = this.getBudgets();
-            
-            console.log('📢 Triggering data update:', {
-                transactions: transactions.length,
-                accounts: accounts.length,
-                budgets: budgets.length
-            });
-
-            const event = new CustomEvent('smartgrocer-data-update', {
-                detail: {
-                    transactions: transactions,
-                    accounts: accounts,
-                    budgets: budgets,
-                    currency: this.currency
-                }
-            });
-            window.dispatchEvent(event);
-        }
-
-        // Get all transactions
-        getTransactions() {
-            const transactions = this.safeParseJSON(localStorage.getItem('smartgrocer-transactions')) || [];
-            console.log('📄 Retrieved transactions:', transactions.length);
-            return transactions;
-        }
-
-        // Add new transaction
-        addTransaction(transaction) {
-            console.log('➕ Adding new transaction:', transaction);
-            const transactions = this.getTransactions();
-            
-            // Ensure transaction has required fields
-            transaction.id = transaction.id || Date.now() + Math.random();
-            transaction.currency = transaction.currency || this.currency;
-            transaction.createdAt = transaction.createdAt || new Date().toISOString();
-            
-            // Ensure amount is positive and we use type to determine income/expense
-            transaction.amount = Math.abs(parseFloat(transaction.amount) || 0);
-            
-            transactions.push(transaction);
-            localStorage.setItem('smartgrocer-transactions', JSON.stringify(transactions));
-            
-            console.log('✅ Transaction added. Total transactions:', transactions.length);
-            
-            // Update account balance if account is specified
-            if (transaction.account) {
-                this.updateAccountBalanceFromTransaction(transaction);
-            }
-            
-            // Trigger immediate update
-            this.triggerDataUpdate();
-            return transaction;
-        }
-
-        // Update account balance based on transaction
-        updateAccountBalanceFromTransaction(transaction) {
-            const accounts = this.getAccounts();
-            let account = accounts.find(a => a.name === transaction.account);
-            
-            if (!account) {
-                // Create account if it doesn't exist
-                account = {
-                    id: Date.now(),
-                    name: transaction.account,
-                    type: 'bank',
-                    balance: 0,
-                    currency: this.currency
-                };
-                accounts.push(account);
-            }
-            
-            if (transaction.type === 'income') {
-                account.balance += parseFloat(transaction.amount);
-            } else {
-                account.balance -= parseFloat(transaction.amount);
-            }
-            
-            localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
-            console.log('💰 Updated account balance:', account.name, account.balance);
-        }
-
-        // Update transaction
-        updateTransaction(id, updates) {
-            const transactions = this.getTransactions();
-            const index = transactions.findIndex(t => t.id === id);
-            
-            if (index !== -1) {
-                transactions[index] = { ...transactions[index], ...updates };
-                localStorage.setItem('smartgrocer-transactions', JSON.stringify(transactions));
-                this.triggerDataUpdate();
-                return transactions[index];
-            }
-            return null;
-        }
-
-        // Delete transaction
-        deleteTransaction(id) {
-            const transactions = this.getTransactions();
-            const filtered = transactions.filter(t => t.id !== id);
-            localStorage.setItem('smartgrocer-transactions', JSON.stringify(filtered));
-            this.triggerDataUpdate();
-        }
-
-        // Get all accounts
-        getAccounts() {
-            return this.safeParseJSON(localStorage.getItem('smartgrocer-accounts')) || [];
-        }
-
-        // Update account balance
-        updateAccountBalance(accountId, newBalance) {
-            const accounts = this.getAccounts();
-            const account = accounts.find(a => a.id === accountId);
-            
-            if (account) {
-                account.balance = newBalance;
-                localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
-                this.triggerDataUpdate();
-            }
-        }
-
-        // Get all budgets
-        getBudgets() {
-            return this.safeParseJSON(localStorage.getItem('smartgrocer-budgets')) || [];
-        }
-
-        // Get categories
-        getCategories() {
-            return this.safeParseJSON(localStorage.getItem('smartgrocer-categories')) || [];
-        }
-
-        // Calculate financial overview - FIXED TOTAL BALANCE CALCULATION
-        calculateFinancialOverview() {
-            const transactions = this.getTransactions();
-            const accounts = this.getAccounts();
-            const currentMonth = new Date().getMonth();
-            const currentYear = new Date().getFullYear();
-
-            console.log('🧮 Calculating financial overview from:', {
-                transactions: transactions.length,
-                accounts: accounts.length
-            });
-
-            // Calculate total income and expenses from ALL transactions in selected currency
-            const allTransactions = transactions.filter(t => t.currency === this.currency);
-            
-            const totalIncome = allTransactions
-                .filter(t => t.type === 'income')
-                .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
-
-            const totalExpenses = allTransactions
-                .filter(t => t.type === 'expense')
-                .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
-
-            // Calculate remaining cash (income - expenses) - THIS IS THE TOTAL BALANCE
-            const remainingCash = totalIncome - totalExpenses;
-
-            // Also get account balances for reference
-            const accountBalance = accounts
-                .filter(account => account.currency === this.currency)
-                .reduce((total, account) => total + (parseFloat(account.balance) || 0), 0);
-
-            const savingsRate = totalIncome > 0 ? 
-                Math.round(((totalIncome - totalExpenses) / totalIncome) * 100) : 0;
-
-            const result = {
-                totalBalance: remainingCash, // This is now remaining cash (income - expenses)
-                accountBalance: accountBalance, // Keep account balance separate
-                totalIncome,
-                totalExpenses,
-                savingsRate,
-                currency: this.currency,
-                symbol: this.currencies[this.currency].symbol
-            };
-
-            console.log('📊 Financial overview calculated:', result);
-            return result;
-        }
-
-        // Calculate chart data
-        calculateChartData() {
-            const transactions = this.getTransactions();
-            const months = [];
-            const incomeData = [];
-            const expenseData = [];
-            const currentDate = new Date();
-
-            console.log('📈 Calculating chart data from transactions:', transactions.length);
-
-            // Last 6 months data
-            for (let i = 5; i >= 0; i--) {
-                const date = new Date(currentDate.getFullYear(), currentDate.getMonth() - i, 1);
-                const monthName = date.toLocaleString('default', { month: 'short' });
-                months.push(monthName);
-
-                const monthIncome = transactions
-                    .filter(t => {
-                        try {
-                            const transactionDate = new Date(t.date);
-                            return t.type === 'income' &&
-                                   t.currency === this.currency &&
-                                   transactionDate.getMonth() === date.getMonth() &&
-                                   transactionDate.getFullYear() === date.getFullYear();
-                        } catch (error) {
-                            return false;
-                        }
-                    })
-                    .reduce((total, t) => total + (parseFloat(t.amount) || 0), 0);
-
-                const monthExpenses = transactions
-                    .filter(t => {
-                        try {
-                            const transactionDate = new Date(t.date);
-                            return t.type === 'expense' &&
-                                   t.currency === this.currency &&
-                                   transactionDate.getMonth() === date.getMonth() &&
-                                   transactionDate.getFullYear() === date.getFullYear();
-                        } catch (error) {
-                            return false;
-                        }
-                    })
-                    .reduce((total, t) => total + Math.abs(parseFloat(t.amount) || 0), 0);
-
-                incomeData.push(monthIncome);
-                expenseData.push(monthExpenses);
-            }
-
-            // Category data
-            const categoryMap = {};
-            const currentMonth = new Date().getMonth();
-            const currentYear = new Date().getFullYear();
-
-            transactions
-                .filter(t => {
-                    try {
-                        const transactionDate = new Date(t.date);
-                        return t.type === 'expense' &&
-                               t.currency === this.currency &&
-                               transactionDate.getMonth() === currentMonth &&
-                               transactionDate.getFullYear() === currentYear;
-                    } catch (error) {
-                        return false;
-                    }
-                })
-                .forEach(t => {
-                    const category = t.category || 'Uncategorized';
-                    const amount = Math.abs(parseFloat(t.amount) || 0);
-                    categoryMap[category] = (categoryMap[category] || 0) + amount;
-                });
-
-            const result = {
-                incomeExpense: {
-                    labels: months,
-                    income: incomeData,
-                    expenses: expenseData
-                },
-                categories: {
-                    labels: Object.keys(categoryMap),
-                    data: Object.values(categoryMap)
-                }
-            };
-
-            console.log('📊 Chart data calculated:', result);
-            return result;
-        }
-
-        // Safe JSON parsing
-        safeParseJSON(jsonString) {
-            try {
-                return jsonString ? JSON.parse(jsonString) : [];
-            } catch (error) {
-                console.error('❌ JSON parsing error:', error);
-                return [];
-            }
-        }
-
-        // Set currency
-        setCurrency(currency) {
-            console.log('💰 Setting currency to:', currency);
-            this.currency = currency;
-            localStorage.setItem('selectedCurrency', currency);
-            this.triggerDataUpdate();
-        }
-
-        // Get currency symbol
-        getCurrencySymbol() {
-            return this.currencies[this.currency]?.symbol || '₨';
-        }
-
-        // Initialize sample data for new users - FIXED SAMPLE DATA
-        initializeSampleData() {
-            const transactions = this.getTransactions();
-            const accounts = this.getAccounts();
-            
-            if (transactions.length === 0 && accounts.length === 0) {
-                console.log('🎯 Initializing sample data for new user');
-                
-                const sampleTransactions = [
-                    {
-                        id: Date.now() + 1,
-                        type: 'income',
-                        amount: 75000, // Positive amount
-                        currency: this.currency,
-                        category: 'Salary',
-                        description: 'Monthly Salary',
-                        date: new Date().toISOString().split('T')[0],
-                        account: 'Primary Account',
-                        createdAt: new Date().toISOString()
-                    },
-                    {
-                        id: Date.now() + 2,
-                        type: 'expense',
-                        amount: 4500, // Positive amount
-                        currency: this.currency,
-                        category: 'Food & Dining',
-                        description: 'Grocery Shopping',
-                        date: new Date().toISOString().split('T')[0],
-                        account: 'Primary Account',
-                        createdAt: new Date().toISOString()
-                    },
-                    {
-                        id: Date.now() + 3,
-                        type: 'expense',
-                        amount: 2500, // Positive amount
-                        currency: this.currency,
-                        category: 'Transportation',
-                        description: 'Fuel',
-                        date: new Date(Date.now() - 86400000).toISOString().split('T')[0],
-                        account: 'Primary Account',
-                        createdAt: new Date().toISOString()
-                    }
-                ];
-
-                const sampleAccounts = [
-                    {
-                        id: 1,
-                        name: 'Primary Account',
-                        type: 'bank',
-                        balance: 68000, // 75000 - 4500 - 2500
-                        currency: this.currency
-                    }
-                ];
-
-                localStorage.setItem('smartgrocer-transactions', JSON.stringify(sampleTransactions));
-                localStorage.setItem('smartgrocer-accounts', JSON.stringify(sampleAccounts));
-                
-                console.log('✅ Sample data initialized');
-                this.triggerDataUpdate();
-            } else {
-                console.log('ℹ️ Sample data already exists, skipping initialization');
-            }
-        }
-
-        // Force data refresh
-        forceRefresh() {
-            console.log('🔄 Manual data refresh triggered');
-            this.triggerDataUpdate();
-        }
-
-        // Cleanup
-        destroy() {
-            if (this.autoUpdateInterval) {
-                clearInterval(this.autoUpdateInterval);
-                console.log('🧹 Data Manager cleaned up');
-            }
-        }
-    }
-
-    // Create global instance immediately
-    window.smartGrocerData = new DataManager();
-
-    // Dashboard Auto-Sync Manager
-    class DashboardManager {
-        constructor() {
-            this.dataManager = window.smartGrocerData;
-            this.charts = {};
-            this.init();
-        }
-
-        init() {
-            console.log('🚀 Initializing Dashboard Manager');
-            this.setupEventListeners();
-            this.setupCurrencySelection();
-            this.checkUserAuth();
-        }
-
-        setupEventListeners() {
-            // Listen for data updates from other pages
-            window.addEventListener('smartgrocer-data-update', (event) => {
-                console.log('📊 Dashboard received data update event', event.detail);
-                this.updateDashboard();
-            });
-
-            // Mobile menu
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const sidebar = document.getElementById('sidebar');
-            const sidebarOverlay = document.getElementById('sidebar-overlay');
-            
-            if (mobileMenuButton) {
-                mobileMenuButton.addEventListener('click', function() {
-                    sidebar.classList.toggle('-translate-x-full');
-                    sidebarOverlay.classList.toggle('hidden');
-                });
-            }
-            
-            if (sidebarOverlay) {
-                sidebarOverlay.addEventListener('click', function() {
-                    sidebar.classList.add('-translate-x-full');
-                    sidebarOverlay.classList.add('hidden');
-                });
-            }
-
-            // Sign in form
-            const signinForm = document.getElementById('signin-form');
-            if (signinForm) {
-                signinForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    this.handleSignIn();
-                });
-            }
-
-            // Add manual refresh button
-            this.addRefreshButton();
-        }
-
-        addRefreshButton() {
-            const header = document.querySelector('header .flex-1');
-            if (!header) return;
-
-            // Remove existing button if any
-            const existingBtn = document.getElementById('manual-refresh-btn');
-            if (existingBtn) existingBtn.remove();
-
-            const refreshBtn = document.createElement('button');
-            refreshBtn.id = 'manual-refresh-btn';
-            refreshBtn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Refresh Now';
-            refreshBtn.className = 'ml-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium';
-            refreshBtn.onclick = () => {
-                console.log('🔄 Manual refresh triggered');
-                this.dataManager.forceRefresh();
-                this.showNotification('Dashboard refreshed!', 'success');
-            };
-
-            header.appendChild(refreshBtn);
-        }
-
-        setupCurrencySelection() {
-            const currencyOptions = document.querySelectorAll('.currency-option');
-            currencyOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    // Remove selected class from all options
-                    currencyOptions.forEach(opt => opt.classList.remove('selected'));
-                    // Add selected class to clicked option
-                    option.classList.add('selected');
-                    
-                    const currency = option.getAttribute('data-currency');
-                    this.dataManager.setCurrency(currency);
-                    this.updateCurrencyDisplay(currency);
-                });
-            });
-        }
-
-        checkUserAuth() {
-            const userName = localStorage.getItem('smartgrocer-currentUser');
-            if (userName) {
-                this.showMainApp(userName);
-                this.updateDashboard();
-            } else {
-                console.log('👤 No user found, showing signin overlay');
-            }
-        }
-
-        handleSignIn() {
-            const userName = document.getElementById('signin-name').value.trim();
-            const selectedCurrency = document.querySelector('.currency-option.selected')?.getAttribute('data-currency') || 'PKR';
-            
-            if (userName) {
-                localStorage.setItem('smartgrocer-currentUser', userName);
-                localStorage.setItem('selectedCurrency', selectedCurrency);
-                this.dataManager.setCurrency(selectedCurrency);
-                this.showMainApp(userName);
-                // Initialize sample data for new users
-                this.dataManager.initializeSampleData();
-                this.updateDashboard();
-                this.showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
-            }
-        }
-
-        showMainApp(userName) {
-            document.getElementById('signin-overlay').style.display = 'none';
-            document.getElementById('main-app-container').classList.remove('hidden');
-            
-            document.getElementById('user-greeting').textContent = `Hello, ${userName}!`;
-            document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
-            
-            const currency = localStorage.getItem('selectedCurrency') || 'PKR';
-            this.updateCurrencyDisplay(currency);
-        }
-
-        updateCurrencyDisplay(currency) {
-            const currencyInfo = this.dataManager.currencies[currency];
-            document.getElementById('current-currency').textContent = currency;
-            document.getElementById('currency-symbol').textContent = currencyInfo.symbol;
-        }
-
-        updateDashboard() {
-            console.log('🔄 Updating dashboard with real data...');
-            try {
-                const financialData = this.dataManager.calculateFinancialOverview();
-                const chartData = this.dataManager.calculateChartData();
-                const transactions = this.dataManager.getTransactions();
-                const budgets = this.dataManager.getBudgets();
-
-                this.updateFinancialOverview(financialData);
-                this.updateCharts(chartData);
-                this.updateRecentTransactions(transactions);
-                this.updateBudgetProgress(budgets, transactions);
-
-                // Show data status
-                this.updateDataStatus(transactions);
-                
-            } catch (error) {
-                console.error('❌ Error updating dashboard:', error);
-                this.showNotification('Error updating dashboard data', 'error');
-            }
-        }
-
-        updateFinancialOverview(data) {
-            console.log('💰 Updating financial overview:', data);
-            document.getElementById('total-balance').textContent = `${data.symbol}${data.totalBalance.toLocaleString()}`;
-            document.getElementById('total-income').textContent = `${data.symbol}${data.totalIncome.toLocaleString()}`;
-            document.getElementById('total-expenses').textContent = `${data.symbol}${data.totalExpenses.toLocaleString()}`;
-            document.getElementById('savings-rate').textContent = `${Math.max(data.savingsRate, 0)}%`;
-        }
-
-        updateCharts(chartData) {
-            console.log('📊 Updating charts:', chartData);
-            this.updateSpendingChart(chartData.incomeExpense);
-        }
-
-        updateSpendingChart(data) {
-            const ctx = document.getElementById('spendingChart');
-            if (!ctx) {
-                console.log('❌ Spending chart canvas not found');
-                return;
-            }
-
-            // Destroy existing chart
-            if (this.charts.spending) {
-                this.charts.spending.destroy();
-            }
-
-            const currencySymbol = this.dataManager.getCurrencySymbol();
-
-            this.charts.spending = new Chart(ctx.getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: data.labels,
-                    datasets: [{
-                        label: 'Spending',
-                        data: data.expenses,
-                        borderColor: '#10B981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `Spending: ${currencySymbol}${context.raw.toLocaleString()}`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.1)'
-                            },
-                            ticks: {
-                                callback: function(value) {
-                                    return `${currencySymbol}${value.toLocaleString()}`;
-                                }
-                            }
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        updateRecentTransactions(transactions) {
-            const container = document.getElementById('recent-transactions-container');
-            if (!container) {
-                console.log('❌ Recent transactions container not found');
-                return;
-            }
-
-            const oneWeekAgo = new Date();
-            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-            
-            const recentTransactions = transactions
-                .filter(transaction => {
-                    try {
-                        const transactionDate = new Date(transaction.date);
-                        return transactionDate >= oneWeekAgo;
-                    } catch (error) {
-                        return false;
-                    }
-                })
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .slice(0, 5);
-
-            const currencySymbol = this.dataManager.getCurrencySymbol();
-
-            if (recentTransactions.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-8 text-gray-500">
-                        <i class="fas fa-exchange-alt text-3xl mb-3 opacity-40"></i>
-                        <p>No recent transactions</p>
-                        <p class="text-sm mt-2">Add some income or expenses to see them here!</p>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = recentTransactions.map(transaction => {
-                const isExpense = transaction.type === 'expense';
-                const amountClass = isExpense ? 'text-red-500' : 'text-green-500';
-                const amountSign = isExpense ? '-' : '+';
-                const absoluteAmount = Math.abs(transaction.amount);
-                
-                const iconClass = this.getTransactionIcon(transaction.category);
-                const timeAgo = this.getTimeAgo(new Date(transaction.date));
-                
-                return `
-                    <div class="transaction-item flex justify-between items-center p-3 rounded-lg border border-gray-100">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-10 h-10 ${iconClass.bg} rounded-full flex items-center justify-center">
-                                <i class="${iconClass.icon} ${iconClass.color}"></i>
-                            </div>
-                            <div>
-                                <p class="font-semibold text-gray-800">${transaction.description || transaction.category}</p>
-                                <p class="text-gray-500 text-xs">${transaction.category} • ${timeAgo}</p>
-                            </div>
-                        </div>
-                        <span class="${amountClass} font-bold">${amountSign}${currencySymbol}${absoluteAmount.toLocaleString()}</span>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        updateBudgetProgress(budgets, transactions) {
-            const container = document.getElementById('budget-progress-container');
-            if (!container) return;
-
-            const currentMonth = new Date().getMonth();
-            const currentYear = new Date().getFullYear();
-            const currencySymbol = this.dataManager.getCurrencySymbol();
-
-            const filteredBudgets = budgets.filter(budget => budget.currency === this.dataManager.currency);
-            
-            if (filteredBudgets.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-8 text-gray-500">
-                        <i class="fas fa-chart-pie text-3xl mb-3 opacity-40"></i>
-                        <p>No budgets set yet</p>
-                        <p class="text-sm mt-2">Create budgets to track your spending limits</p>
-                    </div>
-                `;
-                return;
-            }
-
-            container.innerHTML = filteredBudgets.map(budget => {
-                const spent = transactions
-                    .filter(transaction => {
-                        try {
-                            const transactionDate = new Date(transaction.date);
-                            return transaction.type === 'expense' && 
-                                   transaction.category === budget.category &&
-                                   transaction.currency === this.dataManager.currency &&
-                                   transactionDate.getMonth() === currentMonth &&
-                                   transactionDate.getFullYear() === currentYear;
-                        } catch (error) {
-                            return false;
-                        }
-                    })
-                    .reduce((total, transaction) => total + Math.abs(transaction.amount), 0);
-                
-                const percentage = budget.amount > 0 ? Math.min((spent / budget.amount) * 100, 100) : 0;
-                const progressColor = percentage > 90 ? 'bg-red-500' : 
-                                   percentage > 75 ? 'bg-yellow-500' : 'bg-green-500';
-                
-                return `
-                    <div>
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="font-medium text-gray-700">${budget.name}</span>
-                            <span class="text-sm text-gray-500">${currencySymbol}${spent.toFixed(0)} / ${currencySymbol}${budget.amount}</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill ${progressColor}" style="width: ${percentage}%"></div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        updateDataStatus(transactions) {
-            const statusElement = document.getElementById('data-status');
-            const messageElement = document.getElementById('status-message');
-            
-            if (transactions.length === 0) {
-                statusElement.classList.remove('hidden');
-                messageElement.textContent = 'No transactions found. Add some income or expenses to get started!';
-            } else {
-                statusElement.classList.add('hidden');
-            }
-        }
-
-        getTransactionIcon(category) {
-            const icons = {
-                'Food & Dining': { icon: 'fas fa-utensils', color: 'text-green-600', bg: 'bg-green-100' },
-                'Transportation': { icon: 'fas fa-car', color: 'text-blue-600', bg: 'bg-blue-100' },
-                'Shopping': { icon: 'fas fa-shopping-bag', color: 'text-purple-600', bg: 'bg-purple-100' },
-                'Entertainment': { icon: 'fas fa-film', color: 'text-yellow-600', bg: 'bg-yellow-100' },
-                'Bills & Utilities': { icon: 'fas fa-file-invoice-dollar', color: 'text-red-600', bg: 'bg-red-100' },
-                'Healthcare': { icon: 'fas fa-heartbeat', color: 'text-pink-600', bg: 'bg-pink-100' },
-                'Education': { icon: 'fas fa-graduation-cap', color: 'text-indigo-600', bg: 'bg-indigo-100' },
-                'Travel': { icon: 'fas fa-plane', color: 'text-teal-600', bg: 'bg-teal-100' },
-                'Personal Care': { icon: 'fas fa-spa', color: 'text-orange-600', bg: 'bg-orange-100' },
-                'Salary': { icon: 'fas fa-money-bill-wave', color: 'text-green-600', bg: 'bg-green-100' }
-            };
-            
-            return icons[category] || { icon: 'fas fa-wallet', color: 'text-gray-600', bg: 'bg-gray-100' };
-        }
-
-        getTimeAgo(date) {
-            const now = new Date();
-            const diffInMs = now - date;
-            const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-            const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
-            
-            if (diffInHours < 1) return 'Just now';
-            if (diffInHours < 24) return `${diffInHours}h ago`;
-            if (diffInDays === 1) return 'Yesterday';
-            if (diffInDays < 7) return `${diffInDays}d ago`;
-            return date.toLocaleDateString();
-        }
-
-        showNotification(message, type = 'info') {
-            const notification = document.getElementById('notification');
-            const bgColor = type === 'success' ? 'bg-green-500' :
-                           type === 'error' ? 'bg-red-500' :
-                           type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500';
-            
-            notification.innerHTML = `
-                <div class="${bgColor} text-white p-4 rounded-lg flex items-center justify-between">
-                    <div class="flex items-center">
-                        <i class="fas ${type === 'success' ? 'fa-check-circle' : 
-                                     type === 'error' ? 'fa-exclamation-circle' : 
-                                     type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'} mr-3"></i>
-                        <span>${message}</span>
-                    </div>
-                    <button onclick="this.parentElement.parentElement.classList.add('hidden')" class="ml-4 text-white hover:text-gray-200">
-                        <i class="fas fa-times"></i>
-                    </button>
+    // Currency configuration
+    const currencies = {
+        'USD': { symbol: '$', name: 'US Dollar', flag: 'US' },
+        'PKR': { symbol: '₨', name: 'Pakistani Rupee', flag: 'PK' },
+        'INR': { symbol: '₹', name: 'Indian Rupee', flag: 'IN' }
+    };
+
+    // Global accounts array
+    let accounts = [];
+
+    // Global functions for account management
+    function renderAccounts() {
+        const accountsContainer = document.getElementById('accounts-container');
+        const selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+        
+        if (accounts.length === 0) {
+            accountsContainer.innerHTML = `
+                <div class="col-span-2 text-center py-12">
+                    <i class="fas fa-wallet text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">No Accounts Yet</h3>
+                    <p class="text-gray-500">Add your first account to get started with tracking your finances.</p>
                 </div>
             `;
+            return;
+        }
+        
+        accountsContainer.innerHTML = accounts.map(account => {
+            const currencyInfo = currencies[account.currency];
+            const isPositive = account.balance >= 0;
+            const balanceClass = isPositive ? 'balance-positive' : 'balance-negative';
+            const balanceSign = isPositive ? '' : '-';
             
-            notification.classList.remove('hidden');
+            const iconClass = {
+                'checking': 'fas fa-landmark text-blue-500 bg-blue-100',
+                'savings': 'fas fa-piggy-bank text-green-500 bg-green-100',
+                'credit': 'fas fa-credit-card text-red-500 bg-red-100',
+                'cash': 'fas fa-money-bill-wave text-yellow-500 bg-yellow-100',
+                'investment': 'fas fa-chart-line text-purple-500 bg-purple-100',
+                'loan': 'fas fa-hand-holding-usd text-orange-500 bg-orange-100',
+                'other': 'fas fa-wallet text-gray-500 bg-gray-100'
+            }[account.type] || 'fas fa-wallet text-gray-500 bg-gray-100';
             
-            setTimeout(() => {
-                notification.classList.add('hidden');
-            }, 5000);
+            return `
+                <div class="account-card card p-4">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex items-center">
+                            <div class="account-icon ${iconClass.split(' ').slice(2).join(' ')}">
+                                <i class="${iconClass.split(' ').slice(0, 2).join(' ')}"></i>
+                            </div>
+                            <div class="ml-3">
+                                <h4 class="font-semibold text-gray-900">${account.name}</h4>
+                                <div class="flex items-center mt-1">
+                                    <span class="text-sm text-gray-500 capitalize">${account.type}</span>
+                                    <span class="currency-badge">${account.currency}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="${balanceClass} font-bold text-lg">
+                                ${balanceSign}${currencyInfo.symbol}${Math.abs(account.balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center text-sm text-gray-500">
+                        <span>Account No: ****${account.id.toString().slice(-4)}</span>
+                        <div class="flex space-x-2">
+                            <button class="text-green-600 hover:text-green-800" onclick="editAccount(${account.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="text-red-600 hover:text-red-800" onclick="deleteAccount(${account.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        // Update accounts count
+        document.getElementById('accounts-count').textContent = accounts.length;
+    }
+    
+    function updateTransferDropdowns() {
+        const fromAccountSelect = document.getElementById('from-account');
+        const toAccountSelect = document.getElementById('to-account');
+        const transferAmount = document.getElementById('transfer-amount');
+        const transferBtn = document.getElementById('transfer-btn');
+        
+        // Clear existing options
+        fromAccountSelect.innerHTML = '';
+        toAccountSelect.innerHTML = '';
+        
+        if (accounts.length < 2) {
+            // Not enough accounts for transfer
+            fromAccountSelect.innerHTML = '<option value="">Need at least 2 accounts</option>';
+            toAccountSelect.innerHTML = '<option value="">Need at least 2 accounts</option>';
+            fromAccountSelect.disabled = true;
+            toAccountSelect.disabled = true;
+            transferAmount.disabled = true;
+            transferBtn.disabled = true;
+            transferBtn.textContent = 'Add Accounts to Transfer';
+            transferBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            return;
+        }
+        
+        // Enable transfer functionality
+        fromAccountSelect.disabled = false;
+        toAccountSelect.disabled = false;
+        transferAmount.disabled = false;
+        transferBtn.disabled = false;
+        transferBtn.textContent = 'Transfer Funds';
+        transferBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        
+        // Add default options
+        const defaultOptionFrom = document.createElement('option');
+        defaultOptionFrom.value = '';
+        defaultOptionFrom.textContent = 'Select Account';
+        fromAccountSelect.appendChild(defaultOptionFrom);
+        
+        const defaultOptionTo = document.createElement('option');
+        defaultOptionTo.value = '';
+        defaultOptionTo.textContent = 'Select Account';
+        toAccountSelect.appendChild(defaultOptionTo);
+        
+        // Add accounts to dropdowns
+        accounts.forEach(account => {
+            const optionFrom = document.createElement('option');
+            optionFrom.value = account.id;
+            optionFrom.textContent = `${account.name} (${currencies[account.currency].symbol}${account.balance.toFixed(2)})`;
+            
+            const optionTo = document.createElement('option');
+            optionTo.value = account.id;
+            optionTo.textContent = `${account.name} (${currencies[account.currency].symbol}${account.balance.toFixed(2)})`;
+            
+            fromAccountSelect.appendChild(optionFrom);
+            toAccountSelect.appendChild(optionTo);
+        });
+    }
+    
+    function updateDashboard() {
+        updateTotalBalanceDisplay();
+        document.getElementById('accounts-count').textContent = accounts.length;
+    }
+    
+    function updateTotalBalanceDisplay() {
+        const selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+        const currencyInfo = currencies[selectedCurrency];
+        
+        // Calculate total balance in selected currency
+        let totalBalance = 0;
+        
+        accounts.forEach(account => {
+            // In a real app, you would convert currencies
+            // For demo, we'll just sum accounts in the selected currency
+            if (account.currency === selectedCurrency) {
+                totalBalance += account.balance;
+            }
+        });
+        
+        document.getElementById('total-balance-display').textContent = 
+            `${currencyInfo.symbol}${totalBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    }
+    
+    function saveAccountsToStorage() {
+        localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
+    }
+    
+    function loadAccountsFromStorage() {
+        const storedAccounts = localStorage.getItem('smartgrocer-accounts');
+        if (storedAccounts) {
+            accounts = JSON.parse(storedAccounts);
         }
     }
+    
+    function deleteAccount(accountId) {
+        if (confirm('Are you sure you want to delete this account? This action cannot be undone.')) {
+            // Filter out the account to delete
+            accounts = accounts.filter(acc => acc.id !== accountId);
+            
+            // Save to localStorage
+            saveAccountsToStorage();
+            
+            // Update UI
+            renderAccounts();
+            updateTransferDropdowns();
+            updateDashboard();
+            
+            showNotification('Account deleted successfully!', 'success');
+        }
+    }
+    
+    function editAccount(accountId) {
+        // Find the account
+        const account = accounts.find(acc => acc.id === accountId);
+        if (!account) return;
+        
+        // Populate the modal with account data
+        document.getElementById('account-name').value = account.name;
+        document.getElementById('account-type').value = account.type;
+        document.getElementById('account-currency').value = account.currency;
+        document.getElementById('account-balance').value = account.balance;
+        document.getElementById('modal-currency-symbol').textContent = currencies[account.currency].symbol;
+        
+        // Change the modal title and button
+        document.querySelector('#add-account-modal h3').textContent = 'Edit Account';
+        document.querySelector('#add-account-form button[type="submit"]').textContent = 'Update Account';
+        
+        // Remove existing event listener and add a new one for updating
+        const form = document.getElementById('add-account-form');
+        const newForm = form.cloneNode(true);
+        form.parentNode.replaceChild(newForm, form);
+        
+        newForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Update account
+            account.name = document.getElementById('account-name').value;
+            account.type = document.getElementById('account-type').value;
+            account.currency = document.getElementById('account-currency').value;
+            account.balance = parseFloat(document.getElementById('account-balance').value) || 0;
+            
+            // Save to localStorage
+            saveAccountsToStorage();
+            
+            // Update UI
+            renderAccounts();
+            updateTransferDropdowns();
+            updateDashboard();
+            
+            closeModal();
+            showNotification('Account updated successfully!', 'success');
+        });
+        
+        // Show the modal
+        document.getElementById('add-account-modal').classList.remove('hidden');
+        document.getElementById('add-account-modal').classList.add('flex');
+    }
+    
+    // Helper function to close modal
+    function closeModal() {
+        document.getElementById('add-account-modal').classList.add('hidden');
+        document.getElementById('add-account-modal').classList.remove('flex');
+        document.getElementById('add-account-form').reset();
+        
+        // Reset modal title and button
+        document.querySelector('#add-account-modal h3').textContent = 'Add New Account';
+        document.querySelector('#add-account-form button[type="submit"]').textContent = 'Add Account';
+        
+        // Reset modal currency symbol
+        document.getElementById('modal-currency-symbol').textContent = currencies['USD'].symbol;
+        document.getElementById('account-currency').value = 'USD';
+        
+        // Reset form event listener to default add behavior
+        const form = document.getElementById('add-account-form');
+        const newForm = form.cloneNode(true);
+        form.parentNode.replaceChild(newForm, form);
+        
+        newForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const accountName = document.getElementById('account-name').value;
+            const accountType = document.getElementById('account-type').value;
+            const accountCurrency = document.getElementById('account-currency').value;
+            const accountBalance = parseFloat(document.getElementById('account-balance').value) || 0;
+            
+            // Add new account
+            const newAccount = {
+                id: Date.now(),
+                name: accountName,
+                type: accountType,
+                balance: accountBalance,
+                currency: accountCurrency
+            };
+            
+            accounts.push(newAccount);
+            
+            // Save to localStorage
+            saveAccountsToStorage();
+            
+            // Update UI
+            renderAccounts();
+            updateTransferDropdowns();
+            updateDashboard();
+            
+            closeModal();
+            showNotification('Account added successfully!', 'success');
+        });
+    }
+    
+    // Helper function to show notification
+    function showNotification(message, type = 'info') {
+        const notification = document.getElementById('notification');
+        const bgColor = type === 'success' ? 'bg-green-500' : 
+                       type === 'error' ? 'bg-red-500' : 
+                       type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500';
+        
+        notification.innerHTML = `
+            <div class="${bgColor} text-white p-4 rounded-lg flex items-center">
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : 
+                             type === 'error' ? 'fa-exclamation-circle' : 
+                             type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'} mr-3"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        notification.classList.remove('hidden');
+        
+        setTimeout(() => {
+            notification.classList.add('hidden');
+        }, 3000);
+    }
 
-    // Initialize dashboard when DOM is loaded
+    // Initialize the page
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('🏠 Dashboard DOM loaded, initializing manager...');
-        new DashboardManager();
+        // Mobile menu functionality
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        mobileMenuButton.addEventListener('click', function() {
+            sidebar.classList.toggle('-translate-x-full');
+            sidebarOverlay.classList.toggle('hidden');
+        });
+
+        sidebarOverlay.addEventListener('click', function() {
+            sidebar.classList.add('-translate-x-full');
+            sidebarOverlay.classList.add('hidden');
+        });
+
+        // Check if user is already signed in
+        const currentUser = localStorage.getItem('smartgrocer-currentUser');
+        if (currentUser) {
+            hideSignInOverlay();
+            document.getElementById('welcome-user-text').textContent = `Welcome, ${currentUser}!`;
+            document.getElementById('user-initial').textContent = currentUser.charAt(0).toUpperCase();
+        }
+
+        // Initialize sign-in form
+        document.getElementById('signin-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userName = document.getElementById('signin-name').value.trim();
+            if (userName) {
+                localStorage.setItem('smartgrocer-currentUser', userName);
+                hideSignInOverlay();
+                document.getElementById('welcome-user-text').textContent = `Welcome, ${userName}!`;
+                document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
+                showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
+            }
+        });
+
+        // Currency selection
+        const currencyOptions = document.querySelectorAll('.currency-option');
+        let selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+        
+        // Initialize currency display
+        updateCurrencyDisplay(selectedCurrency);
+        
+        currencyOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const currency = this.getAttribute('data-currency');
+                selectedCurrency = currency;
+                localStorage.setItem('selectedCurrency', currency);
+                
+                // Update UI
+                updateCurrencyDisplay(currency);
+                
+                // Update selected state
+                currencyOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                showNotification(`Display currency set to ${currencies[currency].name}`, 'success');
+            });
+            
+            // Set initial selected state
+            if (option.getAttribute('data-currency') === selectedCurrency) {
+                option.classList.add('selected');
+            }
+        });
+
+        // Account currency change handler
+        document.getElementById('account-currency').addEventListener('change', function() {
+            const currency = this.value;
+            document.getElementById('modal-currency-symbol').textContent = currencies[currency].symbol;
+        });
+
+        // Initialize account modal
+        document.getElementById('add-account-btn').addEventListener('click', function() {
+            document.getElementById('add-account-modal').classList.remove('hidden');
+            document.getElementById('add-account-modal').classList.add('flex');
+        });
+
+        document.getElementById('close-account-modal').addEventListener('click', closeModal);
+        document.getElementById('cancel-account').addEventListener('click', closeModal);
+
+        // Add account form submission
+        document.getElementById('add-account-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const accountName = document.getElementById('account-name').value;
+            const accountType = document.getElementById('account-type').value;
+            const accountCurrency = document.getElementById('account-currency').value;
+            const accountBalance = parseFloat(document.getElementById('account-balance').value) || 0;
+            
+            // Add new account
+            const newAccount = {
+                id: Date.now(),
+                name: accountName,
+                type: accountType,
+                balance: accountBalance,
+                currency: accountCurrency
+            };
+            
+            accounts.push(newAccount);
+            
+            // Save to localStorage
+            saveAccountsToStorage();
+            
+            // Update UI
+            renderAccounts();
+            updateTransferDropdowns();
+            updateDashboard();
+            
+            closeModal();
+            showNotification('Account added successfully!', 'success');
+        });
+
+        // Initialize transfer form
+        document.getElementById('transfer-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const fromAccountId = parseInt(document.getElementById('from-account').value);
+            const toAccountId = parseInt(document.getElementById('to-account').value);
+            const amount = parseFloat(document.getElementById('transfer-amount').value);
+            
+            if (fromAccountId === toAccountId) {
+                showNotification('Cannot transfer to the same account', 'error');
+                return;
+            }
+            
+            // Find accounts
+            const fromAccount = accounts.find(acc => acc.id === fromAccountId);
+            const toAccount = accounts.find(acc => acc.id === toAccountId);
+            
+            if (!fromAccount || !toAccount) {
+                showNotification('Account not found', 'error');
+                return;
+            }
+            
+            if (fromAccount.balance < amount) {
+                showNotification('Insufficient funds for transfer', 'error');
+                return;
+            }
+            
+            // Perform transfer
+            fromAccount.balance -= amount;
+            toAccount.balance += amount;
+            
+            // Save to localStorage
+            saveAccountsToStorage();
+            
+            // Update UI
+            renderAccounts();
+            updateDashboard();
+            updateTransferDropdowns();
+            
+            showNotification('Transfer completed successfully!', 'success');
+            this.reset();
+        });
+
+        // Search functionality
+        document.getElementById('search-accounts').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            filterAccounts(searchTerm);
+        });
+
+        // Load accounts from localStorage if available
+        loadAccountsFromStorage();
+        
+        // Initial render
+        renderAccounts();
+        updateTransferDropdowns();
+        updateDashboard();
+        
+        // Set up auto-update interval
+        setInterval(autoUpdateDashboard, 30000);
+
+        function hideSignInOverlay() {
+            document.getElementById('signin-overlay').classList.add('hidden');
+            document.getElementById('main-app-container').classList.remove('hidden');
+        }
+
+        function updateCurrencyDisplay(currency) {
+            const currencyInfo = currencies[currency];
+            document.getElementById('selected-currency').textContent = currency;
+            document.getElementById('currency-symbol').textContent = currencyInfo.symbol;
+            
+            // Update total balance display
+            updateTotalBalanceDisplay();
+            
+            // Re-render accounts to show updated currency symbols
+            renderAccounts();
+        }
+        
+        function filterAccounts(searchTerm) {
+            if (!searchTerm) {
+                renderAccounts();
+                return;
+            }
+            
+            const filteredAccounts = accounts.filter(account => 
+                account.name.toLowerCase().includes(searchTerm) || 
+                account.type.toLowerCase().includes(searchTerm)
+            );
+            
+            const accountsContainer = document.getElementById('accounts-container');
+            
+            if (filteredAccounts.length === 0) {
+                accountsContainer.innerHTML = `
+                    <div class="col-span-2 text-center py-12">
+                        <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-semibold text-gray-600 mb-2">No Accounts Found</h3>
+                        <p class="text-gray-500">Try adjusting your search terms.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            accountsContainer.innerHTML = filteredAccounts.map(account => {
+                const currencyInfo = currencies[account.currency];
+                const isPositive = account.balance >= 0;
+                const balanceClass = isPositive ? 'balance-positive' : 'balance-negative';
+                const balanceSign = isPositive ? '' : '-';
+                
+                const iconClass = {
+                    'checking': 'fas fa-landmark text-blue-500 bg-blue-100',
+                    'savings': 'fas fa-piggy-bank text-green-500 bg-green-100',
+                    'credit': 'fas fa-credit-card text-red-500 bg-red-100',
+                    'cash': 'fas fa-money-bill-wave text-yellow-500 bg-yellow-100',
+                    'investment': 'fas fa-chart-line text-purple-500 bg-purple-100',
+                    'loan': 'fas fa-hand-holding-usd text-orange-500 bg-orange-100',
+                    'other': 'fas fa-wallet text-gray-500 bg-gray-100'
+                }[account.type] || 'fas fa-wallet text-gray-500 bg-gray-100';
+                
+                return `
+                    <div class="account-card card p-4">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center">
+                                <div class="account-icon ${iconClass.split(' ').slice(2).join(' ')}">
+                                    <i class="${iconClass.split(' ').slice(0, 2).join(' ')}"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="font-semibold text-gray-900">${account.name}</h4>
+                                    <div class="flex items-center mt-1">
+                                        <span class="text-sm text-gray-500 capitalize">${account.type}</span>
+                                        <span class="currency-badge">${account.currency}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="${balanceClass} font-bold text-lg">
+                                    ${balanceSign}${currencyInfo.symbol}${Math.abs(account.balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center text-sm text-gray-500">
+                            <span>Account No: ****${account.id.toString().slice(-4)}</span>
+                            <div class="flex space-x-2">
+                                <button class="text-green-600 hover:text-green-800" onclick="editAccount(${account.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-800" onclick="deleteAccount(${account.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function autoUpdateDashboard() {
+            // Simulate data updates
+            const updateIndicator = document.getElementById('auto-update-indicator');
+            updateIndicator.classList.add('animate-pulse');
+            
+            // In a real app, this would fetch updated data from a server
+            setTimeout(() => {
+                updateDashboard();
+                updateIndicator.classList.remove('animate-pulse');
+            }, 1000);
+        }
     });
-
-    // Global functions for HTML onclick handlers
-    function initializeSampleData() {
-        console.log('🎯 Initializing sample data from global function');
-        window.smartGrocerData.initializeSampleData();
-    }
-
-    function updateDashboard() {
-        console.log('🔄 Manual dashboard update from global function');
-        // This will trigger through the event system
-        window.smartGrocerData.forceRefresh();
-    }
 </script>
