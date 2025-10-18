@@ -1,286 +1,591 @@
 <script>
     // Currency configuration
     const currencies = {
-        'USD': { symbol: '$', name: 'US Dollar', flag: 'US' },
-        'PKR': { symbol: '₨', name: 'Pakistani Rupee', flag: 'PK' },
-        'INR': { symbol: '₹', name: 'Indian Rupee', flag: 'IN' }
+        'USD': { symbol: '$', name: 'US Dollar' },
+        'PKR': { symbol: '₨', name: 'Pakistani Rupee' },
+        'INR': { symbol: '₹', name: 'Indian Rupee' }
     };
 
-    // Global functions
-    function deleteAccount(accountId) {
-        if (confirm('Are you sure you want to delete this account? This action cannot be undone.')) {
-            const storedAccounts = localStorage.getItem('smartgrocer-accounts');
-            let accounts = storedAccounts ? JSON.parse(storedAccounts) : [];
+    // Global variables
+    let budgets = [];
+    let selectedCurrency = 'USD';
+
+    // Initialize the application
+    document.addEventListener('DOMContentLoaded', function() {
+        initializeApp();
+    });
+
+    function initializeApp() {
+        // Check if user is signed in
+        const currentUser = localStorage.getItem('smartgrocer-currentUser');
+        if (currentUser) {
+            hideSignInOverlay();
+            document.getElementById('welcome-user-text').textContent = `Welcome, ${currentUser}!`;
+            document.getElementById('user-initial').textContent = currentUser.charAt(0).toUpperCase();
+        }
+
+        // Sign-in form
+        document.getElementById('signin-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userName = document.getElementById('signin-name').value.trim();
+            if (userName) {
+                localStorage.setItem('smartgrocer-currentUser', userName);
+                hideSignInOverlay();
+                document.getElementById('welcome-user-text').textContent = `Welcome, ${userName}!`;
+                document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
+                showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
+            }
+        });
+
+        // Mobile menu functionality
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        mobileMenuButton.addEventListener('click', function() {
+            sidebar.classList.toggle('-translate-x-full');
+            sidebarOverlay.classList.toggle('hidden');
+        });
+
+        sidebarOverlay.addEventListener('click', function() {
+            sidebar.classList.add('-translate-x-full');
+            sidebarOverlay.classList.add('hidden');
+        });
+
+        // Currency selection
+        setupCurrencySelection();
+        
+        // Budget functionality
+        setupBudgetFunctionality();
+        
+        // Expense syncing
+        handleExpenseUpdates();
+        
+        // Load initial data
+        loadBudgets();
+        updateUI();
+    }
+
+    function setupCurrencySelection() {
+        const currencyOptions = document.querySelectorAll('.currency-option');
+        selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+        
+        currencyOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                const currency = this.getAttribute('data-currency');
+                selectedCurrency = currency;
+                localStorage.setItem('selectedCurrency', currency);
+                
+                // Update selected state
+                currencyOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                // Update UI
+                updateUI();
+                showNotification(`Display currency set to ${currencies[currency].name}`, 'success');
+            });
             
-            accounts = accounts.filter(acc => acc.id !== accountId);
-            localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
+            // Set initial selected state
+            if (option.getAttribute('data-currency') === selectedCurrency) {
+                option.classList.add('selected');
+            }
+        });
+    }
+
+    function setupBudgetFunctionality() {
+        // Modal elements
+        const addBudgetBtn = document.getElementById('add-budget-btn');
+        const addModal = document.getElementById('add-budget-modal');
+        const editModal = document.getElementById('edit-budget-modal');
+        const closeAddBtn = document.getElementById('close-budget-modal');
+        const closeEditBtn = document.getElementById('close-edit-budget-modal');
+        const cancelAddBtn = document.getElementById('cancel-budget');
+        const addForm = document.getElementById('add-budget-form');
+        const editForm = document.getElementById('edit-budget-form');
+        const deleteBtn = document.getElementById('delete-budget');
+
+        // Add budget modal
+        addBudgetBtn.addEventListener('click', () => {
+            addModal.classList.remove('hidden');
+            addModal.classList.add('flex');
+        });
+
+        // Close modals
+        closeAddBtn.addEventListener('click', closeAddModal);
+        cancelAddBtn.addEventListener('click', closeAddModal);
+        closeEditBtn.addEventListener('click', closeEditModal);
+
+        // Currency symbol updates
+        document.getElementById('budget-currency').addEventListener('change', function() {
+            document.getElementById('modal-currency-symbol').textContent = currencies[this.value].symbol;
+        });
+
+        document.getElementById('edit-budget-currency').addEventListener('change', function() {
+            document.getElementById('edit-modal-currency-symbol').textContent = currencies[this.value].symbol;
+        });
+
+        // Form submissions
+        addForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            addNewBudget();
+        });
+
+        editForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            updateBudget();
+        });
+
+        // Delete budget
+        deleteBtn.addEventListener('click', function() {
+            deleteBudget();
+        });
+
+        // Search functionality
+        document.getElementById('search-budgets').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            filterBudgets(searchTerm);
+        });
+
+        // Add manual sync button
+        addManualSyncButton();
+    }
+
+    // Add this function to sync expenses with budgets
+    function syncExpensesWithBudgets() {
+        // Get all expenses from localStorage
+        const expenses = JSON.parse(localStorage.getItem('smartgrocer-expenses') || '[]');
+        
+        // Reset all budget spent amounts to 0
+        budgets.forEach(budget => {
+            budget.spent = 0;
+        });
+        
+        // Update budget spent amounts based on expenses
+        expenses.forEach(expense => {
+            const budget = budgets.find(b => 
+                b.category === expense.category && 
+                b.currency === expense.currency
+            );
             
-            loadAndDisplayAccounts();
-            updateTransferDropdowns();
-            updateDashboard();
-            
-            showNotification('Account deleted successfully!', 'success');
+            if (budget) {
+                budget.spent = (budget.spent || 0) + parseFloat(expense.amount);
+            }
+        });
+        
+        // Save updated budgets
+        saveBudgets();
+    }
+
+    // Update the loadBudgets function to include expense syncing
+    function loadBudgets() {
+        const storedBudgets = localStorage.getItem('smartgrocer-budgets');
+        if (storedBudgets) {
+            budgets = JSON.parse(storedBudgets);
+        }
+        
+        // Sync with expenses whenever budgets are loaded
+        syncExpensesWithBudgets();
+    }
+
+    // Add this function to handle expense updates from other pages
+    function handleExpenseUpdates() {
+        // Listen for storage events (when other tabs update expenses)
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'smartgrocer-expenses') {
+                syncExpensesWithBudgets();
+                updateUI();
+            }
+        });
+        
+        // Also sync when the page becomes visible again
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                syncExpensesWithBudgets();
+                updateUI();
+            }
+        });
+    }
+
+    // Add a manual sync button
+    function addManualSyncButton() {
+        const quickActions = document.querySelector('.card .space-y-3');
+        if (quickActions) {
+            const syncButton = document.createElement('button');
+            syncButton.type = 'button';
+            syncButton.className = 'w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors';
+            syncButton.innerHTML = `
+                <span class="text-gray-700">Sync with Expenses</span>
+                <i class="fas fa-sync-alt text-green-500"></i>
+            `;
+            syncButton.addEventListener('click', function() {
+                syncExpensesWithBudgets();
+                updateUI();
+                showNotification('Budgets synced with latest expenses!', 'success');
+            });
+            quickActions.appendChild(syncButton);
         }
     }
 
-    function editAccount(accountId) {
-        const storedAccounts = localStorage.getItem('smartgrocer-accounts');
-        const accounts = storedAccounts ? JSON.parse(storedAccounts) : [];
-        const account = accounts.find(acc => acc.id === accountId);
-        
-        if (!account) return;
-        
-        document.getElementById('account-name').value = account.name;
-        document.getElementById('account-type').value = account.type;
-        document.getElementById('account-currency').value = account.currency;
-        document.getElementById('account-balance').value = account.balance;
-        document.getElementById('modal-currency-symbol').textContent = currencies[account.currency].symbol;
-        
-        document.querySelector('#add-account-modal h3').textContent = 'Edit Account';
-        document.querySelector('#add-account-form button[type="submit"]').textContent = 'Update Account';
-        
-        // Remove any existing event listeners
-        const newForm = document.getElementById('add-account-form').cloneNode(true);
-        document.getElementById('add-account-form').parentNode.replaceChild(newForm, document.getElementById('add-account-form'));
-        
-        document.getElementById('add-account-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            account.name = document.getElementById('account-name').value;
-            account.type = document.getElementById('account-type').value;
-            account.currency = document.getElementById('account-currency').value;
-            account.balance = parseFloat(document.getElementById('account-balance').value) || 0;
-            
-            localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
-            
-            loadAndDisplayAccounts();
-            updateTransferDropdowns();
-            updateDashboard();
-            
-            closeModal();
-            showNotification('Account updated successfully!', 'success');
-        });
-        
-        document.getElementById('add-account-modal').classList.remove('hidden');
-        document.getElementById('add-account-modal').classList.add('flex');
+    function addNewBudget() {
+        const name = document.getElementById('budget-name').value.trim();
+        const category = document.getElementById('budget-category').value;
+        const currency = document.getElementById('budget-currency').value;
+        const amount = parseFloat(document.getElementById('budget-amount').value);
+        const period = document.getElementById('budget-period').value;
+
+        // Validation
+        if (!name || !category || !amount || amount <= 0) {
+            showNotification('Please fill all fields correctly', 'error');
+            return;
+        }
+
+        const newBudget = {
+            id: Date.now().toString(),
+            name,
+            category,
+            currency,
+            amount,
+            period,
+            spent: 0,
+            createdAt: new Date().toISOString()
+        };
+
+        budgets.push(newBudget);
+        saveBudgets();
+        closeAddModal();
+        updateUI();
+        showNotification('Budget created successfully!', 'success');
     }
 
-    function loadAndDisplayAccounts() {
-        const accountsContainer = document.getElementById('accounts-container');
-        const storedAccounts = localStorage.getItem('smartgrocer-accounts');
-        const accounts = storedAccounts ? JSON.parse(storedAccounts) : [];
+    function editBudget(budgetId) {
+        const budget = budgets.find(b => b.id === budgetId);
+        if (!budget) return;
+
+        // Populate form
+        document.getElementById('edit-budget-id').value = budget.id;
+        document.getElementById('edit-budget-name').value = budget.name;
+        document.getElementById('edit-budget-category').value = budget.category;
+        document.getElementById('edit-budget-currency').value = budget.currency;
+        document.getElementById('edit-budget-amount').value = budget.amount;
+        document.getElementById('edit-budget-period').value = budget.period;
+
+        // Update currency symbol
+        document.getElementById('edit-modal-currency-symbol').textContent = currencies[budget.currency].symbol;
+
+        // Show modal
+        document.getElementById('edit-budget-modal').classList.remove('hidden');
+        document.getElementById('edit-budget-modal').classList.add('flex');
+    }
+
+    function updateBudget() {
+        const budgetId = document.getElementById('edit-budget-id').value;
+        const name = document.getElementById('edit-budget-name').value.trim();
+        const category = document.getElementById('edit-budget-category').value;
+        const currency = document.getElementById('edit-budget-currency').value;
+        const amount = parseFloat(document.getElementById('edit-budget-amount').value);
+        const period = document.getElementById('edit-budget-period').value;
+
+        const budgetIndex = budgets.findIndex(b => b.id === budgetId);
+        if (budgetIndex === -1) {
+            showNotification('Budget not found', 'error');
+            return;
+        }
+
+        if (!name || !category || !amount || amount <= 0) {
+            showNotification('Please fill all fields correctly', 'error');
+            return;
+        }
+
+        budgets[budgetIndex] = {
+            ...budgets[budgetIndex],
+            name,
+            category,
+            currency,
+            amount,
+            period
+        };
+
+        saveBudgets();
+        closeEditModal();
+        updateUI();
+        showNotification('Budget updated successfully!', 'success');
+    }
+
+    function deleteBudget() {
+        const budgetId = document.getElementById('edit-budget-id').value;
         
-        if (accounts.length === 0) {
-            accountsContainer.innerHTML = `
+        if (!budgetId) {
+            showNotification('Error: Could not find budget to delete', 'error');
+            return;
+        }
+
+        if (confirm('Are you sure you want to delete this budget?')) {
+            budgets = budgets.filter(b => b.id !== budgetId);
+            saveBudgets();
+            closeEditModal();
+            updateUI();
+            showNotification('Budget deleted successfully!', 'success');
+        }
+    }
+
+    function closeAddModal() {
+        const modal = document.getElementById('add-budget-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.getElementById('add-budget-form').reset();
+        document.getElementById('modal-currency-symbol').textContent = '$';
+        document.getElementById('budget-currency').value = 'USD';
+    }
+
+    function closeEditModal() {
+        const modal = document.getElementById('edit-budget-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    function updateUI() {
+        renderBudgets();
+        updateBudgetOverview();
+        updateBudgetProgress();
+    }
+
+    function renderBudgets() {
+        const container = document.getElementById('budgets-container');
+        const currencyInfo = currencies[selectedCurrency];
+
+        // Filter budgets by selected currency
+        const filteredBudgets = budgets.filter(budget => budget.currency === selectedCurrency);
+
+        if (filteredBudgets.length === 0) {
+            container.innerHTML = `
                 <div class="col-span-2 text-center py-12">
-                    <i class="fas fa-wallet text-6xl text-gray-300 mb-4"></i>
-                    <h3 class="text-xl font-semibold text-gray-600 mb-2">No Accounts Yet</h3>
-                    <p class="text-gray-500">Add your first account to get started with tracking your finances.</p>
+                    <i class="fas fa-chart-pie text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">No Budgets in ${currencyInfo.name}</h3>
+                    <p class="text-gray-500">Create your first ${selectedCurrency} budget to start tracking your spending.</p>
                 </div>
             `;
             return;
         }
-        
-        accountsContainer.innerHTML = accounts.map(account => {
-            const currencyInfo = currencies[account.currency];
-            const isPositive = account.balance >= 0;
-            const balanceClass = isPositive ? 'balance-positive' : 'balance-negative';
-            const balanceSign = isPositive ? '' : '-';
+
+        container.innerHTML = filteredBudgets.map(budget => {
+            const spent = budget.spent || 0;
+            const remaining = budget.amount - spent;
+            const percentage = Math.min((spent / budget.amount) * 100, 100);
+            const isOverBudget = spent > budget.amount;
             
-            const iconClass = {
-                'checking': 'fas fa-landmark text-blue-500 bg-blue-100',
-                'savings': 'fas fa-piggy-bank text-green-500 bg-green-100',
-                'credit': 'fas fa-credit-card text-red-500 bg-red-100',
-                'cash': 'fas fa-money-bill-wave text-yellow-500 bg-yellow-100',
-                'investment': 'fas fa-chart-line text-purple-500 bg-purple-100',
-                'loan': 'fas fa-hand-holding-usd text-orange-500 bg-orange-100',
-                'other': 'fas fa-wallet text-gray-500 bg-gray-100'
-            }[account.type] || 'fas fa-wallet text-gray-500 bg-gray-100';
+            const progressColor = isOverBudget ? 'bg-red-500' : 
+                               percentage > 80 ? 'bg-yellow-500' : 'bg-green-500';
             
+            const icon = getBudgetIcon(budget.category);
+            const periodText = getPeriodText(budget.period);
+
             return `
-                <div class="account-card card p-4">
-                    <div class="flex justify-between items-start mb-3">
-                        <div class="flex items-center">
-                            <div class="account-icon ${iconClass.split(' ').slice(2).join(' ')}">
-                                <i class="${iconClass.split(' ').slice(0, 2).join(' ')}"></i>
+                <div class="budget-card bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-all duration-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="${icon} text-green-600 text-lg"></i>
                             </div>
-                            <div class="ml-3">
-                                <h4 class="font-semibold text-gray-900">${account.name}</h4>
-                                <div class="flex items-center mt-1">
-                                    <span class="text-sm text-gray-500 capitalize">${account.type}</span>
-                                    <span class="currency-badge">${account.currency}</span>
-                                </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">${budget.name}</h4>
+                                <p class="text-sm text-gray-600">${budget.category} • ${periodText}</p>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <div class="${balanceClass} font-bold text-lg">
-                                ${balanceSign}${currencyInfo.symbol}${Math.abs(account.balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                            </div>
+                        <button onclick="editBudget('${budget.id}')" class="text-gray-400 hover:text-green-600 transition-colors">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm text-gray-600 mb-2">
+                            <span>Spent: <span class="currency-symbol">${currencyInfo.symbol}</span>${spent.toFixed(2)}</span>
+                            <span>Budget: <span class="currency-symbol">${currencyInfo.symbol}</span>${budget.amount.toFixed(2)}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${progressColor}" style="width: ${percentage}%"></div>
                         </div>
                     </div>
-                    <div class="flex justify-between items-center text-sm text-gray-500">
-                        <span>Account No: ****${account.id.toString().slice(-4)}</span>
-                        <div class="flex space-x-2">
-                            <button class="text-green-600 hover:text-green-800" onclick="editAccount(${account.id})">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="text-red-600 hover:text-red-800" onclick="deleteAccount(${account.id})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
+                    
+                    <div class="text-center">
+                        <p class="text-lg font-bold ${isOverBudget ? 'text-red-600' : 'text-green-600'}">
+                            ${currencyInfo.symbol}${Math.abs(remaining).toFixed(2)} ${isOverBudget ? 'Over' : 'Remaining'}
+                        </p>
+                        <p class="text-sm text-gray-500 mt-1">${percentage.toFixed(1)}% of budget used</p>
                     </div>
                 </div>
             `;
         }).join('');
-        
-        document.getElementById('accounts-count').textContent = accounts.length;
     }
-    
-    function updateTransferDropdowns() {
-        const fromAccountSelect = document.getElementById('from-account');
-        const toAccountSelect = document.getElementById('to-account');
-        const transferAmount = document.getElementById('transfer-amount');
-        const transferBtn = document.getElementById('transfer-btn');
-        
-        const storedAccounts = localStorage.getItem('smartgrocer-accounts');
-        const accounts = storedAccounts ? JSON.parse(storedAccounts) : [];
-        
-        fromAccountSelect.innerHTML = '';
-        toAccountSelect.innerHTML = '';
-        
-        if (accounts.length < 2) {
-            fromAccountSelect.innerHTML = '<option value="">Need at least 2 accounts</option>';
-            toAccountSelect.innerHTML = '<option value="">Need at least 2 accounts</option>';
-            fromAccountSelect.disabled = true;
-            toAccountSelect.disabled = true;
-            transferAmount.disabled = true;
-            transferBtn.disabled = true;
-            transferBtn.textContent = 'Add Accounts to Transfer';
-            transferBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+    function filterBudgets(searchTerm) {
+        if (!searchTerm) {
+            renderBudgets();
             return;
         }
-        
-        fromAccountSelect.disabled = false;
-        toAccountSelect.disabled = false;
-        transferAmount.disabled = false;
-        transferBtn.disabled = false;
-        transferBtn.textContent = 'Transfer Funds';
-        transferBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-        
-        const defaultOptionFrom = document.createElement('option');
-        defaultOptionFrom.value = '';
-        defaultOptionFrom.textContent = 'Select Account';
-        fromAccountSelect.appendChild(defaultOptionFrom);
-        
-        const defaultOptionTo = document.createElement('option');
-        defaultOptionTo.value = '';
-        defaultOptionTo.textContent = 'Select Account';
-        toAccountSelect.appendChild(defaultOptionTo);
-        
-        accounts.forEach(account => {
-            const optionFrom = document.createElement('option');
-            optionFrom.value = account.id;
-            optionFrom.textContent = `${account.name} (${currencies[account.currency].symbol}${account.balance.toFixed(2)})`;
+
+        const container = document.getElementById('budgets-container');
+        const currencyInfo = currencies[selectedCurrency];
+
+        const filteredBudgets = budgets.filter(budget => 
+            budget.currency === selectedCurrency &&
+            (budget.name.toLowerCase().includes(searchTerm) || 
+             budget.category.toLowerCase().includes(searchTerm))
+        );
+
+        if (filteredBudgets.length === 0) {
+            container.innerHTML = `
+                <div class="col-span-2 text-center py-12">
+                    <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">No Budgets Found</h3>
+                    <p class="text-gray-500">Try adjusting your search terms.</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Re-render with filtered budgets
+        container.innerHTML = filteredBudgets.map(budget => {
+            const spent = budget.spent || 0;
+            const remaining = budget.amount - spent;
+            const percentage = Math.min((spent / budget.amount) * 100, 100);
+            const isOverBudget = spent > budget.amount;
             
-            const optionTo = document.createElement('option');
-            optionTo.value = account.id;
-            optionTo.textContent = `${account.name} (${currencies[account.currency].symbol}${account.balance.toFixed(2)})`;
+            const progressColor = isOverBudget ? 'bg-red-500' : 
+                               percentage > 80 ? 'bg-yellow-500' : 'bg-green-500';
             
-            fromAccountSelect.appendChild(optionFrom);
-            toAccountSelect.appendChild(optionTo);
-        });
+            const icon = getBudgetIcon(budget.category);
+            const periodText = getPeriodText(budget.period);
+
+            return `
+                <div class="budget-card bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-all duration-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="${icon} text-green-600 text-lg"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-800">${budget.name}</h4>
+                                <p class="text-sm text-gray-600">${budget.category} • ${periodText}</p>
+                            </div>
+                        </div>
+                        <button onclick="editBudget('${budget.id}')" class="text-gray-400 hover:text-green-600 transition-colors">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm text-gray-600 mb-2">
+                            <span>Spent: <span class="currency-symbol">${currencyInfo.symbol}</span>${spent.toFixed(2)}</span>
+                            <span>Budget: <span class="currency-symbol">${currencyInfo.symbol}</span>${budget.amount.toFixed(2)}</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill ${progressColor}" style="width: ${percentage}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <p class="text-lg font-bold ${isOverBudget ? 'text-red-600' : 'text-green-600'}">
+                            ${currencyInfo.symbol}${Math.abs(remaining).toFixed(2)} ${isOverBudget ? 'Over' : 'Remaining'}
+                        </p>
+                        <p class="text-sm text-gray-500 mt-1">${percentage.toFixed(1)}% of budget used</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
-    
-    function updateDashboard() {
-        updateTotalBalanceDisplay();
-        const storedAccounts = localStorage.getItem('smartgrocer-accounts');
-        const accounts = storedAccounts ? JSON.parse(storedAccounts) : [];
-        document.getElementById('accounts-count').textContent = accounts.length;
-    }
-    
-    function updateTotalBalanceDisplay() {
-        const selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+
+    function updateBudgetOverview() {
         const currencyInfo = currencies[selectedCurrency];
         
-        const storedAccounts = localStorage.getItem('smartgrocer-accounts');
-        const accounts = storedAccounts ? JSON.parse(storedAccounts) : [];
-        
-        let totalBalance = 0;
-        
-        accounts.forEach(account => {
-            if (account.currency === selectedCurrency) {
-                totalBalance += account.balance;
-            }
-        });
-        
-        document.getElementById('total-balance-display').textContent = 
-            `${currencyInfo.symbol}${totalBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+        const totalBudget = budgets
+            .filter(budget => budget.currency === selectedCurrency)
+            .reduce((total, budget) => total + budget.amount, 0);
+            
+        const totalSpent = budgets
+            .filter(budget => budget.currency === selectedCurrency)
+            .reduce((total, budget) => total + (budget.spent || 0), 0);
+            
+        const totalRemaining = totalBudget - totalSpent;
+
+        document.getElementById('total-budget-display').textContent = `${currencyInfo.symbol}${totalBudget.toFixed(2)}`;
+        document.getElementById('total-spent-display').textContent = `${currencyInfo.symbol}${totalSpent.toFixed(2)}`;
+        document.getElementById('total-remaining-display').textContent = `${currencyInfo.symbol}${Math.max(totalRemaining, 0).toFixed(2)}`;
     }
-    
-    function closeModal() {
-        document.getElementById('add-account-modal').classList.add('hidden');
-        document.getElementById('add-account-modal').classList.remove('flex');
-        document.getElementById('add-account-form').reset();
-        
-        document.querySelector('#add-account-modal h3').textContent = 'Add New Account';
-        document.querySelector('#add-account-form button[type="submit"]').textContent = 'Add Account';
-        
-        document.getElementById('modal-currency-symbol').textContent = currencies['USD'].symbol;
-        document.getElementById('account-currency').value = 'USD';
-        
-        // Re-attach the add account form handler
-        setupAddAccountForm();
+
+    function updateBudgetProgress() {
+        const container = document.getElementById('budget-progress-container');
+        const filteredBudgets = budgets.filter(budget => budget.currency === selectedCurrency);
+
+        if (filteredBudgets.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-4 text-gray-500">
+                    <i class="fas fa-chart-pie text-2xl mb-2 opacity-40"></i>
+                    <p class="text-sm">No budget data</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = filteredBudgets.map(budget => {
+            const spent = budget.spent || 0;
+            const percentage = Math.min((spent / budget.amount) * 100, 100);
+            const progressColor = percentage > 80 ? 'bg-yellow-500' : 'bg-green-500';
+            
+            return `
+                <div>
+                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                        <span>${budget.name}</span>
+                        <span>${percentage.toFixed(1)}%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill ${progressColor}" style="width: ${percentage}%"></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
     }
-    
-    function setupAddAccountForm() {
-        // Remove any existing event listeners
-        const newForm = document.getElementById('add-account-form').cloneNode(true);
-        document.getElementById('add-account-form').parentNode.replaceChild(newForm, document.getElementById('add-account-form'));
-        
-        // Add new event listener
-        document.getElementById('add-account-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            console.log('Form submitted!');
-            
-            const accountName = document.getElementById('account-name').value;
-            const accountType = document.getElementById('account-type').value;
-            const accountCurrency = document.getElementById('account-currency').value;
-            const accountBalance = parseFloat(document.getElementById('account-balance').value) || 0;
-            
-            console.log('Creating account:', { accountName, accountType, accountCurrency, accountBalance });
-            
-            // Get current accounts
-            const storedAccounts = localStorage.getItem('smartgrocer-accounts');
-            const accounts = storedAccounts ? JSON.parse(storedAccounts) : [];
-            
-            // Create new account
-            const newAccount = {
-                id: Date.now(),
-                name: accountName,
-                type: accountType,
-                balance: accountBalance,
-                currency: accountCurrency
-            };
-            
-            console.log('New account object:', newAccount);
-            
-            // Add to accounts array
-            accounts.push(newAccount);
-            
-            // Save to localStorage
-            localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
-            console.log('Accounts saved to localStorage:', accounts);
-            
-            // Update UI
-            loadAndDisplayAccounts();
-            updateTransferDropdowns();
-            updateDashboard();
-            
-            closeModal();
-            showNotification('Account added successfully!', 'success');
-        });
+
+    function loadBudgets() {
+        const storedBudgets = localStorage.getItem('smartgrocer-budgets');
+        if (storedBudgets) {
+            budgets = JSON.parse(storedBudgets);
+        }
     }
-    
+
+    function saveBudgets() {
+        localStorage.setItem('smartgrocer-budgets', JSON.stringify(budgets));
+    }
+
+    function getBudgetIcon(category) {
+        const icons = {
+            'Food & Dining': 'fas fa-utensils',
+            'Transportation': 'fas fa-car',
+            'Shopping': 'fas fa-shopping-bag',
+            'Entertainment': 'fas fa-film',
+            'Bills & Utilities': 'fas fa-file-invoice-dollar',
+            'Healthcare': 'fas fa-heartbeat',
+            'Education': 'fas fa-graduation-cap',
+            'Travel': 'fas fa-plane',
+            'Personal Care': 'fas fa-spa',
+            'Other': 'fas fa-wallet'
+        };
+        return icons[category] || icons.Other;
+    }
+
+    function getPeriodText(period) {
+        const periods = {
+            'weekly': 'Weekly',
+            'monthly': 'Monthly',
+            'yearly': 'Yearly'
+        };
+        return periods[period] || 'Monthly';
+    }
+
+    function hideSignInOverlay() {
+        document.getElementById('signin-overlay').classList.add('hidden');
+        document.getElementById('main-app-container').classList.remove('hidden');
+    }
+
     function showNotification(message, type = 'info') {
         const notification = document.getElementById('notification');
         const bgColor = type === 'success' ? 'bg-green-500' : 
@@ -303,228 +608,6 @@
         }, 3000);
     }
 
-    function filterAccounts(searchTerm) {
-        const storedAccounts = localStorage.getItem('smartgrocer-accounts');
-        const accounts = storedAccounts ? JSON.parse(storedAccounts) : [];
-        const accountsContainer = document.getElementById('accounts-container');
-        
-        if (!searchTerm) {
-            loadAndDisplayAccounts();
-            return;
-        }
-        
-        const filteredAccounts = accounts.filter(account => 
-            account.name.toLowerCase().includes(searchTerm) || 
-            account.type.toLowerCase().includes(searchTerm)
-        );
-        
-        if (filteredAccounts.length === 0) {
-            accountsContainer.innerHTML = `
-                <div class="col-span-2 text-center py-12">
-                    <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
-                    <h3 class="text-xl font-semibold text-gray-600 mb-2">No Accounts Found</h3>
-                    <p class="text-gray-500">Try adjusting your search terms.</p>
-                </div>
-            `;
-            return;
-        }
-        
-        accountsContainer.innerHTML = filteredAccounts.map(account => {
-            const currencyInfo = currencies[account.currency];
-            const isPositive = account.balance >= 0;
-            const balanceClass = isPositive ? 'balance-positive' : 'balance-negative';
-            const balanceSign = isPositive ? '' : '-';
-            
-            const iconClass = {
-                'checking': 'fas fa-landmark text-blue-500 bg-blue-100',
-                'savings': 'fas fa-piggy-bank text-green-500 bg-green-100',
-                'credit': 'fas fa-credit-card text-red-500 bg-red-100',
-                'cash': 'fas fa-money-bill-wave text-yellow-500 bg-yellow-100',
-                'investment': 'fas fa-chart-line text-purple-500 bg-purple-100',
-                'loan': 'fas fa-hand-holding-usd text-orange-500 bg-orange-100',
-                'other': 'fas fa-wallet text-gray-500 bg-gray-100'
-            }[account.type] || 'fas fa-wallet text-gray-500 bg-gray-100';
-            
-            return `
-                <div class="account-card card p-4">
-                    <div class="flex justify-between items-start mb-3">
-                        <div class="flex items-center">
-                            <div class="account-icon ${iconClass.split(' ').slice(2).join(' ')}">
-                                <i class="${iconClass.split(' ').slice(0, 2).join(' ')}"></i>
-                            </div>
-                            <div class="ml-3">
-                                <h4 class="font-semibold text-gray-900">${account.name}</h4>
-                                <div class="flex items-center mt-1">
-                                    <span class="text-sm text-gray-500 capitalize">${account.type}</span>
-                                    <span class="currency-badge">${account.currency}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="text-right">
-                            <div class="${balanceClass} font-bold text-lg">
-                                ${balanceSign}${currencyInfo.symbol}${Math.abs(account.balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex justify-between items-center text-sm text-gray-500">
-                        <span>Account No: ****${account.id.toString().slice(-4)}</span>
-                        <div class="flex space-x-2">
-                            <button class="text-green-600 hover:text-green-800" onclick="editAccount(${account.id})">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="text-red-600 hover:text-red-800" onclick="deleteAccount(${account.id})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
-
-    // Initialize the page
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Initializing account page...');
-        
-        // Mobile menu
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebar-overlay');
-
-        mobileMenuButton.addEventListener('click', function() {
-            sidebar.classList.toggle('-translate-x-full');
-            sidebarOverlay.classList.toggle('hidden');
-        });
-
-        sidebarOverlay.addEventListener('click', function() {
-            sidebar.classList.add('-translate-x-full');
-            sidebarOverlay.classList.add('hidden');
-        });
-
-        // Check user auth
-        const currentUser = localStorage.getItem('smartgrocer-currentUser');
-        if (currentUser) {
-            document.getElementById('signin-overlay').classList.add('hidden');
-            document.getElementById('main-app-container').classList.remove('hidden');
-            document.getElementById('welcome-user-text').textContent = `Welcome, ${currentUser}!`;
-            document.getElementById('user-initial').textContent = currentUser.charAt(0).toUpperCase();
-        }
-
-        // Sign in form
-        document.getElementById('signin-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const userName = document.getElementById('signin-name').value.trim();
-            if (userName) {
-                localStorage.setItem('smartgrocer-currentUser', userName);
-                document.getElementById('signin-overlay').classList.add('hidden');
-                document.getElementById('main-app-container').classList.remove('hidden');
-                document.getElementById('welcome-user-text').textContent = `Welcome, ${userName}!`;
-                document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
-                showNotification(`Welcome to SmartGrocer, ${userName}!`, 'success');
-            }
-        });
-
-        // Currency selection
-        const currencyOptions = document.querySelectorAll('.currency-option');
-        let selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
-        
-        updateCurrencyDisplay(selectedCurrency);
-        
-        currencyOptions.forEach(option => {
-            option.addEventListener('click', function() {
-                const currency = this.getAttribute('data-currency');
-                selectedCurrency = currency;
-                localStorage.setItem('selectedCurrency', currency);
-                
-                updateCurrencyDisplay(currency);
-                currencyOptions.forEach(opt => opt.classList.remove('selected'));
-                this.classList.add('selected');
-                
-                showNotification(`Display currency set to ${currencies[currency].name}`, 'success');
-            });
-            
-            if (option.getAttribute('data-currency') === selectedCurrency) {
-                option.classList.add('selected');
-            }
-        });
-
-        // Account currency change
-        document.getElementById('account-currency').addEventListener('change', function() {
-            const currency = this.value;
-            document.getElementById('modal-currency-symbol').textContent = currencies[currency].symbol;
-        });
-
-        // Modal buttons
-        document.getElementById('add-account-btn').addEventListener('click', function() {
-            console.log('Opening add account modal');
-            document.getElementById('add-account-modal').classList.remove('hidden');
-            document.getElementById('add-account-modal').classList.add('flex');
-        });
-
-        document.getElementById('close-account-modal').addEventListener('click', closeModal);
-        document.getElementById('cancel-account').addEventListener('click', closeModal);
-
-        // Transfer form
-        document.getElementById('transfer-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const fromAccountId = parseInt(document.getElementById('from-account').value);
-            const toAccountId = parseInt(document.getElementById('to-account').value);
-            const amount = parseFloat(document.getElementById('transfer-amount').value);
-            
-            if (fromAccountId === toAccountId) {
-                showNotification('Cannot transfer to the same account', 'error');
-                return;
-            }
-            
-            const storedAccounts = localStorage.getItem('smartgrocer-accounts');
-            const accounts = storedAccounts ? JSON.parse(storedAccounts) : [];
-            const fromAccount = accounts.find(acc => acc.id === fromAccountId);
-            const toAccount = accounts.find(acc => acc.id === toAccountId);
-            
-            if (!fromAccount || !toAccount) {
-                showNotification('Account not found', 'error');
-                return;
-            }
-            
-            if (fromAccount.balance < amount) {
-                showNotification('Insufficient funds for transfer', 'error');
-                return;
-            }
-            
-            fromAccount.balance -= amount;
-            toAccount.balance += amount;
-            
-            localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
-            
-            loadAndDisplayAccounts();
-            updateDashboard();
-            updateTransferDropdowns();
-            
-            showNotification('Transfer completed successfully!', 'success');
-            this.reset();
-        });
-
-        // Search
-        document.getElementById('search-accounts').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            filterAccounts(searchTerm);
-        });
-
-        // Initialize form and UI
-        setupAddAccountForm();
-        loadAndDisplayAccounts();
-        updateTransferDropdowns();
-        updateDashboard();
-        
-        console.log('Account page initialized successfully');
-
-        function updateCurrencyDisplay(currency) {
-            const currencyInfo = currencies[currency];
-            document.getElementById('selected-currency').textContent = currency;
-            document.getElementById('currency-symbol').textContent = currencyInfo.symbol;
-            updateTotalBalanceDisplay();
-            loadAndDisplayAccounts();
-        }
-    });
+    // Make functions globally available for onclick handlers
+    window.editBudget = editBudget;
 </script>
