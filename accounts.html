@@ -501,20 +501,27 @@
             'INR': { symbol: '₹', name: 'Indian Rupee', flag: 'IN' }
         };
 
-        // Global accounts array
-        let accounts = [];
-
-        // Global functions
+        // Simple global functions that work directly with localStorage
         function deleteAccount(accountId) {
+            console.log('Deleting account:', accountId);
+            
             if (confirm('Are you sure you want to delete this account? This action cannot be undone.')) {
+                // Get current accounts from localStorage
+                const storedAccounts = localStorage.getItem('smartgrocer-accounts');
+                let accounts = storedAccounts ? JSON.parse(storedAccounts) : [];
+                
+                console.log('Before deletion:', accounts);
+                
                 // Filter out the account to delete
                 accounts = accounts.filter(acc => acc.id !== accountId);
                 
-                // Save to localStorage
-                saveAccountsToStorage();
+                console.log('After deletion:', accounts);
                 
-                // Update UI
-                renderAccounts();
+                // Save back to localStorage
+                localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
+                
+                // Force reload the accounts display
+                loadAndDisplayAccounts();
                 updateTransferDropdowns();
                 updateDashboard();
                 
@@ -523,6 +530,10 @@
         }
 
         function editAccount(accountId) {
+            // Get current accounts from localStorage
+            const storedAccounts = localStorage.getItem('smartgrocer-accounts');
+            const accounts = storedAccounts ? JSON.parse(storedAccounts) : [];
+            
             // Find the account
             const account = accounts.find(acc => acc.id === accountId);
             if (!account) return;
@@ -546,17 +557,17 @@
             newForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                // Update account
+                // Update account in the array
                 account.name = document.getElementById('account-name').value;
                 account.type = document.getElementById('account-type').value;
                 account.currency = document.getElementById('account-currency').value;
                 account.balance = parseFloat(document.getElementById('account-balance').value) || 0;
                 
                 // Save to localStorage
-                saveAccountsToStorage();
+                localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
                 
                 // Update UI
-                renderAccounts();
+                loadAndDisplayAccounts();
                 updateTransferDropdowns();
                 updateDashboard();
                 
@@ -569,9 +580,13 @@
             document.getElementById('add-account-modal').classList.add('flex');
         }
 
-        function renderAccounts() {
+        function loadAndDisplayAccounts() {
             const accountsContainer = document.getElementById('accounts-container');
+            const storedAccounts = localStorage.getItem('smartgrocer-accounts');
+            const accounts = storedAccounts ? JSON.parse(storedAccounts) : [];
             const selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
+            
+            console.log('Loading accounts from storage:', accounts);
             
             if (accounts.length === 0) {
                 accountsContainer.innerHTML = `
@@ -646,6 +661,10 @@
             const transferAmount = document.getElementById('transfer-amount');
             const transferBtn = document.getElementById('transfer-btn');
             
+            // Get current accounts
+            const storedAccounts = localStorage.getItem('smartgrocer-accounts');
+            const accounts = storedAccounts ? JSON.parse(storedAccounts) : [];
+            
             // Clear existing options
             fromAccountSelect.innerHTML = '';
             toAccountSelect.innerHTML = '';
@@ -699,12 +718,20 @@
         
         function updateDashboard() {
             updateTotalBalanceDisplay();
+            
+            // Update accounts count
+            const storedAccounts = localStorage.getItem('smartgrocer-accounts');
+            const accounts = storedAccounts ? JSON.parse(storedAccounts) : [];
             document.getElementById('accounts-count').textContent = accounts.length;
         }
         
         function updateTotalBalanceDisplay() {
             const selectedCurrency = localStorage.getItem('selectedCurrency') || 'USD';
             const currencyInfo = currencies[selectedCurrency];
+            
+            // Get current accounts
+            const storedAccounts = localStorage.getItem('smartgrocer-accounts');
+            const accounts = storedAccounts ? JSON.parse(storedAccounts) : [];
             
             // Calculate total balance in selected currency
             let totalBalance = 0;
@@ -719,17 +746,6 @@
             
             document.getElementById('total-balance-display').textContent = 
                 `${currencyInfo.symbol}${totalBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-        }
-        
-        function saveAccountsToStorage() {
-            localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
-        }
-        
-        function loadAccountsFromStorage() {
-            const storedAccounts = localStorage.getItem('smartgrocer-accounts');
-            if (storedAccounts) {
-                accounts = JSON.parse(storedAccounts);
-            }
         }
         
         function closeModal() {
@@ -757,6 +773,10 @@
                 const accountCurrency = document.getElementById('account-currency').value;
                 const accountBalance = parseFloat(document.getElementById('account-balance').value) || 0;
                 
+                // Get current accounts
+                const storedAccounts = localStorage.getItem('smartgrocer-accounts');
+                const accounts = storedAccounts ? JSON.parse(storedAccounts) : [];
+                
                 // Add new account
                 const newAccount = {
                     id: Date.now(),
@@ -769,10 +789,10 @@
                 accounts.push(newAccount);
                 
                 // Save to localStorage
-                saveAccountsToStorage();
+                localStorage.setItem('smartgrocer-accounts', JSON.stringify(accounts));
                 
                 // Update UI
-                renderAccounts();
+                loadAndDisplayAccounts();
                 updateTransferDropdowns();
                 updateDashboard();
                 
@@ -804,8 +824,12 @@
         }
 
         function filterAccounts(searchTerm) {
+            const storedAccounts = localStorage.getItem('smartgrocer-accounts');
+            const accounts = storedAccounts ? JSON.parse(storedAccounts) : [];
+            const accountsContainer = document.getElementById('accounts-container');
+            
             if (!searchTerm) {
-                renderAccounts();
+                loadAndDisplayAccounts();
                 return;
             }
             
@@ -813,8 +837,6 @@
                 account.name.toLowerCase().includes(searchTerm) || 
                 account.type.toLowerCase().includes(searchTerm)
             );
-            
-            const accountsContainer = document.getElementById('accounts-container');
             
             if (filteredAccounts.length === 0) {
                 accountsContainer.innerHTML = `
@@ -962,91 +984,14 @@
             document.getElementById('close-account-modal').addEventListener('click', closeModal);
             document.getElementById('cancel-account').addEventListener('click', closeModal);
 
-            // Add account form submission
-            document.getElementById('add-account-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const accountName = document.getElementById('account-name').value;
-                const accountType = document.getElementById('account-type').value;
-                const accountCurrency = document.getElementById('account-currency').value;
-                const accountBalance = parseFloat(document.getElementById('account-balance').value) || 0;
-                
-                // Add new account
-                const newAccount = {
-                    id: Date.now(),
-                    name: accountName,
-                    type: accountType,
-                    balance: accountBalance,
-                    currency: accountCurrency
-                };
-                
-                accounts.push(newAccount);
-                
-                // Save to localStorage
-                saveAccountsToStorage();
-                
-                // Update UI
-                renderAccounts();
-                updateTransferDropdowns();
-                updateDashboard();
-                
-                closeModal();
-                showNotification('Account added successfully!', 'success');
-            });
-
-            // Initialize transfer form
-            document.getElementById('transfer-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const fromAccountId = parseInt(document.getElementById('from-account').value);
-                const toAccountId = parseInt(document.getElementById('to-account').value);
-                const amount = parseFloat(document.getElementById('transfer-amount').value);
-                
-                if (fromAccountId === toAccountId) {
-                    showNotification('Cannot transfer to the same account', 'error');
-                    return;
-                }
-                
-                // Find accounts
-                const fromAccount = accounts.find(acc => acc.id === fromAccountId);
-                const toAccount = accounts.find(acc => acc.id === toAccountId);
-                
-                if (!fromAccount || !toAccount) {
-                    showNotification('Account not found', 'error');
-                    return;
-                }
-                
-                if (fromAccount.balance < amount) {
-                    showNotification('Insufficient funds for transfer', 'error');
-                    return;
-                }
-                
-                // Perform transfer
-                fromAccount.balance -= amount;
-                toAccount.balance += amount;
-                
-                // Save to localStorage
-                saveAccountsToStorage();
-                
-                // Update UI
-                renderAccounts();
-                updateDashboard();
-                updateTransferDropdowns();
-                
-                showNotification('Transfer completed successfully!', 'success');
-                this.reset();
-            });
-
             // Search functionality
             document.getElementById('search-accounts').addEventListener('input', function(e) {
                 const searchTerm = e.target.value.toLowerCase();
                 filterAccounts(searchTerm);
             });
 
-            // Load accounts from localStorage if available
-            loadAccountsFromStorage();
-            
-            // Initial render
-            renderAccounts();
+            // Initial render - NO DEMO ACCOUNTS
+            loadAndDisplayAccounts();
             updateTransferDropdowns();
             updateDashboard();
             
@@ -1067,7 +1012,7 @@
                 updateTotalBalanceDisplay();
                 
                 // Re-render accounts to show updated currency symbols
-                renderAccounts();
+                loadAndDisplayAccounts();
             }
             
             function autoUpdateDashboard() {
