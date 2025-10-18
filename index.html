@@ -75,12 +75,13 @@
             }
         }
 
-        .sidebar {
+        /* Sidebar Styles */
+        #sidebar {
             transition: transform 0.3s ease;
             background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
         }
         
-        .sidebar-overlay {
+        #sidebar-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -98,14 +99,15 @@
         }
         
         @media (min-width: 1024px) {
-            .sidebar {
+            #sidebar {
                 transform: translateX(0);
             }
-            .main-content {
+            #main-app-container {
                 margin-left: 16rem;
             }
         }
 
+        /* Currency Styles */
         .currency-option {
             display: flex;
             align-items: center;
@@ -140,6 +142,21 @@
             font-size: 10px;
             color: white;
             font-weight: bold;
+        }
+
+        .currency-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background-color: #f3f4f6;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        .currency-symbol {
+            font-weight: 600;
         }
         
         .stat-card {
@@ -208,6 +225,20 @@
             }
         }
 
+        /* Auto-update indicator */
+        .auto-update-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 12px;
+            background-color: #d1fae5;
+            color: #065f46;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: 8px;
+            animation: pulse 2s infinite;
+        }
+
         .data-status {
             background-color: #FEF3C7;
             border: 1px solid #F59E0B;
@@ -244,11 +275,11 @@
 </head>
 <body class="antialiased">
 
-    <!-- Signin Overlay -->
+    <!-- Enhanced Signin Overlay -->
     <div id="signin-overlay" class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-gradient-to-br from-green-50 to-blue-50"></div>
         <div class="relative w-full max-w-md">
-            <div class="card p-8">
+            <div class="card p-8 transform transition-all duration-500 scale-100 opacity-100">
                 <div class="text-center mb-8">
                     <div class="w-24 h-24 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg pulse">
                         <i class="fas fa-chart-pie text-white text-4xl"></i>
@@ -257,7 +288,7 @@
                     <p class="text-gray-600 text-lg">Smart Financial Management</p>
                 </div>
                 
-                <p class="text-gray-600 mb-8 text-center">Welcome! Please enter your name to begin.</p>
+                <p class="text-gray-600 mb-8 text-center">Welcome! Please enter your name to begin your financial journey.</p>
                 
                 <form id="signin-form" class="space-y-6">
                     <div class="relative">
@@ -269,7 +300,7 @@
                     
                     <!-- Currency Selection -->
                     <div class="bg-gray-50 rounded-xl p-4">
-                        <p class="text-sm font-medium text-gray-700 mb-3 text-center">Select Currency</p>
+                        <p class="text-sm font-medium text-gray-700 mb-3 text-center">Select Display Currency</p>
                         <div class="grid grid-cols-3 gap-2">
                             <div class="currency-option text-center" data-currency="USD">
                                 <div class="currency-flag bg-blue-600 mx-auto mb-2">US</div>
@@ -286,19 +317,24 @@
                         </div>
                     </div>
                     
-                    <button type="submit" class="btn-primary w-full text-white font-bold py-4 px-4 rounded-xl text-lg">
+                    <button type="submit" 
+                            class="btn-primary w-full text-white font-bold py-4 px-4 rounded-xl text-lg shadow-lg">
                         <i class="fas fa-rocket mr-2"></i>Start Managing Finances
                     </button>
                 </form>
+
+                <div class="mt-8 text-center">
+                    <p class="text-xs text-gray-500">Your data is stored locally on your device for privacy</p>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Sidebar Overlay -->
-    <div id="sidebar-overlay" class="sidebar-overlay hidden lg:hidden"></div>
+    <div id="sidebar-overlay" class="hidden fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"></div>
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar fixed top-0 left-0 z-40 w-64 h-screen shadow-xl transform -translate-x-full lg:translate-x-0">
+    <aside id="sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen shadow-xl transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
         <div class="h-full flex flex-col">
             <!-- Logo -->
             <div class="h-20 flex items-center justify-center border-b border-gray-200 px-4">
@@ -321,20 +357,42 @@
                 <a href="expense.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-primary">
                     <i class="fas fa-credit-card w-5 h-5 mr-3"></i>Expenses
                 </a>
+                <a href="accounts.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-primary">
+                    <i class="fas fa-wallet w-5 h-5 mr-3"></i>Accounts
+                </a>
                 <a href="budget.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-primary">
                     <i class="fas fa-chart-pie w-5 h-5 mr-3"></i>Budgets
                 </a>
+                <a href="reports.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-primary">
+                    <i class="fas fa-chart-line w-5 h-5 mr-3"></i>Reports
+                </a>
+                <a href="blogs.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-primary">
+                    <i class="fas fa-blog w-5 h-5 mr-3"></i>Blog
+                </a>
+                <a href="contact.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-primary">
+                    <i class="fas fa-envelope w-5 h-5 mr-3"></i>Contact Us
+                </a>
+                <a href="settings.html" class="nav-link flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-green-50 hover:text-primary">
+                    <i class="fas fa-cog w-5 h-5 mr-3"></i>Settings
+                </a>
             </nav>
+
+            <!-- Footer Links -->
+            <div class="px-4 py-4 border-t border-gray-200">
+                <a href="#privacy" class="text-xs text-gray-500 hover:text-primary block">Privacy Policy</a>
+                <a href="#terms" class="text-xs text-gray-500 hover:text-primary block mt-1">Terms & Conditions</a>
+                <a href="#disclaimers" class="text-xs text-gray-500 hover:text-primary block mt-1">Disclaimers</a>
+            </div>
         </div>
     </aside>
 
     <!-- Main App Content -->
-    <div id="main-app-container" class="main-content min-h-screen hidden">
+    <div id="main-app-container" class="lg:ml-64 min-h-screen hidden">
         <!-- Header -->
         <header class="glass-effect shadow-sm border-b border-gray-200 sticky top-0 z-30">
             <div class="flex items-center justify-between px-6 py-4">
                 <!-- Mobile Menu Button -->
-                <button id="mobile-menu-button" class="lg:hidden text-gray-600 hover:text-primary">
+                <button id="mobile-menu-button" class="lg:hidden text-gray-600 hover:text-primary focus:outline-none">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
                 
@@ -344,23 +402,33 @@
                     <p class="text-gray-600 text-sm">Welcome back! Here's your financial overview</p>
                 </div>
                 
-                <!-- User Info -->
+                <!-- User Info and Currency -->
                 <div class="flex items-center space-x-4">
-                    <button onclick="updateDashboard()" class="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
+                    <div class="hidden md:flex items-center space-x-2 bg-gray-100 rounded-lg px-3 py-1">
+                        <span id="current-currency" class="text-sm font-medium text-gray-700">PKR</span>
+                        <span id="currency-symbol" class="text-sm font-medium text-gray-700">₨</span>
+                        <span class="auto-update-indicator ml-2" id="auto-update-indicator">
+                            <i class="fas fa-sync-alt mr-1"></i> Live
+                        </span>
+                    </div>
                     <div class="flex items-center space-x-3">
                         <span id="user-greeting" class="text-gray-600 hidden sm:block">Hello, User!</span>
+                        <button onclick="updateDashboard()" class="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
                         <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold shadow-md" id="user-initial">U</div>
                     </div>
                 </div>
             </div>
         </header>
 
-        <!-- Data Status -->
+        <!-- Data Status Indicator -->
         <div id="data-status" class="data-status">
             <i class="fas fa-exclamation-triangle text-yellow-500 mr-2"></i>
             <span class="text-yellow-700 text-sm flex-1" id="status-message">No transactions found. Add some income or expenses to get started!</span>
+            <button onclick="updateDashboard()" class="refresh-btn">
+                <i class="fas fa-sync-alt mr-1"></i>Refresh
+            </button>
         </div>
 
         <!-- Main Content -->
@@ -439,6 +507,13 @@
                             <p>No budgets set yet</p>
                         </div>
                     </div>
+                    
+                    <div class="mt-6 text-center">
+                        <a href="budget.html" class="inline-flex items-center text-primary hover:text-green-700 font-semibold text-sm">
+                            Manage Budgets
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
                 </div>
 
                 <!-- Recent Transactions -->
@@ -453,6 +528,13 @@
                             <i class="fas fa-exchange-alt text-3xl mb-3 opacity-40"></i>
                             <p>No recent transactions</p>
                         </div>
+                    </div>
+                    
+                    <div class="mt-6 text-center">
+                        <a href="expense.html" class="inline-flex items-center text-primary hover:text-green-700 font-semibold text-sm">
+                            View All Transactions
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -477,7 +559,7 @@
                         </a>
                         <button onclick="updateDashboard()" class="bg-orange-50 border border-orange-100 rounded-xl p-4 text-center hover:bg-orange-100 transition-colors group">
                             <i class="fas fa-sync-alt text-orange-600 text-xl mb-2 group-hover:text-orange-700"></i>
-                            <p class="font-semibold text-orange-800 text-sm">Refresh</p>
+                            <p class="font-semibold text-orange-800 text-sm">Refresh Data</p>
                         </button>
                     </div>
                 </div>
@@ -497,30 +579,57 @@
     <div id="notification" class="notification hidden fixed top-4 right-4 z-50 max-w-sm"></div>
 
     <script>
-        // Simple Dashboard Manager
+        // Dashboard Manager
         class DashboardManager {
             constructor() {
                 this.currencies = {
-                    'USD': { symbol: '$' },
-                    'PKR': { symbol: '₨' },
-                    'INR': { symbol: '₹' }
+                    'USD': { symbol: '$', name: 'US Dollar' },
+                    'PKR': { symbol: '₨', name: 'Pakistani Rupee' },
+                    'INR': { symbol: '₹', name: 'Indian Rupee' }
                 };
                 this.chart = null;
                 this.init();
             }
 
             init() {
-                console.log('🚀 Starting Dashboard');
+                console.log('🚀 Starting Dashboard Manager');
+                this.initializeStorage();
                 this.setupEventListeners();
+                this.setupCurrencySelection();
                 this.checkUserAuth();
-                this.updateDashboard();
+                
+                // Initial dashboard update
+                setTimeout(() => {
+                    this.updateDashboard();
+                }, 100);
+                
+                // Auto-update every 5 seconds
+                this.setupAutoUpdate();
+            }
+
+            initializeStorage() {
+                const keys = ['expenses', 'income', 'smartgrocer-budgets'];
+                keys.forEach(key => {
+                    if (!localStorage.getItem(key)) {
+                        localStorage.setItem(key, '[]');
+                        console.log(`✅ Initialized: ${key}`);
+                    }
+                });
             }
 
             setupEventListeners() {
-                // Listen for data updates
+                // Listen for data updates from other pages
                 window.addEventListener('smartgrocer-data-update', () => {
-                    console.log('📊 Dashboard updating from event');
+                    console.log('📊 Dashboard received data update event');
                     this.updateDashboard();
+                });
+
+                // Listen for storage changes
+                window.addEventListener('storage', (e) => {
+                    if (e.key === 'expenses' || e.key === 'income') {
+                        console.log('📦 Storage changed, updating dashboard');
+                        this.updateDashboard();
+                    }
                 });
 
                 // Mobile menu
@@ -550,8 +659,16 @@
                         this.handleSignIn();
                     });
                 }
+            }
 
-                // Currency selection
+            setupAutoUpdate() {
+                // Auto-update dashboard every 5 seconds
+                setInterval(() => {
+                    this.updateDashboard();
+                }, 5000);
+            }
+
+            setupCurrencySelection() {
                 const currencyOptions = document.querySelectorAll('.currency-option');
                 currencyOptions.forEach(option => {
                     option.addEventListener('click', () => {
@@ -559,6 +676,7 @@
                         option.classList.add('selected');
                         const currency = option.getAttribute('data-currency');
                         localStorage.setItem('selectedCurrency', currency);
+                        this.updateCurrencyDisplay();
                         this.updateDashboard();
                     });
                 });
@@ -588,17 +706,27 @@
                 document.getElementById('main-app-container').classList.remove('hidden');
                 document.getElementById('user-greeting').textContent = `Hello, ${userName}!`;
                 document.getElementById('user-initial').textContent = userName.charAt(0).toUpperCase();
+                this.updateCurrencyDisplay();
+            }
+
+            updateCurrencyDisplay() {
+                const currency = localStorage.getItem('selectedCurrency') || 'PKR';
+                const currencyInfo = this.currencies[currency];
+                if (currencyInfo) {
+                    document.getElementById('current-currency').textContent = currency;
+                    document.getElementById('currency-symbol').textContent = currencyInfo.symbol;
+                }
             }
 
             updateDashboard() {
-                console.log('🔄 Updating dashboard...');
+                console.log('🔄 Updating dashboard with real data...');
                 try {
                     const expenses = this.getData('expenses');
                     const income = this.getData('income');
                     const budgets = this.getData('smartgrocer-budgets');
                     const transactions = [...expenses, ...income];
                     
-                    console.log('User Data:', {
+                    console.log('📊 Real User Data:', {
                         expenses: expenses.length,
                         income: income.length,
                         transactions: transactions.length
@@ -629,7 +757,7 @@
                 const currency = localStorage.getItem('selectedCurrency') || 'PKR';
                 const currencySymbol = this.currencies[currency]?.symbol || '₨';
                 
-                // Calculate totals from ALL transactions
+                // Calculate from REAL transactions only
                 const totalIncome = transactions
                     .filter(t => t.type === 'income')
                     .reduce((total, t) => total + (parseFloat(t.amount) || 0), 0);
