@@ -377,6 +377,10 @@
                                 <span class="text-gray-700">Export Budget Data</span>
                                 <i class="fas fa-download text-green-500"></i>
                             </button>
+                            <button id="sync-expenses-btn" class="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <span class="text-gray-700">Sync with Expenses</span>
+                                <i class="fas fa-sync-alt text-green-500"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -577,6 +581,9 @@
             // Budget functionality
             setupBudgetFunctionality();
             
+            // Expense syncing
+            handleExpenseUpdates();
+            
             // Load initial data
             loadBudgets();
             updateUI();
@@ -619,6 +626,7 @@
             const addForm = document.getElementById('add-budget-form');
             const editForm = document.getElementById('edit-budget-form');
             const deleteBtn = document.getElementById('delete-budget');
+            const syncExpensesBtn = document.getElementById('sync-expenses-btn');
 
             // Add budget modal
             addBudgetBtn.addEventListener('click', () => {
@@ -656,10 +664,62 @@
                 deleteBudget();
             });
 
+            // Sync expenses button
+            syncExpensesBtn.addEventListener('click', function() {
+                syncExpensesWithBudgets();
+                updateUI();
+                showNotification('Budgets synced with latest expenses!', 'success');
+            });
+
             // Search functionality
             document.getElementById('search-budgets').addEventListener('input', function(e) {
                 const searchTerm = e.target.value.toLowerCase();
                 filterBudgets(searchTerm);
+            });
+        }
+
+        // Sync expenses with budgets
+        function syncExpensesWithBudgets() {
+            // Get all expenses from localStorage
+            const expenses = JSON.parse(localStorage.getItem('smartgrocer-expenses') || '[]');
+            
+            // Reset all budget spent amounts to 0
+            budgets.forEach(budget => {
+                budget.spent = 0;
+            });
+            
+            // Update budget spent amounts based on expenses
+            expenses.forEach(expense => {
+                const budget = budgets.find(b => 
+                    b.category === expense.category && 
+                    b.currency === expense.currency
+                );
+                
+                if (budget) {
+                    budget.spent = (budget.spent || 0) + parseFloat(expense.amount);
+                }
+            });
+            
+            // Save updated budgets
+            saveBudgets();
+        }
+
+        // Handle expense updates from other pages
+        function handleExpenseUpdates() {
+            // Listen for storage events (when other tabs update expenses)
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'smartgrocer-expenses') {
+                    syncExpensesWithBudgets();
+                    updateUI();
+                }
+            });
+            
+            // Also sync when the page becomes visible again
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) {
+                    syncExpensesWithBudgets();
+                    updateUI();
+                }
             });
         }
 
@@ -987,6 +1047,9 @@
             if (storedBudgets) {
                 budgets = JSON.parse(storedBudgets);
             }
+            
+            // Sync with expenses whenever budgets are loaded
+            syncExpensesWithBudgets();
         }
 
         function saveBudgets() {
