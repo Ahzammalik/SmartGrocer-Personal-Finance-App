@@ -680,8 +680,14 @@
 
         // Sync expenses with budgets
         function syncExpensesWithBudgets() {
-            // Get all expenses from localStorage
-            const expenses = JSON.parse(localStorage.getItem('smartgrocer-expenses') || '[]');
+            console.log('🔄 Syncing expenses with budgets...');
+            
+            // Get all transactions from localStorage
+            const transactions = JSON.parse(localStorage.getItem('smartgrocer-transactions') || '[]');
+            
+            // Filter only expense transactions
+            const expenses = transactions.filter(t => t.type === 'expense');
+            console.log('📊 Found expenses:', expenses.length);
             
             // Reset all budget spent amounts to 0
             budgets.forEach(budget => {
@@ -696,31 +702,50 @@
                 );
                 
                 if (budget) {
-                    budget.spent = (budget.spent || 0) + parseFloat(expense.amount);
+                    // Use absolute value since expenses are stored as negative numbers
+                    const expenseAmount = Math.abs(expense.amount);
+                    budget.spent = (budget.spent || 0) + expenseAmount;
+                    console.log(`💰 Updated budget "${budget.name}": Added ${expenseAmount} from expense "${expense.description}"`);
                 }
             });
             
             // Save updated budgets
             saveBudgets();
+            console.log('✅ Budgets synced successfully');
         }
 
         // Handle expense updates from other pages
         function handleExpenseUpdates() {
-            // Listen for storage events (when other tabs update expenses)
+            // Listen for storage events (when other tabs update transactions)
             window.addEventListener('storage', function(e) {
-                if (e.key === 'smartgrocer-expenses') {
+                if (e.key === 'smartgrocer-transactions') {
+                    console.log('📢 Storage event detected: transactions updated');
                     syncExpensesWithBudgets();
                     updateUI();
                 }
             });
             
+            // Listen for custom data update events from Expense Manager
+            window.addEventListener('smartgrocer-data-update', function(e) {
+                console.log('📢 Custom event detected: data updated');
+                syncExpensesWithBudgets();
+                updateUI();
+            });
+            
             // Also sync when the page becomes visible again
             document.addEventListener('visibilitychange', function() {
                 if (!document.hidden) {
+                    console.log('👀 Page visible, syncing budgets...');
                     syncExpensesWithBudgets();
                     updateUI();
                 }
             });
+            
+            // Initial sync after a short delay
+            setTimeout(() => {
+                syncExpensesWithBudgets();
+                updateUI();
+            }, 1000);
         }
 
         function addNewBudget() {
@@ -750,7 +775,11 @@
             budgets.push(newBudget);
             saveBudgets();
             closeAddModal();
+            
+            // Sync with existing expenses after creating budget
+            syncExpensesWithBudgets();
             updateUI();
+            
             showNotification('Budget created successfully!', 'success');
         }
 
