@@ -580,6 +580,9 @@
                     }
                 });
                 window.dispatchEvent(event);
+                
+                // Also trigger storage event for cross-tab communication
+                window.dispatchEvent(new Event('storage'));
             }
 
             getTransactions() {
@@ -608,6 +611,7 @@
                     this.updateAccountBalanceFromTransaction(transaction);
                 }
                 
+                // 🔥 CRITICAL: Trigger budget updates
                 this.triggerDataUpdate();
                 return transaction;
             }
